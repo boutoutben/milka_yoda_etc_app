@@ -1,0 +1,112 @@
+#AnimalIdentity {
+    background-color: var(--third-color);
+    width: 90%;
+    max-width: 1000px;
+    margin: 50px;
+    border: 7px solid black;
+    border-radius: 15px;
+    padding: 25px;
+}
+
+#AnimalIdentity>div>div>img{
+    width: 250px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 20px;
+}
+
+#AnimalIdentity>div>div{
+    gap: 40px;
+}
+
+#AnimalIdentity>div>div>div{
+    row-gap: 20px;
+}
+
+#AnimalIdentity>div>div>div>div{
+    gap: 30px;
+}
+
+
+#raceAnimal{
+    background-color: var(--blue-color);
+    color: white;
+    padding:4px 5px;
+    border: 2px solid black;
+    border-radius: 15px;
+    width: fit-content;
+}
+
+.all-races{
+    width: 175px;
+    flex-wrap: wrap;
+    gap: 5px;
+    row-gap: 10px;
+}
+
+.sexe{
+    gap: 10px;
+}
+.sexe > img {
+    width: 40px;
+}
+
+#animalDescription{
+    width: 100%;
+    max-width: 900px;
+    padding: 0;
+    margin-bottom: 50px;
+}
+
+
+#animalDescription>div>div{
+    align-items: flex-start;
+    gap: 35px;
+}
+
+.animalIncompatibility{
+    width: 200px;
+    row-gap: 10px;
+}
+
+.animalIncompatibility img{
+    width: 70px;
+}
+
+@media screen and (max-width: 768px) {
+    #animalDetail {
+        overflow: hidden;
+    }
+    #AnimalIdentity{
+        margin-top: 0 !important;
+        margin-bottom: 25px !important;
+        border: none; 
+        border-radius: 0;
+    }
+    #AnimalIdentity>div>div {
+        flex-direction: column-reverse;
+    }
+
+    #AnimalIdentity>div>div img {
+        width: 80%;
+    }
+
+    #AnimalIdentity>div>div>div>div:nth-child(2) {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    #animalDescription>div>div {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #animalDescription p{
+        width: 80%;
+        max-width: 600px;
+    }
+
+    #animalDescription #mainBtn{
+        max-width: 80%;
+    }
+}

@@ -1,0 +1,130 @@
+#adoptInterface{
+    display: flex;
+    flex-direction: row;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 25px;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin: 40px auto;
+}
+
+.search-icon {
+    position: absolute;
+    left: 63px;
+    color: black;
+    font-size: 18px;
+}
+
+aside{
+    background-color: var(--blue-color);
+    width: fit-content;
+    margin:0 40px;
+    padding: 25px 50px 50px;
+    color: white;
+    row-gap: 25px;
+    border: 7px solid black;
+    border-radius: 25px;
+    height: fit-content;
+}
+
+aside .closeImg{
+    display: none;
+}
+
+#filterInfo{
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    text-align: center;
+    row-gap: 25px;
+}
+
+#filterBtn {
+    display: none;
+}
+
+#filterBtn>h2{
+    text-align: left !important;
+    text-decoration: none !important;
+    cursor: pointer;
+}
+
+form>div>div {
+    display: flex;
+    flex-direction: column;
+    margin: 5px 20px
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px !important;
+}
+
+.noAnimal {
+    text-align: center;
+    width: 100%;
+    margin: auto;
+}
+
+@media screen and (max-width:1180px) {
+    #adoptInterface {
+        padding: 0 15px;
+    }
+    aside{
+        padding: 25px 30px 35px;
+        margin: 0 !important;
+    }
+    form>div>div {
+        display: flex;
+        flex-direction: column;
+        margin: 5px 15px
+    }
+}
+
+@media screen and (max-width:768px) {
+    #filterBtn {
+        display: block;
+    }
+    #filterInfo {
+        text-align: left;
+    }
+    aside {
+        position: fixed;
+        left: -100vw;
+        width:200px;
+        height: 100%;
+        padding-bottom:- 100px;
+        top: 0;
+        max-width: 500px;
+        z-index: 5;
+        border-radius: 0;
+        overflow-x: auto;
+        transition: left 1s ease-in-out;
+    }
+
+    .showFilter{
+        left: -30px;
+    }
+
+    aside .closeImg {
+        display: block;
+        margin-left: 65% !important;
+        margin-bottom: 40px !important;
+    }
+    .search-container {
+        max-width: 250px;
+    } 
+    
+    .search-icon {
+        left: 20px;
+    }
+}

@@ -1,0 +1,46 @@
+#actionPage h1 {
+    text-align: left;
+    padding-top: 1vw;
+    width: 95%;
+}
+
+#action>div{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: start;
+}
+
+#action img {
+    width: 300px;
+    height: 200px;
+    float: left;
+    object-fit: cover;
+    border-radius: 40px;
+    margin-right: 1vw;
+}
+
+#action p {
+    width: 750px;
+    margin-left: 1vw;
+}
+
+@media screen and (max-width:1180px) {
+    #action p {
+        width: 600px;
+    }
+}
+
+@media screen and (max-width:768px) {
+    #action img {
+        width: 250px;
+        height: 150px;
+        float: none;
+        display: block;
+        margin: 0 auto;
+    }
+    #action p {
+        width: 90vw;
+        max-width: 400px;
+    }
+}

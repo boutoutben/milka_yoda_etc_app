@@ -1,0 +1,134 @@
+header {
+    background-color: var(--secondary-color);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5vw 0;
+}
+
+#headerLogo{
+    width: 70px;
+    cursor: pointer;
+}
+
+nav{
+    display: flex;
+}
+nav>ul>a{
+    text-decoration: none;
+    color: black;
+    margin: 0 1.5vw;
+    font-size: 1.6em;
+}
+
+nav>ul>a:hover{
+    color:var(--third-color);
+}
+
+.shopImg{
+    width: 55px;
+    height: 55px;
+    margin: 0 2vw;
+}
+
+#menuBtn, header .verticalLine {
+    display: none;
+}
+
+.dropdownMenu, .normalMenu{
+    display: none;
+}
+
+@media screen and (max-width:1180px) {
+    header {
+        justify-content: space-between;
+        padding: 0 40px;
+    }
+    header>nav {
+        display: none;
+    }
+
+    .shopImg {
+        display: none;
+    }
+
+    header .verticalLine {
+        display: block;
+        height: 50px;
+    }
+
+    #menuBtn {
+        display: block;
+        width: 50px;
+        cursor: pointer;
+        transition: width 2s;
+    }
+
+    #headerLogo {
+        width: 80px;
+    }
+
+    .dropdownMenu,
+    .normalMenu {
+        position: fixed;
+        top: 0;
+        left: 65%;
+        transform: translateX(-50%);
+        width: 70%;
+        height: 100%;
+        background-color: var(--secondary-color);
+        border-left: 5px solid black;
+        z-index: 2;
+        display: flex;
+        align-items: end;
+        row-gap: 15px;
+        transition: left 1s ease-in-out;
+    }
+
+    
+    :is(.normalMenu,.dropdownMenu)>nav>ul {
+        align-items: end;
+        margin:25px 50px;
+        row-gap: 20px;
+        font-size: 1.3em;
+    }
+
+    :is(.normalMenu,.dropdownMenu) button{
+        margin: 0 25px !important;
+    }
+
+    :is(.normalMenu,.dropdownMenu) #headerLogo {
+        width: 100px;
+        margin: 0 50px;
+    }
+
+    .normalMenu {
+        left: 150%;
+    }
+}
+
+@media screen and (max-width:768px) {
+    header {
+        padding: 5px 20px;
+    }
+    header .verticalLine {
+        display: none;
+    }
+
+    .dropdownMenu, .normalMenu {
+        left: 50vw;
+        overflow: auto;
+        width: 100vw;
+        min-height: 100vw;
+        padding-bottom: 50px;
+    }
+
+
+    header>div>a {
+        display: none;
+    }
+    .normalMenu {
+        left: 175vw;
+    }
+}
