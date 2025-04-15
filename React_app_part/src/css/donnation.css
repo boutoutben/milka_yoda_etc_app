@@ -1,3 +1,6 @@
+#donnationPage {
+    max-width: 100%;
+}
 #donnationPage h1{
     text-align: left;
     width: 95%;
@@ -21,7 +24,6 @@
     display: none;
     /* Cache complètement l'input radio */
 }
-
 
 #donnationData>form{
     display: flex;
@@ -73,7 +75,7 @@ select{
     width: 98%;
     background-color: white;
 }
-select:first-child {
+#donnationPage select:first-child {
     padding: 1px 7px !important;
 }
 
@@ -134,6 +136,8 @@ select:first-child {
 @media screen and (max-width: 768px) {
     #donnationPage{
         background-color: var(--third-color);
+        margin:80px 0 0;
+        padding-bottom: 40px;
     }
 
     #informationDonnation #mainBtn{
@@ -142,55 +146,53 @@ select:first-child {
 
     #donnationData>form>section {
         padding: 15px 0;
-        width: 95vw;
+        width: 100%;
         border-radius: 0px;
         border: none;
+        
     }
 
-    #informationDonnation input {
-        max-width: 300px;
+    #informationDonnation input{
+        margin: 30px;
+        max-width: 325px;
     }
 
+    #donnationData select {
+        width: 100%;
+        padding: 7px auto !important;
+    }
     #donnationData>form>section:not(:last-child) {
         border-bottom: 3px solid black;
     }
     #coordonateDonnation {
         width: 95vw !important;
     }
-    #coordonateDonnation>div{
+    #coordonateDonnation>div select,#donnationPage select:first-child{
+        padding: 8px 12px !important;
+    }
+   #coordonateDonnation>div {
+       display: flex;
+       box-sizing: border-box;
+       flex-direction: column;
+       align-items: center;
+       width: auto;
+       max-width: 600px;
+       min-width: 280px;
+       margin: 0 30px;
+       /* Centre le div au milieu */
+       /* Ajoute un peu d'espace interne */
+   }
+   #coordonateDonnation input {
+       width: 95% !important;
+       margin: 5px 0;
+   }
+
+    #coordonateDonnation>div>div:not(:last-child){
         display: flex;
         flex-direction: column;
         align-items: center;
-        width:fit-content;
-        min-width: 300px;
-        max-width: 500px;
-        margin: auto; 
+        width: 100%;
+        gap: 0;
     }
-
-    #coordonateDonnation>div>div{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    #donnationData #coordonateDonnation input:not(input[type=radio]) {
-        padding: 8px 7px;
-        border-radius: 10px;
-        width: 80%;
-        margin: 5px 0;
-    }
-    #coordonateDonnation>div>div:not(:last-child) {
-        flex-direction: column;
-    }
-    #coordonateDonnation select {
-        height: 40px;
-        width: 175px;
-        margin-left: -85px;
-    }
-
-    .PhoneInput {
-       width: 80% !important;
-    }
-
 }
 

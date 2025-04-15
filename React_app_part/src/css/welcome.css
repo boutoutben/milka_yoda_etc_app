@@ -1,6 +1,8 @@
 #welcomePage {
     max-width: 100%;
     overflow: hidden;
+    margin-bottom: 0;
+    row-gap: 0;
 }
 .carousel {
     position: relative;
@@ -77,6 +79,7 @@
 
 #welcomePage>section{
     width: 100%;
+    padding: 25px 0;
 }
 
 main img {
@@ -89,7 +92,6 @@ main img {
     border: 10px solid rgb(0, 0, 0, 0.5);
     border-radius: 15px;
 }
-
 
 .borderBlue {
     background-color: var(--blue-color);
@@ -213,7 +215,7 @@ main img {
 
 #socialMediaPresentation {
     background-color: var(--third-color);
-    padding: 0;
+    padding: 0 !important;
 }
 
 
@@ -229,6 +231,9 @@ main img {
 }
 
 @media screen and (max-width:1180px) {
+    #welcomePage{
+        margin: 80px 0 0;
+    }
     .carousel, .slide img {
         height: 300px;
     }
@@ -284,7 +289,7 @@ main img {
     }
     
     .carousel h1 {
-        font-size: 2em;
+        font-size: 1.8em;
     }
 
     .carousel button {

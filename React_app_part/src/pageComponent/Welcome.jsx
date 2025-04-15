@@ -3,7 +3,7 @@ import "./../css/welcome.css"
 
 import {MainBtn, PresentationAnimal, WelcomeSection} from "./Component"
 import { useNavigate } from "react-router-dom"
-import { fetchApi } from "./App"
+import { getFetchApi } from "./App"
 
 
 const WelcomeToMilkaYodaEtc = () => {
@@ -48,11 +48,6 @@ const WelcomeToMilkaYodaEtc = () => {
         </div>
     );
 }
-        /*
-        <div id="welcomeToAsso">
-             <h1 className="flex-column alignCenter-AJ">Bienvenue dans Milka Yoda etc</h1>
-        </div>
-        */
 
 const WelcomeImg = ({src, alt, redirection}) => {
     const navigate = useNavigate();
@@ -63,7 +58,7 @@ const WelcomeImg = ({src, alt, redirection}) => {
     }
     return (
         <div id="welcomeImg" className="borderBlue">
-            <img src={src} alt={alt} onClick={handleClick}/>
+            <img src={src} alt={alt} onClick={handleClick} />
         </div>  
     )
 }
@@ -120,39 +115,82 @@ const ActionSumary = () => {
 
 const AnimalToAdopt = () => {
     const [animalsData, setAnimalsData] = useState([]);
+    const navigate = useNavigate();
+
+    const fetchAnimalsData = async () => {
+        try {
+            const data = await getFetchApi("welcomeData");
+            setAnimalsData(data.animals);
+        } catch (err) {
+            console.error("Error fetching animals data:", err);
+        }
+    };
+
     useEffect(() => {
-        fetchApi("welcomeData")
+        fetchAnimalsData();
+    }, []);
+
+    const handleClick = (event, animalId) => {
+        event.preventDefault();
+        navigate(`adopter/${animalId}`);
+    };
+
+    // Utility function to calculate the animal's age
+    const calculateAge = (born) => {
+        return new Date().getFullYear() - new Date(born).getFullYear();
+    };
+
+    return (
+        <WelcomeSection
+            id='animalToAdopt'
+            title='Nos animaux à adopter'
+            content={
+                <div className="flex-row alignCenter-AJ">
+                    {animalsData.length > 0 ? (
+                        animalsData.map((animal) => (
+                            <PresentationAnimal
+                                key={animal.id}
+                                img={animal.imgName}
+                                name={animal.name}
+                                age={calculateAge(animal.born)}
+                                isMale={animal.sexe === 1}
+                                handleClick={(event) => handleClick(event, animal.id)}
+                            />
+                        ))
+                    ) : (
+                        <p>Loading animals...</p>
+                    )}
+                    <ArrowSeeMore redirection='/adopter' />
+                </div>
+            }
+        />
+    );
+};
+
+const BeingCarefullAboutAnimales = ({redirection}) => {
+    const navigate = useNavigate();
+
+    const [articles, setArticles] = useState([]);
+    useEffect(() => {
+        getFetchApi("welcomeData")
             .then(data => {
-                setAnimalsData(data);
+                setArticles(data.articles);
             })
             .catch(err => {
                 console.error(err);
             })
     }, []);
-    
-    return (
-        <WelcomeSection
-        id='animalToAdopt'
-        title='Nos animaux à adopter'
-        content={
-            <div className="flex-row alignCenter-AJ">
-                {animalsData.map((animal) => (
-                    <PresentationAnimal key={animal.id} img={animal.imgName} name={animal.name} age={new Date().getFullYear() - new Date(animal.born).getFullYear()} isMale={(animal.sexe === 1) ? true : false}/>
-                ))}
-                <ArrowSeeMore redirection={'/adopter'} />
-            </div>
-        }
-        />
-    )
-}
 
-const BeingCarefullAboutAnimales = ({redirection}) => {
-    const navigate = useNavigate();
+    const handleArticleClick = (event, id) => {
+        event.preventDefault();
+        navigate(`/article/${id}`);
+    }
 
     const handleClick = (event) => {
         event.preventDefault();
         navigate(redirection);
     }
+
 
     return (
         <WelcomeSection
@@ -160,18 +198,12 @@ const BeingCarefullAboutAnimales = ({redirection}) => {
         title='Les animaux ne sont pas des objets'
         content={
             <div className="flex-row alignCenter-AJ">
-                <div className="borderBlue">
-                    <img src="img/petAbuse.png" alt="" />
-                    <p>La maltraitance animal affecter mentalment nos ami canin</p>
-                </div>
-                <div className="borderBlue">
-                    <img src="img/giveAttention.png" alt="" />
-                    <p>Donner de l'attention à vos compagnon pour bien le stimuler</p>
-                </div>
-                <div className="borderBlue">
-                    <img src="img/foodAlert.png" alt="" />
-                    <p>Le chien n'est pas homnivors, ne lui donner pas n'importe quoi</p>
-                </div>
+                {articles.map((article) => (
+                    <div className="borderBlue" key={article.id} onClick={(event) => handleArticleClick(event, article.id)}>
+                        <img src={`img/${article.imgName}`} alt="" />
+                        <p>{article.title}</p>
+                    </div>
+                ))}
             </div>
         }
         nameBtn={"Voir plus"}

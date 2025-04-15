@@ -1,5 +1,7 @@
 import { AllAnimales, WelcomeSection } from "./Component";
 import './../css/mediatorAnimal.css'
+import { getFetchApi } from "./App";
+import { useEffect, useState } from "react";
 
 const PresentationMediation = () => {
     return (
@@ -15,16 +17,22 @@ const PresentationMediation = () => {
 }
 
 const MediatorAnimal = () => {
-    const animalData = {
-        animal1:{img:'tatai.JPG', name:'taitai', age:4, isMale:false},
-        animal2:{img:'beber.jpeg', name:'beber', age:1, isMale: true},
-        animal3:{img:'soso.JPG', name:'soleil', age:8, isMale:true},
-        animal4:{img:'clochette.JPG', name:'clochette', age:2, isMale:false}
-    }
+    const [animals, setAnimals] = useState(null);
+    useEffect(() => {
+            getFetchApi("mediator")
+                .then(data => {
+                    setAnimals(data);
+                   
+                })
+                .catch(err => {
+                    console.error(err);
+                });
+        }, []); 
+    if(!animals) return(<p>chargement ...</p>)
     return (
         <main>
             <PresentationMediation />
-            <AllAnimales animalData={animalData} redirectionUrl={'/mediatorAnimalDetail'} className='mediator'/>    
+            <AllAnimales animalData={animals} className='mediator' root={"/mediatorAnimal/"} />    
         </main>
         
     )

@@ -44,44 +44,50 @@
 #presentationAnimal{
     border: 10px solid black;
     width: 200px;
+    height: 275px;
     background-color: var(--third-color);
-    overflow: auto;
+    cursor: pointer;
 }
-
-#presentationAnimal>img{
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
+#presentationAnimal>div:first-child{
+    height: 134px;
     border-bottom: 10px solid black;
     overflow: hidden;
 }
-#presentationAnimal>img:hover {
+#presentationAnimal>div:first-child>img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+#presentationAnimal>div:first-child>:hover {
     cursor: pointer;
+    z-index: -1;
     transform:scale(1.05);
 }
-#presentationAnimal>div{
+#presentationAnimal>div:last-child{
     display: flex;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin: 35px 0;
+    height: calc(100% - 134px);
+    margin: auto 20px;
 }
 .verticalLine{
     border-right: 5px solid black;
     height: 60px;
-    margin: 0 20px;
+    margin: 0 25px;
 }
-#presentationAnimal>div>img{
+#presentationAnimal>div:last-child>img{
     width: 40px;
     height: 40px;
 }
 
 #presentationAnimal>div>div>p{
-    margin: 5px 0;
+    text-align: center;
 }
 
 .line {
     border-top: 0.3vw solid black;
-    width: 90vw;
+    width: 90%;
     margin: 0 auto;
 }
 
@@ -89,23 +95,17 @@
 #allAnimal {
     display: flex;
     flex-wrap:wrap;
-    margin:0 auto;
     gap: 40px;
     row-gap: 20px;
     justify-content: flex-start;
     align-items: flex-start;
     /* Alignement en haut */
-    width: 850px;
-    /* Espacement entre les éléments */
+    width: 100%;
     padding: 20px;
     min-height: fit-content;
 }
 
 #allAnimal>section {
-    margin: 0;
-    border-radius: 8px;
-    width: 225px;
-    max-width: 225px;
     /* Coins arrondis */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     /* Légère ombre */
@@ -116,11 +116,29 @@
     justify-content: center !important;
 }
 
+.logout {
+    justify-content: center;
+    align-items: flex-end;
+    width: 100%;
+}
+
+.logout img {
+    width: 60px;
+    height: 60px;
+    margin-left: auto;
+    cursor: pointer;
+}
+
+
+
 @media screen and (max-width:1180px) {
+    #presentationAnimal .verticalLine {
+        margin:10px;
+    }
     #presentationAnimal {
         border: 10px solid black;
         background-color: var(--third-color);
-        min-width: 175px;
+        min-width: 200px;
     }
 
     #presentationAnimal>img {
@@ -129,10 +147,6 @@
         object-fit: cover;
         border-bottom: 10px solid black;
         overflow: hidden;
-    }
-
-    #presentationAnimal>div {
-        margin: 20px 0;
     }
 
     #mainBtn,
@@ -152,6 +166,13 @@
 }
 
 @media screen and (max-width:768px) {
+    #presentationAnimal .verticalLine {
+        margin: 10px;
+        border-right: none;
+        border-top: 5px solid;
+        width: 90%;
+        height: 0;
+    }
     #allAnimal {
         flex-direction: row;
         margin: 0 auto;
@@ -163,13 +184,32 @@
         width: fit-content;
     }
 
+    #presentationAnimal {
+        border: 10px solid black;
+        background-color: var(--third-color);
+        min-width: 200px;
+        height: 300px;
+    }
+
     #allAnimal>section {
         box-sizing: border-box;
         border-radius: 8px;
         /* Coins arrondis */
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
+    #presentationAnimal>div:last-child {
+        flex-direction: column;
+        margin:0 10px
+    }
+    #presentationAnimal>div:last-child>div{
+        overflow:visible;
+    }
 
+    .logout {
+        flex-direction: column-reverse;
+        align-items: center;
+        margin-top: 35px;
+    }
 
 }
 

@@ -1,3 +1,9 @@
+#contact{
+    max-width: 100vw;
+    row-gap: 0;
+    margin: 80px 0 35px;
+}
+
 #contact img{
     width: 100%;
     height: 200px;
@@ -6,14 +12,17 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    box-sizing: border-box;
     background-color: var(--blue-color);
     border: 10px solid black;
     width: 100%;
+    padding: 25px 0;
+    margin-bottom: 40px;
 }
 #contactForm>form {
     max-width: 600px;
     width: 100%;
-    
+    gap:10px !important
 }
 #contact input, #contact textarea{
     border: 3px solid black;
@@ -24,9 +33,11 @@
 #contactForm>form>div {
     display: flex;
     flex-direction: row;
+    gap: 20px;
 }
-#contactForm>form>div>input{
+#contactForm>form>div>div{
     width: 100%;
+    margin: 0;
 }
 
 #contactForm #mainBtn{
@@ -47,6 +58,7 @@
 @media screen and (max-width:768px) {
     #contactForm {
         border: none;
+        
     }
     #contactForm>form>div {
             flex-direction: column;

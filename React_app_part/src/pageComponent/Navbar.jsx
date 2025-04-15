@@ -17,6 +17,41 @@ const NavElement = ({navClass}) => {
     )
 }
 
+
+const UserBtn = () => {
+    const navigate = useNavigate();
+
+    const handleAccountClick = (event) => {
+        event.preventDefault();
+        try {
+            const userInfo = JSON.parse(localStorage.getItem("userInformation"));
+            if (userInfo) {
+                switch (userInfo.role) {
+                    case 1:
+                        navigate("/userSpace");
+                        break;
+                    case 2:
+                        navigate("/adminSpace");
+                        break;
+                    default:
+                        navigate("/");
+                }
+            } else {
+                navigate("/login");
+            }
+        } catch (err) {
+            console.error("Erreur de parsing des infos utilisateur :", err);
+            navigate("/login");
+        }
+    };
+
+    return (
+        <a onClick={handleAccountClick}>
+            <img src="/img/user.png" alt="Compte utilisateur" />
+        </a>
+    );
+};
+
 const Menu = ({redirection}) => {
     const [menuType, setMenuType] = useState("btn");
 
@@ -45,7 +80,7 @@ const Menu = ({redirection}) => {
     return (
         <div>
             <img 
-                src="img/menu.png" 
+                src="/img/menu.png" 
                 id="menuBtn" 
                 onClick={() => setMenuType("menu")}
                 alt="Menu"
@@ -53,7 +88,8 @@ const Menu = ({redirection}) => {
             <div className={`${menuType === "menu" ? "dropdownMenu" : "normalMenu"} flex-column`}>
                 <CloseImg click={() => setMenuType('btn')} />
                 <NavElement navClass={"flex-column"} />
-                <Link to='/'><img src="img/AssocJuliette.png" alt="logo" id='headerLogo'/></Link>
+                <Link to='/'><img src="/img/AssocJuliette.png" alt="logo" id='headerLogo'/></Link>
+                <UserBtn />
                 <MainBtn name={"Nous soutenir"} click={handleClick} />
             </div>
         </div>
@@ -63,23 +99,26 @@ const Menu = ({redirection}) => {
 
 const Navbar = () => {
     const navigate = useNavigate();
+
     const handleClick = (event) => {
         event.preventDefault();
         navigate('/');
     };
+
+
     return (
         <header>
-            <img src="img/AssocJuliette.png" alt="logo" id='headerLogo' onClick={handleClick} />
+            <img src="/img/AssocJuliette.png" alt="logo" id='headerLogo' onClick={handleClick} />
             <NavElement />
-            <div className='flex-row'>
-                <img src='img/shopping-cart.png' alt='shop en ligne' className='shopImg'/>
+            <div className='flex-row alignCenter-AJ'>
+                <UserBtn />
+                <a href=""><img src='/img/shopping-cart.png' alt='shop en ligne' className='shopImg'/></a>
                 <Menu redirection={'/don'}/>
                 <div className='verticalLine'></div>
                 <Link to={'/don'}><MainBtn name={"Nous soutenir"}/></Link>    
-            </div>
-            
+            </div>     
         </header>
-    )
+    );
 }
 
 export default Navbar;

@@ -2,6 +2,8 @@ import './../css/contact.css';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { MainBtn } from './Component';
+import { useRef } from 'react';
+import emailjs from '@emailjs/browser';
 
 const ContactSchema = Yup.object().shape({
     lastname: Yup.string()
@@ -13,86 +15,122 @@ const ContactSchema = Yup.object().shape({
     firstname: Yup.string()
        .min(2, "Il faut au moins 2 caractères.")
        .max(50, "Le nombre maximal de caractères est 50.")
-       .matches(/^[A-ZÀ-Ÿ][a-zà-ÿ'-]+(?: [A-ZÀ-Ÿ][a-zà-ÿ'-]+)*$/, "Format invalide : ex. Jean ou Marie-Thérèse"),
+       .matches(/^[A-ZÀ-Ÿ][a-zà-ÿ'-]+(?: [A-ZÀ-Ÿ][a-zà-ÿ'-]+)*$/, "Format invalide : ex. Jean ou Marie-Thérèse")
+       .required("Le prénom est requis."),
 
     email: Yup.string()
-       .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Adresse e-mail invalide")
+       .email("Adresse e-mail invalide")
        .required("L'e-mail est requis."),
     
     phone: Yup.string() 
-       .matches(/^(\+33|0)[1-9](\d{2}){4}$/, "Numéro de téléphone invalide"),
+       .matches(/^(\+33|0)[1-9](\s?\d{2}){4}$/, "Numéro de téléphone invalide"),
 
-    topic: Yup.string() 
-       .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9.,!?'"()\- ]{5,100}$/, "Le sujet doit contenir entre 5 et 100 caractères et ne pas inclure de symboles spéciaux interdits.")
+    subject: Yup.string() 
+       .min(5, "Le sujet doit contenir au moins 5 caractères.")
+       .max(100, "Le sujet ne doit pas dépasser 100 caractères.")
+       .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9.,!?'"()\- ]+$/, "Le sujet contient des caractères non autorisés.")
        .required("Le sujet est requis."),
 
     message: Yup.string()
-        .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9.,!?'"()\-:;@#*/\n\r ]{10,1000}$/, "Le message doit contenir entre 10 et 1000 caractères et ne pas inclure de symboles interdits.")
-        .required("Le message est requis."),
-})
+       .min(10, "Le message doit contenir au moins 10 caractères.")
+       .max(1000, "Le message ne doit pas dépasser 1000 caractères.")
+       .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9.,!?'"()\-:;@#*\/\n\r ]+$/, "Le message contient des caractères non autorisés.")
+       .required("Le message est requis."),
+});
 
 const ContactForm = () => {
-    const initialValues =  {
+    const formRef = useRef(); // ✅ Still needed for emailjs
+    const initialValues = {
         lastname: "",
-        firstname: '',
-        email:'',
-        phone:'',
-        topic:'',
-        message:'',
-    }
+        firstname: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: "",
+    };
+    
+    const handleSubmit = (values, { resetForm }) => {
+        console.log("✔ Formik onSubmit is triggered!");
+        console.log("📩 Form Values:", values);
+        
+        if (!formRef.current) return;
 
-    const onSubmit = () => {
-        console.log("Formualaire envoyé")
-    }
+        emailjs.sendForm(
+            "service_rudbrtp",
+            "template_n97r70c",
+            formRef.current,
+            "mHP87VvYc_0rTgwUu"
+        )
+        .then((result) => {
+            console.log("✅ Email sent:", result.text);
+            resetForm(); // ✅ Reset Formik form state
+        })
+        .catch((err) => {
+            console.error("❌ Error:", err.text);
+            alert("Échec de l'envoi du message.");
+        });
+    };
+
+
 
     return (
-        <section id='contactForm'>
+        <section id="contactForm">
             <h1>Nous contacter par mail</h1>
             <Formik
-            initialValues={initialValues}
-            validationSchema={ContactSchema }
-            onSubmit={onSubmit}
+                initialValues={initialValues}
+                validationSchema={ContactSchema}
+                onSubmit={handleSubmit}
             >
                 {({ errors, touched }) => (
-                    <Form>
+                    <Form ref={formRef}> {/* ✅ Form ref is fine here */}
                         <div>
-                            <Field type='text' name='lastname' placeholder='Nom*'/>
-                            <Field type='text' name='firstname' placeholder='Prénom'/>
+                            <div>
+                                <Field type="text" name="lastname" placeholder="Nom*" />  
+                                {errors.lastname && touched.lastname && (
+                                    <div className="formError">{errors.lastname}</div>
+                                )}  
+                            </div>
+                            <div>
+                                <Field type="text" name="firstname" placeholder="Prénom" />  
+                                {errors.firstname && touched.firstname && (
+                                    <div className="formError">{errors.firstname}</div>
+                                )}  
+                            </div>
+                            
                         </div>
-                        {errors.lastname && touched.lastname ?(
-                            <div className='formError'>{errors.lastname}</div>    
-                        ) : null} 
-                        {errors.firstname && touched.firstname ?(
-                            <div className='formError'>{errors.firstname}</div>    
-                        ) : null}
+
                         <div>
-                            <Field type='text' name='email' placeholder='Email*'/>  
-                            <Field type='text' name='phone' placeholder='Téléphone'/>
-                        </div>
-                        
-                        {errors.email && touched.email ?(
-                            <div className='formError'>{errors.email}</div>    
-                        ) : null}
-                        
-                        {errors.phone && touched.phone ?(
-                            <div className='formError'>{errors.phone}</div>    
-                        ) : null}
-                        <Field type='text' name='topic' placeholder='Sujet*'/>
-                        {errors.topic && touched.topic ?(
-                            <div className='formError'>{errors.topic}</div>    
-                        ) : null}
-                        <Field as='textarea' name='message' placeholder='Message*'/>
-                        {errors.message && touched.message ?(
-                            <div className='formError'>{errors.message}</div>    
-                        ) : null}
-                        <MainBtn className={"btnInMain"} name="Envoyer" isSubmit={true} />
+                            <div>
+                                <Field type="text" name="email" placeholder="Email*" />
+                                {errors.email && touched.email && (
+                                    <div className="formError">{errors.email}</div>
+                                )}
+                            </div>
+                            <div>
+                                <Field type="text" name="phone" placeholder="Téléphone" /> 
+                                {errors.phone && touched.phone && (
+                                    <div className="formError">{errors.phone}</div>
+                                )}   
+                            </div>
+                        </div>              
+                        <Field type="text" name="subject" placeholder="Sujet*" />
+                        {errors.subject && touched.subject && (
+                            <div className="formError">{errors.subject}</div>
+                        )}
+
+                        <Field as="textarea" name="message" placeholder="Message*" />
+                        {errors.message && touched.message && (
+                            <div className="formError">{errors.message}</div>
+                        )}
+
+                        {/* ✅ No need for click={handleSubmit}, Formik handles it */}
+                        <MainBtn className="btnInMain" name="Envoyer" isSubmit={true} />
                     </Form>
                 )}
-            </Formik>    
+            </Formik>
         </section>
-        
-    )
-}
+    );
+};
 
 const ContactText = () => {
     return (

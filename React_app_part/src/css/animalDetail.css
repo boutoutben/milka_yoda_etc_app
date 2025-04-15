@@ -1,6 +1,7 @@
 #AnimalIdentity {
     background-color: var(--third-color);
-    width: 90%;
+    box-sizing: border-box;
+    width: 100%;
     max-width: 1000px;
     margin: 50px;
     border: 7px solid black;
@@ -39,7 +40,8 @@
 
 .all-races{
     width: 175px;
-    flex-wrap: wrap;
+    flex-wrap:wrap;
+    text-align: center;
     gap: 5px;
     row-gap: 10px;
 }
@@ -76,11 +78,12 @@
 @media screen and (max-width: 768px) {
     #animalDetail {
         overflow: hidden;
+        margin: 80px 0 25px;
     }
     #AnimalIdentity{
-        margin-top: 0 !important;
+        margin: 0!important;
         margin-bottom: 25px !important;
-        border: none; 
+        border: 10px solid; 
         border-radius: 0;
     }
     #AnimalIdentity>div>div {
@@ -89,6 +92,7 @@
 
     #AnimalIdentity>div>div img {
         width: 80%;
+        max-width: 320px;
     }
 
     #AnimalIdentity>div>div>div>div:nth-child(2) {

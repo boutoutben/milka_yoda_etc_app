@@ -3,9 +3,11 @@
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
+    max-width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 0;
 }
 
 #article h1 {
@@ -29,6 +31,7 @@
     padding: 40px 0;
     margin: 0 50px;
     border-bottom: 3px solid gray;
+    cursor: pointer;
 }
 
 #article section:last-child {
@@ -64,6 +67,9 @@
 }
 
 @media screen and (max-width:768px) {
+    #article {
+        margin: 80px 0 0;
+    }
     #article>article>section {
         align-items: center;
             justify-content: center;

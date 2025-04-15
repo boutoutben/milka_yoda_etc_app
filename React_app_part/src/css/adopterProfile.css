@@ -1,0 +1,93 @@
+#adopterProfile{
+    margin: 80px auto 40px;
+    width: 100%;
+    box-sizing: border-box;
+    max-width: 900px;
+    row-gap: 25px;
+    overflow: hidden;
+}
+
+#adopterProfile h2{
+    text-align: left;
+}
+
+#adopterProfile>form{
+    width: 100%;
+}
+
+#adopterProfile>form>section {
+    row-gap: 25px;
+}
+
+#adopterProfile select{
+    width: 105%;
+}
+#adopterProfile input{
+    border-radius: 10px;
+    width: 100%;
+    margin: 0;
+}
+
+#personnalInfo>div{
+    row-gap: 10px;
+}
+
+#personnalInfo .flex-row {
+    gap: 25px;
+}
+
+#adopterProfile .checkbox-align{
+    flex-wrap: wrap;
+    gap: 60px;
+    row-gap: 20px;
+}
+
+
+#adopterProfile label{
+    white-space: nowrap;
+}
+
+#modivation textarea{
+    height: 125px;
+    font-size: 1.4em;
+}
+
+#acceptationCondition label{
+    white-space: wrap;
+}
+
+#adopterProfile>form>div{
+    gap: 25px;
+}
+
+#adopterProfile #mainBtn{
+    width: 175px;
+    justify-content: center;
+}
+
+
+@media screen and (max-width:1180px) {
+    #adopterProfile {
+        margin: 80px 30px 0;
+        padding-bottom: 30px;
+        width: calc(100% - 60px);
+    }
+}
+
+@media screen and (max-width:768px) {
+
+    #personnalInfo .flex-row{
+        flex-direction: column;
+        gap: 10px;
+    }
+    #adopterProfile>form>div {
+        flex-direction: column;
+        gap: 15px;
+    }
+    #adopterProfile select {
+        width: auto;
+    }
+    #adopterProfile input {
+        width: auto;
+    }
+}

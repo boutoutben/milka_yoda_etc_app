@@ -106,7 +106,6 @@ const CordonateDonnation = () => {
       title="Mes coordonnées"
       content={ 
         <>
-
               <Field type="text" name="email" placeholder="Email" />
               <div>
                 <Field as="select" name="gender">
