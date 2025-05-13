@@ -5,7 +5,7 @@ const router = Router();
 
 router.get("/", async (req, res) => {
     try {
-        const [animals] = await db.promise().query("SELECT * FROM animals WHERE isMediator=false LIMIT 2");
+        const [animals] = await db.promise().query("SELECT * FROM animals WHERE isMediator=false && isAdopted=false LIMIT 2");
         const [articles] = await db.promise().query("SELECT * FROM articles LIMIT 3");
         res.json({ animals, articles }); 
     } catch (error) {

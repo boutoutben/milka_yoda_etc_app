@@ -11,16 +11,17 @@ import Donnation from './Donnation';
 import AnimalDetail from './AnimalDetail';
 import MediatorAnimal from './MediatorAnimales';
 import axios from 'axios';
-
-import ScroolToTop from './Component';
+import ScroolToTop, { HorizontaleLine } from './Component';
 import AdopterProfile from './AdopterProfile';
 import ArticleDetail from './articleDetail';
 import Login from './Login';
 import Register from './register';
 import UserSpace from './UserSpace';
 import AdminSpace from './AdminSpace';
-import { useCallback, useEffect } from 'react';
 import SessionManager from './SessionManager.jsx';
+import AdopterSumary from './AdopterSumary.jsx';
+import AdoptSucess from './AdoptSucess.jsx';
+import ApprouvedAdoption from './ApprouvedAdoption.jsx';
 
 
 const API_BASE_URL = "http://localhost:5000/api";
@@ -64,6 +65,23 @@ export const convertExpiresInToMs = (expiresIn) => {
     }
 };
 
+export function isGranted(roleName) {
+    try {
+        const userInfoString = localStorage.getItem("userInformation");
+        if (!userInfoString) return false;
+
+        const userInfo = JSON.parse(userInfoString);
+        return userInfo.roleName === roleName;
+    } catch (e) {
+        console.error("Error parsing userInformation from localStorage:", e);
+        return false;
+    }
+}
+
+export function upluadsImgUrl(name) {
+    return `http://localhost:5000/uploads/${name}`
+}
+
 const App = () => {
     return (
         <Router>
@@ -86,6 +104,9 @@ const App = () => {
                 <Route path='/register' element={<Register />} />
                 <Route path="/userSpace" element={<UserSpace />} />
                 <Route path='/adminSpace' element={<AdminSpace/>} />
+                <Route path='/adopterSumary' element={<AdopterSumary />} />
+                <Route path='/adoptSucess' element={<AdoptSucess />} />
+                <Route path='/adopterApprouved/:id' element={<ApprouvedAdoption />} />
             </Routes>
             <Footer />
         </Router>

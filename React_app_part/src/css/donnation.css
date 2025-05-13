@@ -4,7 +4,6 @@
 #donnationPage h1{
     text-align: left;
     width: 95%;
-    margin: 25px 0;
 }
 
 #donnationPrice {
@@ -44,18 +43,22 @@
     height: fit-content;
 }
 
+#coordonateDonnation .contentDiv{
+    row-gap: 5px;
+}
 
 #informationDonnation>div{
     display: flex;
     flex-direction: row;
     gap: 10px;
 }
-
-#donnationData input:not(input[type=radio]), select {
-    padding: 8px 7px;
+#informationDonnation select{
+    height: 38px;
+}
+#donnationData input:not(input[type=radio]){
     border-radius: 10px;
-    width: 92%;
-    margin:5px 0;
+    width: 100%;
+    height: 38px;
 }
 #coordonateDonnation {
     width: 400px !important;
@@ -67,16 +70,11 @@
     display: flex;
     flex-direction: row;
     gap: 10px;
-    width: 98%;
 }
 
 
 select{
-    width: 98%;
     background-color: white;
-}
-#donnationPage select:first-child {
-    padding: 1px 7px !important;
 }
 
 .PhoneInputInput, select {
@@ -156,19 +154,11 @@ select{
         margin: 30px;
         max-width: 325px;
     }
-
-    #donnationData select {
-        width: 100%;
-        padding: 7px auto !important;
-    }
     #donnationData>form>section:not(:last-child) {
         border-bottom: 3px solid black;
     }
     #coordonateDonnation {
         width: 95vw !important;
-    }
-    #coordonateDonnation>div select,#donnationPage select:first-child{
-        padding: 8px 12px !important;
     }
    #coordonateDonnation>div {
        display: flex;
@@ -179,20 +169,17 @@ select{
        max-width: 600px;
        min-width: 280px;
        margin: 0 30px;
-       /* Centre le div au milieu */
-       /* Ajoute un peu d'espace interne */
    }
-   #coordonateDonnation input {
-       width: 95% !important;
-       margin: 5px 0;
+   #coordonateDonnation>div>div{
+        width: 100%;
    }
-
     #coordonateDonnation>div>div:not(:last-child){
         display: flex;
         flex-direction: column;
         align-items: center;
-        width: 100%;
-        gap: 0;
+        
     }
+
+    
 }
 

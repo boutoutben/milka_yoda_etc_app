@@ -1,9 +1,11 @@
+#animalDetail{
+    margin:120px auto;
+}
 #AnimalIdentity {
     background-color: var(--third-color);
     box-sizing: border-box;
     width: 100%;
     max-width: 1000px;
-    margin: 50px;
     border: 7px solid black;
     border-radius: 15px;
     padding: 25px;

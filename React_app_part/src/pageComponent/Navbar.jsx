@@ -26,15 +26,13 @@ const UserBtn = () => {
         try {
             const userInfo = JSON.parse(localStorage.getItem("userInformation"));
             if (userInfo) {
-                switch (userInfo.role) {
-                    case 1:
+                switch (userInfo.roleName) {
+                    case "USER_ROLE":
                         navigate("/userSpace");
                         break;
-                    case 2:
+                    case "ADMIN_ROLE":
                         navigate("/adminSpace");
                         break;
-                    default:
-                        navigate("/");
                 }
             } else {
                 navigate("/login");

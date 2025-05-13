@@ -1,17 +1,33 @@
+[id^="action-"] {
+    position: relative;
+    border: 5px solid;
+    padding: 25px 100px;
+    box-sizing: border-box;
+    border-radius: 25px;
+    max-width: 100vw;
+}
+
+[id^="action-"] .contentDiv{
+    margin: auto;
+}
+
+[id^="action-"] span:hover {
+    cursor: grab;
+}
+
+
+[id^="action-"] span>img {
+    width: 75px;
+    height: auto;
+}
+
 #actionPage h1 {
     text-align: left;
-    padding-top: 1vw;
     width: 95%;
 }
 
-#action>div{
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: start;
-}
 
-#action img {
+[id^="action-"] img {
     width: 300px;
     height: 200px;
     float: left;
@@ -21,28 +37,36 @@
 }
 
 
-
-#action p {
-    width: 750px;
-    margin-left: 1vw;
+.addAction{
+    position: relative;
+    width: 100%;
+    text-align: center;
 }
 
 @media screen and (max-width:1180px) {
-    #action p {
+   [id^="action-"]>div:first-child {
         width: 600px;
     }
 }
 
 @media screen and (max-width:768px) {
-    #action img {
+    [id^="action-"]>div:first-child {
+        width: 100%;
+    }
+     [id^="action-"] {
+        touch-action: none;
+        padding: auto 0;
+        width: 100%;
+    }
+   [id^="action-"] img {
         width: 250px;
         height: 150px;
         float: none;
         display: block;
         margin: 0 auto;
     }
-    #action p {
-        width: 90vw;
-        max-width: 400px;
+   [id^="action-"]>div:nth-child(2){
+        width: 100%;
+        box-sizing: border-box;
     }
 }

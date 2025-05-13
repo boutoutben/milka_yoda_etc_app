@@ -107,7 +107,7 @@ const CordonateDonnation = () => {
       content={ 
         <>
               <Field type="text" name="email" placeholder="Email" />
-              <div>
+              <div className="flex-row alignCenter-AJ">
                 <Field as="select" name="gender">
                     <option value="">Genre</option>
                     <option value="man">Homme</option>

@@ -1,0 +1,11 @@
+#adoptSucess {
+    justify-content: flex-start;
+    min-width: calc(100vh - 501px);
+}
+#adoptSucess img {
+    width: 125px;
+}
+
+#adoptSucess p {
+    text-align: center;
+}

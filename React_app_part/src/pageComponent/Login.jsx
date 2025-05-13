@@ -50,7 +50,7 @@ const LoginSection = () => {
             });
 
             if (response.data.token) {
-                const { token, user, expiresIn } = response.data;
+                const { token, userInfo, expiresIn } = response.data;
 
                 const expiresInMs = convertExpiresInToMs(expiresIn);
                 const expirationTime = Date.now() + expiresInMs;
@@ -59,13 +59,13 @@ const LoginSection = () => {
                 console.log(expirationDate)
 
                 localStorage.setItem("token", token);
-                localStorage.setItem("userInformation", JSON.stringify(user));
+                localStorage.setItem("userInformation", JSON.stringify(userInfo));
                 localStorage.setItem("tokenExpiration", expirationDate);
-                switch (response.data.user.role) {
-                    case 1:
+                switch (response.data.userInfo.roleName) {
+                    case "USER_ROLE":
                         navigate("/userSpace");
                         break;
-                    case 2:
+                    case "ADMIN_ROLE":
                         navigate("/adminSpace");
                         break;
                 }
@@ -73,6 +73,7 @@ const LoginSection = () => {
                 setErr("Token non reçu !");
             }
         } catch (error) {
+            console.log(error);
             if (error.response?.data) {
                 console.log(error)
                 const data = error.response.data;
@@ -101,7 +102,7 @@ const LoginSection = () => {
                     <a href="/register">pas encore de compte</a>
                     {err && <p className="formError">{err}</p>}
                     {errorMessage && <p className="formError">{errorMessage}</p>}
-                    <form action="" className="flex-colunm alignCenter-AJ" onSubmit={formik.handleSubmit}>
+                    <form className="flex-column alignCenter-AJ" onSubmit={formik.handleSubmit}>
                         <div>
                             <input type="text" name="email" placeholder="username" value={formik.values.email}
                                         onChange={formik.handleChange} />  

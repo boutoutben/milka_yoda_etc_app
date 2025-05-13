@@ -1,3 +1,4 @@
+import { Router } from "express";
 import db from "../mysqlDatabase.mjs";
 
 export function authRole(role) {
@@ -7,6 +8,7 @@ export function authRole(role) {
       .promise()
       .query("SELECT firstname, lastname, email, phone, roles.name as role FROM users INNER JOIN roles ON users.role = roles.id WHERE users.id = ?", [req.user.userId]);
         const user = rows[0];
+        console.log(role);
         if(user.role === role){
             req.user = user;
             next();
@@ -19,3 +21,4 @@ export function authRole(role) {
     }
 
 }
+

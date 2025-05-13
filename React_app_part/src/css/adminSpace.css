@@ -1,0 +1,14 @@
+#askForAdopt {
+    max-width: 100%;
+    
+}
+
+#askForAdopt>div{
+    margin: auto;
+    width: fit-content;
+}
+
+#askForAdopt>div>div{
+    justify-content: flex-start;
+    overflow: auto;
+}

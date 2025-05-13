@@ -1,3 +1,7 @@
+#adopt{
+    margin: 120px auto;
+}
+
 #adoptInterface{
     display: flex;
     flex-direction: row;
@@ -12,17 +16,17 @@
     justify-content: center;
     position: relative;
     max-width: 400px;
-    margin: 40px auto;
+    margin: 0px auto;
 }
 
 .search-icon {
     position: absolute;
-    left: 20px;
+    left: 15px;
     color: black;
     font-size: 18px;
 }
 
-aside{
+#adoptInterface aside{
     background-color: var(--blue-color);
     width: max-content;
     margin:0 50px;
@@ -34,7 +38,7 @@ aside{
     height: fit-content;
 }
 
-aside .closeImg{
+#adoptInterface aside .closeImg{
     display: none;
 }
 
@@ -49,7 +53,7 @@ aside .closeImg{
 #filterBtn {
     display: none;
 }
-aside label {
+#adoptInterface aside label {
     display: inline-flex;
     align-items: center;
 }
@@ -58,18 +62,6 @@ aside label {
     text-align: left !important;
     text-decoration: none !important;
     cursor: pointer;
-}
-
-form>div>div {
-    display: flex;
-    flex-direction: column;
-    margin: 5px 20px
-}
-
-form{
-    display: flex;
-    flex-direction: column;
-    row-gap: 20px !important;
 }
 
 .noAnimal {
@@ -82,18 +74,16 @@ form{
     #adoptInterface {
         padding: 0 15px;
     }
-    aside{
+    #adoptInterface aside{
         padding: 25px 30px 35px;
         margin: 0 25px;
-    }
-    form>div>div {
-        display: flex;
-        flex-direction: column;
-        margin: 5px 15px
     }
 }
 
 @media screen and (max-width:768px) {
+    #adoptInterface {
+        padding: 0;
+    }
     #filterBtn {
         display: flex;
         gap: 10px;
@@ -101,7 +91,7 @@ form{
     #filterInfo {
         text-align: left;
     }
-    aside {
+    #adoptInterface aside {
         position: fixed;
         left: -100vw;
         width:200px;
@@ -116,14 +106,14 @@ form{
         transition: left 1s ease-in-out;
     }
 
-    .showFilter{
+    #adoptInterface .showFilter{
         left: 0;
     }
     .filterImg {
         width: 40px;
     }
 
-    aside .closeImg {
+    #adoptInterface aside .closeImg {
         display: block;
         margin-left: 65% !important;
         margin-bottom: 40px !important;

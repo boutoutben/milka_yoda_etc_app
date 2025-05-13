@@ -17,35 +17,34 @@
     border: 10px solid black;
     width: 100%;
     padding: 25px 0;
+    color: white;
+    row-gap: 25px;
     margin-bottom: 40px;
 }
-#contactForm>form {
+#contactForm form {
     max-width: 600px;
     width: 100%;
-    gap:10px !important
+    margin: auto;
 }
+
 #contact input, #contact textarea{
     border: 3px solid black;
 }
-#contactForm>form>input,#contactForm>form>textarea  {
-    width:93%;
+#contactForm form>input,#contactForm>form>textarea  {
+    width:100%;
 }
-#contactForm>form>div {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
+#contactForm form>div {
+    width: 100%;
+    gap: 7px;
 }
-#contactForm>form>div>div{
+
+#contactForm form>div>div>div{
     width: 100%;
     margin: 0;
 }
 
 #contactForm #mainBtn{
     padding: 10px 40px;
-}
-#contactForm h1 {
-    margin-bottom: 50px;
-    color: white;
 }
 
 .contactText {

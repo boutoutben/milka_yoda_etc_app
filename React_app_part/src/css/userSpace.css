@@ -1,0 +1,11 @@
+#yourAdoption{
+    gap: 25px;
+    align-items: center;
+    max-width: 95vw;
+    justify-content: flex-start;
+    overflow:auto;
+}
+
+#userSpace>section{
+    width: 100%;
+}

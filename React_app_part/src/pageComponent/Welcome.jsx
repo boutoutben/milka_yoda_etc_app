@@ -217,7 +217,7 @@ const SocialMediaPresentation = () => {
         <section id="socialMediaPresentation">
             <div className="flex-row alignCenter-AJ">
                 <a href="https://www.instagram.com/milka_yoda_etc?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank"><img src="img/instagram.png" alt="" /></a>
-                <a href="#"><img src="img/tik-tok.png" alt="" /></a>
+                <a href="https://www.tiktok.com/@milka.yoda.etc" target="_blank"><img src="img/tik-tok.png" alt="" /></a>
                 <a href="#"><img src="img/twitter.png" alt="" /></a>
                 <a href="https://www.facebook.com/profile.php?id=61574010993069" target="_blank"><img src="img/facebook.png" alt="" /></a>
             </div>

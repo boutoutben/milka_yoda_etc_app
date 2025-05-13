@@ -1,7 +1,8 @@
-import { AllAnimales, WelcomeSection } from "./Component";
+import { AddAnimals, AllAnimales, WelcomeSection } from "./Component";
 import './../css/mediatorAnimal.css'
 import { getFetchApi } from "./App";
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 const PresentationMediation = () => {
     return (
@@ -17,6 +18,8 @@ const PresentationMediation = () => {
 }
 
 const MediatorAnimal = () => {
+    const location = useLocation();
+    const state = location.state;
     const [animals, setAnimals] = useState(null);
     useEffect(() => {
             getFetchApi("mediator")
@@ -31,6 +34,10 @@ const MediatorAnimal = () => {
     if(!animals) return(<p>chargement ...</p>)
     return (
         <main>
+            {state && (
+                <p className="formError">{state.message}</p>
+            )}
+            <AddAnimals apiUrl={'mediator/add'} />
             <PresentationMediation />
             <AllAnimales animalData={animals} className='mediator' root={"/mediatorAnimal/"} />    
         </main>

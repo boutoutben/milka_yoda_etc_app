@@ -7,7 +7,7 @@
     --secondary-color: #B4DFE5;
     --third-color: #FBE8A6;
     --blue-color:#3079B6;
-    --last-color: #F4976C
+    --last-color: #F4976C;
 }
 
 *{
@@ -23,7 +23,6 @@ h1{
     font-size: 2.6em;
     font-family: "Pacifico", cursive;
     font-weight: 400;
-    margin: 25px 0 0;
     font-style: normal;
 }
 
@@ -38,7 +37,11 @@ h3{
     font-size: 1.5em;
 }
 
-p,label, a,li {
+form{
+    width: 100%;
+}
+
+p,label, a,li, td {
     font-size: 1.2em;
     font-family: "Source Serif 4", serif;
     font-optical-sizing: auto;
@@ -54,24 +57,22 @@ label, input[type=radio] {
 main {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     max-width: 900px;
-    margin:80px auto;
+    margin:120px auto;
     row-gap:40px;
+    min-height: calc(100vh - 412px);
 }
 
-input[type='text'], input[type='search'], textarea,input[type=number], input[type="password"] {
-    margin: 5px 5px;
+input[type='text'], input[type='search'], textarea,input[type=number], input[type="password"], input[type=date] {
     border: 3px solid var(--blue-color);
     border-radius: 20px;
     padding: 17px 12px;
-    
+    width: 100%;
+    box-sizing: border-box;
 }
 
-select {
-    padding: 17px 12px !important;
-}
 
 input[type='search'] {
     padding-left: 35px;
@@ -91,18 +92,27 @@ input[type='radio']
     background-color: transparent;
     outline: 2px solid white;
 }
-.checkbox{
+
+h4 {
+    font-size: 1.3em;
+    text-align: center;
+}
+.checkbox, .radio{
     position: relative;
     font-size: 1.4em;
     display: block;
     padding-left: 40px;
     cursor: pointer;
 }
-.checkbox input{
+.checkbox input, .radio input{
     position: absolute;
-    height: 0;
-    width: 0;
+    visibility: hidden;
+    outline: none;
     cursor: pointer;
+}
+
+.radio .check{
+    border-radius: 50px;
 }
 
 .check{
@@ -112,14 +122,15 @@ input[type='radio']
     border-radius: 2px;
     background-color: white;
     border: 2px solid var(--blue-color);
-    top:2px;
+    top:50%;
+    transform: translateY(-50%);
     left: 0;
 }
-.checkbox:hover input ~ .check{
+.checkbox:hover input ~ .check, .radio:hover input~.check {
     background-color: transparent;
     background-color: rgb(204, 204, 204);
 }
-.checkbox input:checked ~ .check{
+.checkbox input:checked ~ .check, .radio input:checked~.check{
     background-color: var(--blue-color);
     border: 4px solid white;
     outline: 3px solid var(--blue-color);
@@ -128,13 +139,27 @@ input[type='radio']
     height: 16px;
 }
 
+.chevron-down-icon {
+    font-size: 10px;
+}
+.radio input:checked~.check {
+    border-radius: 50px;
+}
+
 input[type='radio']:checked
 {
     border: 3px solid var(--last-color);
 }
 
+select{
+    padding: 15px 10px;
+    padding-bottom: 15px;
+    border-radius: 15px;
+}
+
 .formError {
     font-size: 1.5em;
+    margin-top: 10px;
     color: rgb(160, 4, 4);
 }
 
@@ -158,19 +183,51 @@ a {
     align-items: center;
 }
 
+.editLink {
+    text-decoration: underline;
+    color: rgb(14, 46, 151);
+    cursor: pointer;
+    margin-left: 15px;
+}
+
+.relative{
+    position: relative;
+    width: 100%;
+}
+
+table>tr, table{
+    width: 100%;
+}
+
+td{
+    text-align: center;
+}
+
+.row-gap-15{
+    row-gap: 15px;
+}
+
+.row-gap-25 {
+    row-gap: 25px;
+}
+
+.gap-15 {
+    gap: 15px;
+}
+
 @media screen and (max-width:1180px) {
     h2{
         font-size: 1.8em;
     }
 
     main {
-        margin: 80px 40px;
+        margin: 120px 40px;
     }
 }
 
 @media screen and (max-width:768px) {
     main {
-            margin: 80px 20px;
+            margin: 120px 20px;
         }
 }
 

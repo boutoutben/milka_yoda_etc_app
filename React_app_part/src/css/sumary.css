@@ -1,0 +1,94 @@
+#sumary {
+    background-color: var(--third-color);
+    margin: 80px 0;
+    width: 100%;
+    max-width: none;
+    margin-bottom: 0;
+    padding-bottom: 50px;
+}
+
+#sumary>div{
+    margin: auto;
+    gap: 25px;
+}
+
+#sumary>section {
+    align-items: stretch;
+}
+
+
+#sumary img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+}
+
+#sumary aside{
+    box-sizing: border-box;
+    border: 10px solid black;
+    padding: 25px;
+    background-color: var(--blue-color);
+    color: white;
+    justify-content: flex-start;
+    row-gap: 15px;
+    min-width: 300px;
+}
+#sumary aside>div {
+    row-gap: 15px;
+}
+#sumary h1{
+    margin-top: 10px;
+}
+#sumary aside h2{
+    font-size: 1.5em;
+}
+
+#sumary aside>section>div>div {
+    row-gap: 15px;
+}
+
+#adopterDetails {
+    box-sizing: border-box;
+    padding: 15px;
+    row-gap: 25px;
+    width: 100%;
+    max-width: 600px;
+    height: 100%;
+    overflow: auto;
+}
+
+#sumary li{
+    font-size: 1.4em;
+}
+
+#sumary p{
+    text-align: center;
+}
+
+
+@media screen and (max-width:1180px){
+    #sumary{
+        align-items: flex-start;
+    }
+}
+
+@media screen and (max-width:768px) {
+    #sumary>section {
+        flex-direction: column;
+        height: fit-content;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
+    #sumary aside {
+        width: 100%;
+        max-width: none;
+        flex-wrap: wrap;
+    }
+
+    #sumary>div:last-child {
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 0 25px;
+    }
+}

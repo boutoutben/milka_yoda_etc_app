@@ -5,6 +5,7 @@
     max-width: 900px;
     row-gap: 25px;
     overflow: hidden;
+    padding: 25px;
 }
 
 #adopterProfile h2{
@@ -19,13 +20,16 @@
     row-gap: 25px;
 }
 
-#adopterProfile select{
-    width: 105%;
-}
-#adopterProfile input{
+:is(#adopterProfile, #userSpace) input, select{
     border-radius: 10px;
     width: 100%;
     margin: 0;
+    box-sizing: border-box;
+}
+
+#personnalInfo .contentDiv>div>div {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 #personnalInfo>div{
@@ -63,6 +67,31 @@
 #adopterProfile #mainBtn{
     width: 175px;
     justify-content: center;
+}
+
+.animalCaseElement, .childrenElement {
+    gap: 25px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    width: fit-content;
+}
+.childrenElement>div {
+    gap: 20px;
+    row-gap: 20px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+.animalCaseElement :is(input[type=number], input[type=text] ) {
+    width: 50% !important;
+    min-width: 225px;
+}
+
+.smallInput{
+    width: 100%;
+    max-width: 250px !important;
+}
+.otherElement {
+    row-gap: 20px;
 }
 
 

@@ -21,6 +21,11 @@
     box-shadow: 7px 7px 7px black;
     cursor: pointer;
 }
+#mainBtn:disabled {
+  color: white;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
 
 .btnInMain {
     margin: 0 auto 0 !important;
@@ -52,11 +57,13 @@
     height: 134px;
     border-bottom: 10px solid black;
     overflow: hidden;
+    position: relative;
 }
-#presentationAnimal>div:first-child>img{
+#presentationAnimal>div:first-child>img:first-child{
     width: 100%;
     height: 100%;
     object-fit: cover;
+    
 }
 #presentationAnimal>div:first-child>:hover {
     cursor: pointer;
@@ -70,6 +77,17 @@
     align-items: center;
     height: calc(100% - 134px);
     margin: auto 20px;
+} 
+.waiting {
+    position: absolute;
+    width: 50px;
+    left: 150px;
+    bottom: 5px;
+    border-radius: 50px;
+    z-index: 2;
+}
+.waiting:hover{
+    pointer-events: none;
 }
 .verticalLine{
     border-right: 5px solid black;
@@ -127,9 +145,187 @@
     height: 60px;
     margin-left: auto;
     cursor: pointer;
+} 
+#plusBtn {
+    width: 50px;
+    margin: auto;
 }
 
+#personnalInfo .contentDiv{
+   row-gap: 10px;
+}
 
+.userMessage{
+    margin-bottom: 25px;
+}
+
+.alertBox {
+    background-color: var(--blue-color);
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    width: 350px;
+    row-gap: 15px !important;
+    padding: 20px 0;
+    border-radius: 25px;
+    border: 10px solid var(--secondary-color);
+}
+.alertBox img{
+    width: 70px !important;
+    height: 70px !important;
+    background-color: white;
+}
+.alertBox #mainBtn {
+    padding:5px 20px;
+}
+.chooseFile{
+    width: fit-content;
+    margin: auto;
+}
+.chooseFile input {
+    display: none;
+    
+}
+
+.chooseFile label {
+    padding: 15px 20px;
+    background-color: var(--third-color);
+    cursor: pointer;
+    border: 5px solid var(--last-color);
+    color: black;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.floatFormField{
+    background-color: var(--blue-color);
+    color: white;
+    padding: 20px 25px;
+    border-radius: 25px;
+    border: 10px solid black;
+    max-width: 500px;
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    z-index: 5;
+}
+
+.floatFormField.isTop {
+    top:0;
+    transform: translateX(-50%) translateY(0)
+}
+
+.floatFormField>div{
+    width: 100%;
+}
+
+.floatFormField h3{
+    text-decoration: underline;
+    padding:0 25%;
+     white-space: nowrap;
+}
+
+.floatFormField .closeImg{
+    display: flex;
+    width: 40px !important;
+}
+
+#areYouSure{
+    row-gap: 25px;
+    width: 300px;
+    padding: 25px;
+}
+.custom-select{
+    width: 100%;
+    position: relative;
+    color: black;
+    border-radius: 15px;
+    font-size: 1em;
+    height: 100%;
+    background-color: white;
+    padding-bottom: 1px;
+}
+
+.custom-select.isOpen{
+    border-radius: 15px 15px 0 0;
+}
+
+.custom-select .search-container{
+    margin: 10px auto;
+    width: fit-content;
+}
+
+.custom-select .search-container>input {
+    width: 200px;
+    padding: 10px;
+    padding-left: 35px;
+}
+
+.custom-select .search-container .search-icon{
+    left: 10px;
+}
+
+.custom-select .select-box{
+    justify-content: space-between;
+    color: black;
+    padding: 15px 10px;
+    box-sizing: border-box;
+    width: 100%;
+    border-radius: 15px;
+    font-size: 0.8em;
+    cursor: pointer;
+    background-color: white;
+    text-align: left;
+    
+}
+
+.custom-select .options-container{
+    position: absolute;
+    top: 100%;
+    color:black;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    max-height: 150px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 10;
+    border-radius:0 0 15px 15px;
+}
+.custom-select label{
+    display: inline-block;
+    width: 100%;
+    box-sizing: border-box;
+}
+.custom-select .options-container .option{
+    border:3px solid black;
+    border-bottom: none;
+    font-size: .8em;
+    width: 100%;
+    padding-left: 20px;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.custom-select .check{
+    width: 15px;
+    height: 15px;
+}
+
+.custom-select .checkbox input:checked ~ .check {
+    border: 3px solid white;
+    outline: 2px solid var(--blue-color);
+    border-radius: 1px;
+    width: 10px;
+    height: 10px;
+}
+
+.custom-select .options-container .option:hover{
+    background-color: rgb(209, 208, 208);
+}
 
 @media screen and (max-width:1180px) {
     #presentationAnimal .verticalLine {
@@ -211,6 +407,9 @@
         margin-top: 35px;
     }
 
+    .logout>img{
+        margin: 0;
+    }
 }
 
 .closeImg {

@@ -1,7 +1,7 @@
 import './../css/contact.css';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, useFormik } from 'formik';
 import * as Yup from 'yup';
-import { MainBtn } from './Component';
+import { MainBtn, WelcomeSection } from './Component';
 import { useRef } from 'react';
 import emailjs from '@emailjs/browser';
 
@@ -71,64 +71,66 @@ const ContactForm = () => {
         });
     };
 
-
+    const formik = useFormik({
+        initialValues:initialValues,
+        validationSchema:ContactSchema,
+        onSubmit: handleSubmit,
+    })
 
     return (
-        <section id="contactForm">
-            <h1>Nous contacter par mail</h1>
-            <Formik
-                initialValues={initialValues}
-                validationSchema={ContactSchema}
-                onSubmit={handleSubmit}
-            >
-                {({ errors, touched }) => (
-                    <Form ref={formRef}> {/* ✅ Form ref is fine here */}
-                        <div>
-                            <div>
-                                <Field type="text" name="lastname" placeholder="Nom*" />  
-                                {errors.lastname && touched.lastname && (
-                                    <div className="formError">{errors.lastname}</div>
-                                )}  
+        <WelcomeSection 
+            id={"contactForm"}
+            title={"Contactez-nous"}
+            content={
+                    <form className='flex-column alignCenter-AJ row-gap-25' onSubmit={formik.handleSubmit}>
+                        <div className='flex-column'>
+                            <div className='flex-row gap-15'>
+                                <div>
+                                    <input type="text" name="lastname" placeholder='Nom*' value={formik.values.lastname} onChange={formik.handleChange} />
+                                    {formik.errors.lastname && formik.touched.lastname && (
+                                        <div className="formError">{formik.errors.lastname}</div>
+                                    )}  
+                                </div>
+                                <div className='flex-column'>
+                                    <input type="text" name="firstname" placeholder='Prénom*' value={formik.values.firstname} onChange={formik.handleChange} /> 
+                                    {formik.errors.firstname && formik.touched.firstname && (
+                                        <div className="formError">{formik.errors.firstname}</div>
+                                    )}  
+                                </div>
+                                
                             </div>
-                            <div>
-                                <Field type="text" name="firstname" placeholder="Prénom" />  
-                                {errors.firstname && touched.firstname && (
-                                    <div className="formError">{errors.firstname}</div>
-                                )}  
-                            </div>
-                            
+
+                            <div className='flex-row gap-15'>
+                                <div>
+                                <input type="text" name="email" value={formik.values.email} placeholder='Email*' onChange={formik.handleChange} />
+                                    {formik.errors.email && formik.touched.email && (
+                                        <div className="formError">{formik.errors.email}</div>
+                                    )}
+                                </div>
+                                <div>
+                                <input type="text" name="phone" value={formik.values.phone} placeholder='Téléphone' onChange={formik.handleChange} /> 
+                                    {formik.errors.phone && formik.touched.phone && (
+                                        <div className="formError">{formik.errors.phone}</div>
+                                    )}   
+                                </div>
+                            </div>              
+                            <input type="text" name="subject" value={formik.values.subject} placeholder='Suject*' onChange={formik.handleChange} />
+                            {formik.errors.subject && formik.touched.subject && (
+                                <div className="formError">{formik.errors.subject}</div>
+                            )}
+
+                            <textarea name="message" value={formik.values.message} placeholder='Message*' onChange={formik.handleChange}></textarea>
+                            {formik.errors.message && formik.touched.message && (
+                                <div className="formError">{formik.errors.message}</div>
+                            )}
+
                         </div>
-
-                        <div>
-                            <div>
-                                <Field type="text" name="email" placeholder="Email*" />
-                                {errors.email && touched.email && (
-                                    <div className="formError">{errors.email}</div>
-                                )}
-                            </div>
-                            <div>
-                                <Field type="text" name="phone" placeholder="Téléphone" /> 
-                                {errors.phone && touched.phone && (
-                                    <div className="formError">{errors.phone}</div>
-                                )}   
-                            </div>
-                        </div>              
-                        <Field type="text" name="subject" placeholder="Sujet*" />
-                        {errors.subject && touched.subject && (
-                            <div className="formError">{errors.subject}</div>
-                        )}
-
-                        <Field as="textarea" name="message" placeholder="Message*" />
-                        {errors.message && touched.message && (
-                            <div className="formError">{errors.message}</div>
-                        )}
 
                         {/* ✅ No need for click={handleSubmit}, Formik handles it */}
                         <MainBtn className="btnInMain" name="Envoyer" isSubmit={true} />
-                    </Form>
-                )}
-            </Formik>
-        </section>
+                    </form>
+            }
+        />         
     );
 };
 
