@@ -37,6 +37,8 @@
     row-gap: 40px;
 }
 
+
+
 .checkPrice {
     border: 5px solid var(--last-color) !important;
     background-color: #e9bfac !important;
@@ -204,6 +206,7 @@
     padding: 20px 25px;
     border-radius: 25px;
     border: 10px solid black;
+    box-sizing: border-box;
     max-width: 500px;
     width: 100%;
     position: absolute;
@@ -231,6 +234,12 @@
 .floatFormField .closeImg{
     display: flex;
     width: 40px !important;
+}
+
+.floatFormField form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 #areYouSure{
@@ -362,6 +371,10 @@
 }
 
 @media screen and (max-width:768px) {
+    .welcomeSection .welcomeTitle {
+        flex-direction: column;
+        row-gap: 10px;
+    }
     #presentationAnimal .verticalLine {
         margin: 10px;
         border-right: none;
@@ -409,6 +422,15 @@
 
     .logout>img{
         margin: 0;
+    }
+
+    .floatFormField>.flex-row {
+        flex-direction: column-reverse;
+    }
+
+    .floatFormField tbody td {
+        display: block;
+        text-align: left;
     }
 }
 

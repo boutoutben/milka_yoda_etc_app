@@ -1,6 +1,7 @@
 #welcomePage {
     max-width: 100%;
     overflow: hidden;
+    margin: 80px auto;
     margin-bottom: 0;
     row-gap: 0;
 }
@@ -173,10 +174,13 @@ main img {
 #beingCarefullAboutAnimales>div>div>div {
     position: relative;
     display: flex;
+    height: 200px;
+    width: 225px;
 }
 
 #beingCarefullAboutAnimales img {
     width: 200px;
+    
     border: 15px solid rgba(0, 0, 0, 0.8);
     border-radius: 40px;
 }
@@ -197,12 +201,14 @@ main img {
     color: rgb(255, 255, 255);
     background-color: rgb(158, 145, 145,.7);
     font-weight: bold;
-    border-radius: 25px;
+    border-radius: 35px;
     z-index: 1;
     text-align: center;
     white-space: pre-wrap;
     opacity: 0;
     visibility: hidden;
+    padding: 15px;
+    box-sizing: border-box;
     cursor: pointer;
     transition: opacity 0.3s ease, visibility 0.3s ease;
 }
@@ -260,8 +266,12 @@ main img {
         border: none;
     }
 
+    #beingCarefullAboutAnimales>div>div>div {
+        width: 200px;
+        height: 175px;
+    }
     #beingCarefullAboutAnimales img {
-        width: 150px;
+        width: 200px;
     }
 
     #assocationPresentation img {
@@ -270,8 +280,8 @@ main img {
     }
 
     #beingCarefullAboutAnimales p {
-        width: 150px;
-        height: 132px;
+        width: 175px;
+        height: 150px;
         background-color: rgb(158, 145, 145, .7);
         opacity: 1;
         visibility: visible;

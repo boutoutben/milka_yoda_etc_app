@@ -7,6 +7,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: 80px auto 50px;
     margin-bottom: 0;
 }
 
@@ -18,7 +19,7 @@
 #article>article {
     max-width: 1000px;
     margin: 2vw 0;
-    padding: 0;
+    padding: 25px 0;
     width: 100%;
     background-color: var(--primary-color);
 }
@@ -48,9 +49,10 @@
 #article h2{
     text-align: left;
 }
-#article img {
+#article>article>section img {
     width: 200px;
     height: 150px;
+    border-radius: 15px;
     object-fit: cover;
 }
 
@@ -59,6 +61,9 @@
 }
 
 @media screen and (max-width:1180px) {
+    #article {
+        margin: 120px auto 40px;
+    }
     #article>article {
         max-width: 1200px;
         margin: 0;
@@ -68,7 +73,7 @@
 
 @media screen and (max-width:768px) {
     #article {
-        margin: 80px 0 0;
+        margin: 120px 0 0;
     }
     #article>article>section {
         align-items: center;

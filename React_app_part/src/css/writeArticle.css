@@ -1,0 +1,134 @@
+#writeArticle{
+    margin:80px auto;
+}
+
+.editor {
+    margin-top: 120px;
+    width: 90vw;
+    max-width: 1000px;
+    height: auto; /* Good */
+    display: block; /* default, but ensures layout behaves correctly */
+    overflow: visible; /* ensures content is not clipped */
+    box-sizing: border-box; /* makes padding included in width/height */
+}
+.editor:focus{
+    outline: none;
+}
+.editColor {
+    width: fit-content !important;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    padding: 5px 0;
+    border: 5px solid black;
+    background-color: var(--blue-color);
+}
+
+
+.sample-toolbar {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    background-color: white;
+    border-bottom: 2px solid black;
+    z-index: 2;
+}
+
+.sample-toolbar button, .sample-toolbar .dropdown, .chooseColor {
+    flex: 1 1 0;
+    padding: 10px;
+    background-color: white;
+    border: 2px solid black;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+    min-width: 120px;
+    text-align: center;
+}
+
+.sample-toolbar button:hover, .sample-toolbar .dropdown:hover, .chooseColor:hover {
+    background-color: rgb(212, 211, 211);
+}
+
+.dropdown, .chooseColor {
+     display: flex;
+     padding: 0 !important;
+}
+.dropdown ul{
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    list-style: none;
+    border: 1px solid #ccc;
+    margin: 0;
+    z-index: 2;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0;
+}
+
+.dropdown button{
+    border: none;
+    gap: 50px;
+    width: 100%;
+    padding: 0 20px;
+}
+
+.dropdown li {
+    cursor: pointer;  
+    padding: 10px;
+    border: 2px solid black;
+}
+
+.editorCheck {
+    background-color: rgb(131, 130, 130) !important;
+    color: white;
+}
+
+.pickColor{
+    position: absolute;
+    top: 21px;
+    display: block;
+    width: 20px;
+    height: 5px;
+}
+.editColor button, .chooseColor button {
+    border: none;
+    margin: 0 auto;
+}
+
+.rgbColor {
+    gap: 5px;
+    width: 200px;
+    align-items: center;
+    margin: 0 7px;
+    color: white;
+}
+.rgbColor>input{
+    height: 20px;
+    padding: 15px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    border: 3px solid black;
+}
+
+@media screen and (max-width: 768px) {
+    .sample-toolbar{
+        position: relative;
+        top: 0;
+    }
+
+    .editor{
+        margin-top: 0;
+    }
+
+    #writeArticle>div:last-child{
+        flex-direction: column;
+        align-items: center;
+    }
+
+}

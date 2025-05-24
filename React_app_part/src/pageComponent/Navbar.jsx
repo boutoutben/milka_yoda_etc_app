@@ -2,7 +2,7 @@ import {Link} from 'react-router-dom';
 import { CloseImg, MainBtn } from './Component';
 import { useNavigate } from "react-router-dom"
 import './../css/navbar.css'
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const NavElement = ({navClass}) => {
     return (
@@ -52,6 +52,7 @@ const UserBtn = () => {
 
 const Menu = ({redirection}) => {
     const [menuType, setMenuType] = useState("btn");
+    const wrapperRef = useRef(null);
 
    useEffect(() => {
         const mobileNavLinks = document.querySelectorAll("header>div :is(nav>ul>a, a)");
@@ -69,6 +70,18 @@ const Menu = ({redirection}) => {
             });
         };
     }, []);
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+          if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+            setMenuType("btn");
+          }
+        };
+    
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+          document.removeEventListener("mousedown", handleClickOutside);
+        };
+      }, []);
     const navigate = useNavigate();
     const handleClick = (event) => {
         event.preventDefault();
@@ -76,7 +89,7 @@ const Menu = ({redirection}) => {
         navigate(redirection);
     }
     return (
-        <div>
+        <div ref={wrapperRef}>
             <img 
                 src="/img/menu.png" 
                 id="menuBtn" 

@@ -1,5 +1,5 @@
 #animalDetail{
-    margin:120px auto;
+    margin:120px auto 50px;
 }
 #AnimalIdentity {
     background-color: var(--third-color);
@@ -59,7 +59,7 @@
     width: 100%;
     max-width: 900px;
     padding: 0;
-    margin-bottom: 50px;
+    padding-bottom: 25px;
 }
 
 
@@ -84,7 +84,6 @@
     }
     #AnimalIdentity{
         margin: 0!important;
-        margin-bottom: 25px !important;
         border: 10px solid; 
         border-radius: 0;
     }

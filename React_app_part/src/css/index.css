@@ -60,7 +60,7 @@ main {
     justify-content: flex-start;
     align-items: center;
     max-width: 900px;
-    margin:120px auto;
+    margin:120px auto 50px;
     row-gap:40px;
     min-height: calc(100vh - 412px);
 }
@@ -75,7 +75,7 @@ input[type='text'], input[type='search'], textarea,input[type=number], input[typ
 
 
 input[type='search'] {
-    padding-left: 35px;
+    padding-left: 45px;
     width: 300px;
 }
 
@@ -163,6 +163,10 @@ select{
     color: rgb(160, 4, 4);
 }
 
+.underline{
+    text-decoration: underline;
+}
+
 a {
     width: fit-content;
     text-decoration: none;
@@ -214,6 +218,9 @@ td{
 .gap-15 {
     gap: 15px;
 }
+.gap-25{
+    gap: 25px;
+}
 
 @media screen and (max-width:1180px) {
     h2{
@@ -221,13 +228,13 @@ td{
     }
 
     main {
-        margin: 120px 40px;
+        margin: 120px 40px 40px;
     }
 }
 
 @media screen and (max-width:768px) {
     main {
-            margin: 120px 20px;
-        }
+        margin: 120px 20px 40px;
+    }
 }
 

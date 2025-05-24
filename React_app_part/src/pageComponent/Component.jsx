@@ -71,16 +71,18 @@ export const WelcomeSection = ({id, title, content, nameBtn, click,isSubmit=fals
                 <img src='/img/grabImg.png' />
             </span>
             )}
+           {title && (
+                <div className='flex-row alignCenter-AJ relative welcomeTitle'>
+                    {title && <h2>{title}</h2>}
+                    {editAndSup && granted === true && (
+                        <>
+                            <p className='editLink' onClick={editClick}>modifier</p>
+                            <SupElement onDelete={onDelete} />
+                        </>
+                        )}
+                </div>
+           )}
            
-            <div className='flex-row alignCenter-AJ relative'>
-                {title && <h2>{title}</h2>}
-                {editAndSup && granted === true && (
-                    <>
-                        <p className='editLink' onClick={editClick}>modifier</p>
-                        <SupElement onDelete={onDelete} />
-                    </>
-                    )}
-            </div>
             <div className='contentDiv flex-column relative'>
                 {content}
             </div>
@@ -235,6 +237,12 @@ export const PLusBtn = ({ formik, array, element, objectOption }) => {
 export const SupElement = ({onDelete}) => {   
     return(
         <p className='editLink' onClick={onDelete}>supprimer</p>
+    )
+}
+
+export const EditElement = ({onEdit}) => {   
+    return(
+        <p className='editLink' onClick={onEdit}>modifier</p>
     )
 }
 

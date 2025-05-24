@@ -55,7 +55,7 @@
     }
      [id^="action-"] {
         touch-action: none;
-        padding: auto 0;
+        padding: 25px 35px;
         width: 100%;
     }
    [id^="action-"] img {

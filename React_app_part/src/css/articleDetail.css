@@ -1,1 +1,16 @@
+#articleDetail{
+    row-gap: 0;
+}
+
+#articleDetail .flex-row {
+    width: auto;
+}
+
+#articleDetail>*{
+    width: 100%;
+}
+
+.emptyDiv {
+    height: 25px;
+}
 

@@ -1,14 +1,18 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "../css/articleDetail.css"
 import { Suspense, useEffect, useState } from "react";
-import { getFetchApi } from "./App";
+import { getFetchApi, isGranted } from "./App";
+import { EditElement, SupElement } from "./Component";
+import axios from "axios";
 
 
 
 const ArticleDetail = () => {
+    const navigate = useNavigate();
     const {id} = useParams();
     const [article, setArticle] = useState(null);
     const [ArticleComponent, setArticleComponent] = useState(null);
+    const granted = isGranted("ADMIN_ROLE");
     useEffect(() => {
             getFetchApi(`articles/${id}`)
                 .then(data => {
@@ -21,10 +25,31 @@ const ArticleDetail = () => {
                     console.error(err);
                 });
         }, [id]);
+
+    const handleDeleteArtilce = async () => {
+        try {
+            await axios.delete(
+                `http://localhost:5000/api/articles/delete/${id}`,
+                {},
+                { withCredentials: true }
+            ).then(response => {
+                console.log(response);
+                navigate(response.data.url);
+            })
+            }  catch (err) {
+            console.error("Erreur lors de l'envoi :", err);
+            } 
+    }
     if(!article) return <p>Chargement...</p>
     return (
         <main id="articleDetail">
-            <h1>{article.title}</h1>
+            {granted && (
+                <div className="flex-row">
+                    <EditElement onEdit={() => navigate(`/writeArticle/${id}`)}/>
+                    <SupElement onDelete={handleDeleteArtilce} />
+                </div>    
+            )}
+            
             {ArticleComponent ? (
                 <Suspense fallback={<p>Chargement du contenu...</p>}>
                     <ArticleComponent />

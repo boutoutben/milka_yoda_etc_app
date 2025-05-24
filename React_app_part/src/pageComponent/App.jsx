@@ -22,6 +22,7 @@ import SessionManager from './SessionManager.jsx';
 import AdopterSumary from './AdopterSumary.jsx';
 import AdoptSucess from './AdoptSucess.jsx';
 import ApprouvedAdoption from './ApprouvedAdoption.jsx';
+import WriteArticle from './WriteArticle.jsx';
 
 
 const API_BASE_URL = "http://localhost:5000/api";
@@ -82,6 +83,10 @@ export function upluadsImgUrl(name) {
     return `http://localhost:5000/uploads/${name}`
 }
 
+export function upluadsArticle(name) {
+    return `http://localhost:5000/articles/${name}`
+}
+
 const App = () => {
     return (
         <Router>
@@ -94,6 +99,7 @@ const App = () => {
                 <Route path="/adopter" element={<Adopt />} />
                 <Route path="/article" element={<Article />} />
                 <Route path='/article/:id' element={<ArticleDetail />}/>
+                <Route path='/writeArticle/:id' element={<WriteArticle />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path='/don' element={<Donnation />} />
                 <Route path='/adopter/:id' element={<AnimalDetail btnName={'Rencontrer cette animal'} />} />

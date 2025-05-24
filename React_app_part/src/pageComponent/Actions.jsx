@@ -264,7 +264,7 @@ const Actions = () => {
                 <div className="addAction">
                     <MainBtn name={"Ajouter un action"} click={() => setAdd(true)} className={"btnInMain"} />
                     {canAdd && (
-                        <FloatFormField setter={() => setAdd(false)} action={"Ajouter une action"} content={
+                        <FloatFormField isTop={true} setter={() => setAdd(false)} action={"Ajouter une action"} content={
                                 <form onSubmit={AddActionformik.handleSubmit} className="flex-column alignCenter-AJ">
                                     <table aria-hidden="true">
                                         <tbody>

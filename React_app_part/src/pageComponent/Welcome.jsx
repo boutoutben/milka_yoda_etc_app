@@ -3,7 +3,7 @@ import "./../css/welcome.css"
 
 import {MainBtn, PresentationAnimal, WelcomeSection} from "./Component"
 import { useNavigate } from "react-router-dom"
-import { getFetchApi } from "./App"
+import { getFetchApi, upluadsImgUrl } from "./App"
 
 
 const WelcomeToMilkaYodaEtc = () => {
@@ -200,7 +200,7 @@ const BeingCarefullAboutAnimales = ({redirection}) => {
             <div className="flex-row alignCenter-AJ">
                 {articles.map((article) => (
                     <div className="borderBlue" key={article.id} onClick={(event) => handleArticleClick(event, article.id)}>
-                        <img src={`img/${article.imgName}`} alt="" />
+                        <img src={upluadsImgUrl(article.imgName)} alt="" />
                         <p>{article.title}</p>
                     </div>
                 ))}
