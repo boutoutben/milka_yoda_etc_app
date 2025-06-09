@@ -10,11 +10,14 @@
     margin: 0;
     align-items: center;
     justify-content: center;
-    padding: 40px 60px;
+    padding: 40px 50px;
     box-sizing: border-box;
     border: 10px solid black;
     color: white;
     flex: 1;
+}
+#auth .all-field{
+    row-gap: 5px;
 }
 #auth>section>div{
     display: flex;
@@ -26,17 +29,13 @@
 }
 #auth .flex-row, #auth .flex-column{
     margin: 0;
-    gap: 15px;
     width: 100%;
 }
 #auth a {
     color: rgb(143, 212, 240);
     text-decoration: underline;
 }
-#auth>section>div>div{
-    gap: 15px;
-    width: 100%;
-}
+
 
 #auth input, #auth form>div{
     width: 100%;

@@ -23,6 +23,7 @@ import AdopterSumary from './AdopterSumary.jsx';
 import AdoptSucess from './AdoptSucess.jsx';
 import ApprouvedAdoption from './ApprouvedAdoption.jsx';
 import WriteArticle from './WriteArticle.jsx';
+import ResetPassword from './ResetPassword.jsx';
 
 
 const API_BASE_URL = "http://localhost:5000/api";
@@ -66,6 +67,43 @@ export const convertExpiresInToMs = (expiresIn) => {
     }
 };
 
+function pemToBinary(pem) {
+    const base64 = pem
+      .replace(/-----(BEGIN|END) PUBLIC KEY-----/g, '')
+      .replace(/\s+/g, '');
+  
+    return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+  }
+  export async function encryptWithPublicKey(data, pemKey) {
+    try {
+      const binaryDer = pemToBinary(pemKey.publicKey); // 👈 FIXED here
+      const publicKey = await window.crypto.subtle.importKey(
+        'spki',
+        binaryDer.buffer,
+        {
+          name: 'RSA-OAEP',
+          hash: 'SHA-256',
+        },
+        false,
+        ['encrypt']
+      );
+  
+      const encoded = new TextEncoder().encode(JSON.stringify(data));
+  
+      const encrypted = await window.crypto.subtle.encrypt(
+        {
+          name: 'RSA-OAEP',
+        },
+        publicKey,
+        encoded
+      );
+      return btoa(String.fromCharCode(...new Uint8Array(encrypted)))
+    } catch (err) {
+      console.error("Error during encryption:", err);
+      throw err;
+    }
+  }
+
 export function isGranted(roleName) {
     try {
         const userInfoString = localStorage.getItem("userInformation");
@@ -107,12 +145,14 @@ const App = () => {
                 <Route path='/mediatorAnimal/:id' element={<AnimalDetail />} />
                 <Route path='/adopterProfile' element={<AdopterProfile />} />
                 <Route path='/login' element={<Login />} />
+                <Route path='/reset-password/:token' element={<ResetPassword />} />
                 <Route path='/register' element={<Register />} />
                 <Route path="/userSpace" element={<UserSpace />} />
                 <Route path='/adminSpace' element={<AdminSpace/>} />
                 <Route path='/adopterSumary' element={<AdopterSumary />} />
                 <Route path='/adoptSucess' element={<AdoptSucess />} />
                 <Route path='/adopterApprouved/:id' element={<ApprouvedAdoption />} />
+    
             </Routes>
             <Footer />
         </Router>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import '../css/userSpace.css'
-import { getFetchApi } from './App';
+import { encryptWithPublicKey, getFetchApi } from './App';
 import { Logout, PersonnelInfo, PresentationAnimal, WelcomeSection } from "./Component";
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
@@ -43,6 +43,16 @@ const UserInfoSchema = Yup.object().shape({
 });
 
 const UserInfo = ({userInfo}) => {
+  const [publicKey, setPublicKey] = useState('');
+  useEffect(() => {
+    getFetchApi("encrypt/public-key")
+           .then(data => {
+               setPublicKey(data)
+           }) 
+           .catch(err => {
+               console.log("Error ", err);
+           })
+})
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const [message, setMessage] = useState(null);
@@ -58,14 +68,17 @@ const UserInfo = ({userInfo}) => {
         },
         validationSchema: UserInfoSchema,
         onSubmit: async (values) => {
-            axios.put('http://localhost:5000/api/userSpace', {id: userInfo.id,values:values}, {
+            const encryptedData = await encryptWithPublicKey(values, publicKey);
+            axios.put('http://localhost:5000/api/userSpace', {id: userInfo.id, data:encryptedData}, {
                 withCredentials: true,
                 headers: {
-                'Authorization': `Bearer ${token}`
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
                 }
             })
             .then(response => {
                 setMessage(response.data.message);
+                localStorage.setItem("userInformation", JSON.stringify(response.data.userInfo));
             })
             .catch(error => {
                 console.error("Erreur lors de l'envoi :", error);

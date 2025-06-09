@@ -12,3 +12,23 @@
     justify-content: flex-start;
     overflow: auto;
 }
+
+.userPresentation{
+    background-color: var(--blue-color);
+    color: white;
+    border: 5px solid black;
+    border-radius: 15px;
+    padding: 10px;
+    justify-content: space-around;
+}
+
+.userPresentation img{
+    width: 40px;
+}
+
+.ban{
+    background-color: red;
+    padding: 5px;
+    border-radius: 50px;
+    border: 2px solid black;
+}

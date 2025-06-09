@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react"
+import React, { use, useEffect, useState } from "react"
 import "./../css/welcome.css"
 
 import {MainBtn, PresentationAnimal, WelcomeSection} from "./Component"
-import { useNavigate } from "react-router-dom"
+import { redirect, useNavigate } from "react-router-dom"
 import { getFetchApi, upluadsImgUrl } from "./App"
 
 
@@ -98,14 +98,31 @@ const AssociationPresentation = () => {
 }
 
 const ActionSumary = () => {
+    const [actions, setActions] = useState([]);
+    useEffect(() => {
+        getFetchApi("welcomeData")
+            .then(data => {
+                setActions(data.actions);
+            })
+            .catch(err => {
+                console.error(err);
+            })
+    }, []);
     return (
         <WelcomeSection 
         id="actionSumary"
         title="Avant goût des actions"
         content={
             <div className="flex-row alignCenter-AJ">
-                <WelcomeImg src="img/milka.JPG" alt='illustration de médiation animal avec Milka, un des chiens médiateur' redirection={"/mediatorAnimal"}/>
-                <WelcomeImg src='img/shopAction.png' alt='Illustration de nos boutiques' />
+                {actions.map((action, index) => (
+                    <WelcomeImg
+                        key={index}
+                        src={upluadsImgUrl(action.imgName)}
+                        alt="Action img"
+                        redirection={action.pageUrl || undefined}
+                    />
+                ))}
+                
                 <ArrowSeeMore redirection={"/action"} />
             </div>
         }

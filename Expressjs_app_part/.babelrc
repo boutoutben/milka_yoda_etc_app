@@ -1,14 +1,13 @@
 {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "modules": false,  // Cette option empêche Babel de convertir en CommonJS
-          "targets": {
-            "browsers": "> 0.25%, not dead"
-          }
-        }
-      ],
-      "@babel/preset-react"
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "node": "current"
+        },
+        "modules": "auto"
+      }
     ]
-  }
+  ]
+}

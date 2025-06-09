@@ -185,14 +185,16 @@ const convertStyleToHtml = (jsx) => {
     useEffect(() => {
             getFetchApi(`articles/detail/${id}`)
             .then(data => {
-                
-                const returnContent = data.match(/return\s*\(\s*([\s\S]*?)\s*\)[;\n]/);
-                if (returnContent) {
-                    let articleData = returnContent[1];
-                    setArticleData(convertStyleToHtml(articleData.replace(/<>\s*|\s*<\/>/g, '')));
-                } else {
-                    console.error('Aucun return trouvé dans le code source.');
+                if(data) {
+                  const returnContent = data.content.match(/return\s*\(\s*([\s\S]*?)\s*\)[;\n]/);
+                  if (returnContent) {
+                      let articleData = returnContent[1];
+                      setArticleData(convertStyleToHtml(articleData.replace(/<>\s*|\s*<\/>/g, '')));
+                  } else {
+                      console.error('Aucun return trouvé dans le code source.');
+                  }  
                 }
+                
             })
                 .catch(err => {
                     console.error(err);
@@ -264,18 +266,6 @@ const convertStyleToHtml = (jsx) => {
         if(content) return content.replace(/<br\s*\/?>/gi, '');
       };
       
-      const UnderlineBtn = ({ editorRef }) => {
-        const [selected, setSelected] = useState(false);
-        
-        return (
-          <button
-            onClick={() => format('underline')}
-            className={selected ? "editorCheck" : ""}
-          >
-            <span className="fa-solid fa-underline"></span>
-          </button>
-        );
-      };
 
       function toggleTagOnSelection(tagName, tagFormat) {
         const selection = window.getSelection();
@@ -483,9 +473,8 @@ const convertStyleToHtml = (jsx) => {
               ref={editorRef}
               id="sampleeditor"
               contentEditable
-              spellCheck={true}
+              spellCheck={false}
               onPaste={handlePaste}
-              lang="fr"
             ></div>
             <div className="flex-row gap-25">
                 <MainBtn name={"Anuller"} click={handleArticleCancelle} />

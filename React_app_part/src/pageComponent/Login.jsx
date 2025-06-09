@@ -1,12 +1,13 @@
-import { WelcomeSection } from "./Component";
+import { FloatFormField, WelcomeSection,PasswordInput } from "./Component";
 import { MainBtn } from "./Component";
 import {useState, useEffect } from 'react';
 import '../css/auth.css'
-import { useLocation, useNavigate } from "react-router-dom";
+import { Form, useLocation, useNavigate } from "react-router-dom";
 import {useFormik} from 'formik';
 import axios from "axios";
 import * as Yup from 'yup';
-import { convertExpiresInToMs } from "./App";
+import { convertExpiresInToMs, encryptWithPublicKey, getFetchApi } from "./App";
+
 
 const loginSchema = Yup.object().shape({
     email: Yup.string()
@@ -18,22 +19,35 @@ const loginSchema = Yup.object().shape({
        .max(100, "Le mot de passe ne doit pas dépasser 100 caractères.")
        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, "Le mot de passe n'est pas conforme")
        .required("Le mot de passe est requis."),
-
-    
 });
 
-const LoginSection = () => {
+const emailSchema = Yup.object().shape({
+    email: Yup.string()
+       .email("Adresse e-mail invalide")
+       .required("L'e-mail est requis."),
+});
+
+
+const LoginSection = ({setForgot}) => {
     const navigate = useNavigate();
     const [err, setErr] = useState("");
+    const [publicKey, setPublicKey] = useState(null);
     const location = useLocation();
+    
     const errorMessage = location.state?.error;
 
     useEffect(() => {
         if (err) {
             console.log("Erreur détectée :", err);
         }
+        getFetchApi("encrypt/public-key")
+        .then(data => {
+            setPublicKey(data)
+        }) 
+        .catch(err => {
+            console.log("Error ", err);
+        })
     }, [err]);
-
     const formik = useFormik({
         initialValues:{
             email: '',
@@ -43,12 +57,17 @@ const LoginSection = () => {
         validationSchema: loginSchema,
         onSubmit: async (values) => {
         setErr(""); // Reset l'erreur avant tentative
-
+        const encryptedData = await encryptWithPublicKey(values, publicKey)
+        console.log(encryptedData);
         try {
-            const response = await axios.post("http://localhost:5000/api/login", values, {
+            const response = await axios.post("http://localhost:5000/api/login", {
+                data: encryptedData
+              }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                  },
                 withCredentials: true
-            });
-
+              });
             if (response.data.token) {
                 const { token, userInfo, expiresIn } = response.data;
 
@@ -94,29 +113,34 @@ const LoginSection = () => {
     }
     });
 
+    
+
+
     return (
         <WelcomeSection 
             title={"Connexion"}
             content={
-                <div className="flex-column alignCenter-AJ">
-                    <a href="/register">pas encore de compte</a>
+                <div className="flex-column alignCenter-AJ row-gap-15">
                     {err && <p className="formError">{err}</p>}
                     {errorMessage && <p className="formError">{errorMessage}</p>}
-                    <form className="flex-column alignCenter-AJ" onSubmit={formik.handleSubmit}>
-                        <div>
-                            <input type="text" name="email" placeholder="username" value={formik.values.email}
-                                        onChange={formik.handleChange} />  
-                            {formik.touched.email && formik.errors.email && (
-                                <div className="formError">{formik.errors.email}</div>
-                            )}   
+                    <div className="flex-row alignCenter-AJ gap-15">
+                        <a href="/register">pas encore de compte</a>
+                        <a onClick={() => setForgot(true)}>Mot de passe oublié</a>     
+                    </div>
+                    
+                    
+                    <form className="flex-column alignCenter-AJ row-gap-15" onSubmit={formik.handleSubmit}>
+                        <div className="flex-column all-field">
+                            <div>
+                                <input type="text" name="email" placeholder="username" value={formik.values.email}
+                                            onChange={formik.handleChange} />  
+                                {formik.touched.email && formik.errors.email && (
+                                    <div className="formError">{formik.errors.email}</div>
+                                )}   
+                            </div>
+                            <PasswordInput formik={formik} name={"password"}placeholder={"Mot de passe"}/>
                         </div>
-                        <div>
-                            <input type="password" name="password" placeholder="mot de passe" value={formik.values.password}
-                                        onChange={formik.handleChange} />    
-                            {formik.touched.password && formik.errors.password && (
-                                <div className="formError">{formik.errors.password}</div>
-                            )} 
-                        </div>
+                        
                         
                         <label className='checkbox'> Se souvenir de moi
                             <input type="checkbox" name="remember_me" id='other'value={formik.values.remenber_me}
@@ -132,9 +156,47 @@ const LoginSection = () => {
 }
 
 const Login = () => {
+    const [forgot, setForgot] = useState(false);
+    const forgetFormik = useFormik({
+        initialValues: {
+            email:''
+        },
+        validationSchema:emailSchema,
+        onSubmit: async (values) => {
+            axios.post("http://localhost:5000/api/forgot-password", 
+                values, {
+              headers: {
+                  'Content-Type': 'application/json'
+                },
+              withCredentials: true
+            })
+            .then((response) => {
+                console.log(response);
+                location.reload();
+            })
+            .catch(err => {
+                console.log(err);
+            })
+        }
+    })
     return (
         <main id="auth" className="flex-row ">
-            <LoginSection />
+            <LoginSection setForgot={setForgot} />
+            {forgot && (
+                        <FloatFormField setter={() => setForgot(false)} action={"Entrer votre email"}
+                            content={
+                                <form onSubmit={forgetFormik.handleSubmit}>
+                                    <div className="flex-column alignCenter-AJ">
+                                        <input type="text" name="email" placeholder="Email" value={forgetFormik.values.email} onChange={forgetFormik.handleChange} /> 
+                                        {forgetFormik.touched.email && forgetFormik.errors.email && (
+                                <div className="formError">{forgetFormik.errors.email}</div>
+                            )}    
+                                    </div>
+                                    <MainBtn name={"valider"} isSubmit={true} className={"btnInMain"} />
+                                </form>
+                            }
+                        />    
+                    )}
             <div>
                 <img src="/img/loginImg.png" />    
             </div>

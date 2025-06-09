@@ -1,9 +1,11 @@
 import axios from 'axios';
 import '../css/auth.css';
-import { MainBtn, WelcomeSection } from './Component';
+import { MainBtn, WelcomeSection, PasswordInput } from './Component';
 import {useFormik} from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
+import { encryptWithPublicKey, getFetchApi } from './App';
+import { useEffect, useState } from 'react';
 
 const registerSchema = Yup.object().shape({
     lastname: Yup.string()
@@ -40,7 +42,17 @@ const registerSchema = Yup.object().shape({
     
 });
 
-const RegisterSection = () => {
+const RegisterSection =  () => {
+    const [publicKey, setPublicKey] = useState("");
+    useEffect(() => {
+         getFetchApi("encrypt/public-key")
+                .then(data => {
+                    setPublicKey(data)
+                }) 
+                .catch(err => {
+                    console.log("Error ", err);
+                })
+    })
     const navigate = useNavigate()
     const formik = useFormik({
         initialValues:{
@@ -53,10 +65,16 @@ const RegisterSection = () => {
             accept:false,
         },
         validationSchema:registerSchema,
-        onSubmit: (values) => {
-            axios.post('http://localhost:5000/api/register', values, {
+        onSubmit: async (values) => {
+            const encryptedData = await encryptWithPublicKey(values, publicKey);
+            axios.post('http://localhost:5000/api/register',  {
+                data: encryptedData
+              }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                  },
                 withCredentials: true
-            })
+              })
             .then(response => {
                 navigate('/login', { state: { user: response.data } });
             })
@@ -65,27 +83,29 @@ const RegisterSection = () => {
             });
         }
     })
+
     return (
         <WelcomeSection
             title={"Créer une compte"}
             content={
-                <div className="flex-column alignCenter-AJ">
+                <div className="flex-column alignCenter-AJ row-gap-15">
                     <a href="/login">J'ai déjà un compte</a>
-                    <form action="" className='flex-colunm alignCenter-AJ' onSubmit={formik.handleSubmit}>
+                    <form className='flex-column alignCenter-AJ row-gap-15' onSubmit={formik.handleSubmit}>
+                        <div className="flex-column all-field">
                         <div className='flex-row'>
                             <div className="flex-column">
-                                <input type="text" name="firstname" placeholder="nom" value={formik.values.firstname}
-                                    onChange={formik.handleChange} /> 
-                                {formik.touched.firstname && formik.errors.firstname && (
-                                    <div className="formError">{formik.errors.firstname}</div>
-                                )}   
-                            </div>
-                            <div className="flex-column">
-                                <input type="text" name="lastname" placeholder='prénom' value={formik.values.lastname}
+                                <input type="text" name="lastname" placeholder='Nom' value={formik.values.lastname}
                                     onChange={formik.handleChange} />  
                                 {formik.touched.lastname && formik.errors.lastname && (
                                 <div className="formError">{formik.errors.lastname}</div>
                                 )}    
+                            </div>
+                            <div className="flex-column">
+                                <input type="text" name="firstname" placeholder="Prénom" value={formik.values.firstname}
+                                    onChange={formik.handleChange} /> 
+                                {formik.touched.firstname && formik.errors.firstname && (
+                                    <div className="formError">{formik.errors.firstname}</div>
+                                )}   
                             </div>
                         </div>
                         <div className="flex-row">
@@ -104,20 +124,10 @@ const RegisterSection = () => {
                                 )}   
                             </div>
                         </div>
-                        <div className="flex-column">
-                            <input type="password" name="password" placeholder="mot de passe" value={formik.values.password}
-                            onChange={formik.handleChange} />   
-                            {formik.touched.password && formik.errors.password && (
-                                <div className="formError">{formik.errors.password}</div>
-                            )}
+                        <PasswordInput name="password" formik={formik} placeholder={"Mot de passe"} />
+                        <PasswordInput name="confirmPassword" formik={formik} placeholder={"Confirmation du mot de passe"} />
                         </div>
-                        <div className="flex-column">
-                            <input type="password" name="confirmPassword" placeholder='confirmation mot de passe' value={formik.values.confirmPassword}
-                            onChange={formik.handleChange} />
-                            {formik.touched.confirmPassword && formik.errors.confirmPassword && (
-                                <div className="formError">{formik.errors.confirmPassword}</div>
-                            )}
-                        </div>
+                        
                         <div className="flex-column">
                             <label className='checkbox'> J’accepte que ces données soient envoyée à milka yoda etc
                                 <input type="checkbox" name="accept" value={formik.values.accept}
@@ -129,7 +139,7 @@ const RegisterSection = () => {
                             )} 
                         </div>
                        
-                        <MainBtn name={"Créer un compte"} isSubmit={true} />
+                        <MainBtn name={"Créer un compte"} isSubmit={true} className={"btnInMain"} />
                     </form>
                 </div>
             }

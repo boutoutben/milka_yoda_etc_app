@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import './../css/article.css'
 import { getFetchApi, isGranted, upluadsArticle, upluadsImgUrl } from './App'
 import { useNavigate } from 'react-router-dom'
-import { ChooseFile, FloatFormField, MainBtn } from './Component'
+import { AreYouSure, ChooseFile, EditElement, FloatFormField, MainBtn, SupElement } from './Component'
 import axios from 'axios'
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -40,10 +40,114 @@ const AddArticleSchema = Yup.object().shape({
   })
 })
 
+const EditArticleSchema = Yup.object().shape({
+    title: Yup.string()
+        .min(3, "Le nom doit comporter au moins 3 caractères.")
+        .max(50, "Le nombre maximal de caractères du titre est 50.")
+        .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9.,!?'"()\-:;@#*\/\n\r ]+$/, "Format invalide")
+        .required("Le titre est requis."),
+    description: Yup.string()
+        .min(30, "Le nom doit comporter au moins 30 caractères.")
+        .max(750, "Le nombre maximal de caractères de la description est 750.")
+        .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9.,!?'"()\-:;@#*\/\n\r ]+$/, "Format invalide")
+        .required("La description est requis."),
+        file: Yup.mixed()
+        .test(
+          'fileFormat',
+          'Vous extension n\'est pas correct seul png, jpg, jpeg, gif, webp',
+          function (file) {
+            if (!file) return true; // Accepte l'absence de fichier
+            const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            const extension = file.name.split('.').pop().toLowerCase();
+            return validExtensions.includes(extension);
+          }
+        )
+        .test(
+          'fileSize',
+          'Le fichier est trop volumineux (max 500Ko)',
+          function (file) {
+            if (!file) return true;
+            const isValid = file.size < 500 * 1024;
+            return isValid;
+          }
+        )
+})
+
+const EditArticle = ({onEdit, article}) => {
+    const formik = useFormik({
+        initialValues: {
+            title:article.title,
+            description: article.description,
+            file:''
+        },
+
+        validationSchema:EditArticleSchema,
+
+        onSubmit: (values) => {
+            const formData = new FormData();
+                  formData.append("title", values.title);
+                  formData.append("description", values.description);
+                  formData.append("file", values.file);
+                  formData.append("articleId", article.id);
+                  axios.patch('http://localhost:5000/api/articles/editDescriptionArticle', formData, {
+                      withCredentials: true,
+                      headers: {
+                          'Content-Type': 'multipart/form-data'
+                      }
+                  })
+                  .then(response => {
+                      formik.resetForm();
+                      location.reload();
+                  })
+                  .catch(error => {
+                      console.error("Erreur lors de l'envoi :", error);
+                  });
+              }
+    })
+
+    return(
+        <FloatFormField isTop={true} action={"Modifier l'article"} setter={onEdit} content={
+            <form onSubmit={formik.handleSubmit}>
+                <table aria-hidden="true">
+                    <tbody>
+                        <tr>
+                            <td>Titre:</td>
+                            <td><input type="text" name="title" placeholder='Titre' value={formik.values.title} onChange={formik.handleChange} /></td>
+                        </tr>
+                        <tr>
+                            {formik.touched.title && formik.errors.title && (
+                                <td className="formError" colSpan={2} >{formik.errors.title}</td>
+                            )}    
+                        </tr>
+                        <tr>
+                            <td>Description:</td>
+                            <td><textarea name="description" placeholder='Description' value={formik.values.description} onChange={formik.handleChange}></textarea></td>
+                        </tr>
+                        <tr>
+                            {formik.touched.description && formik.errors.description && (
+                                <td className="formError" colSpan={2} >{formik.errors.description}</td>
+                            )}    
+                        </tr>
+                    </tbody>
+                </table>
+                <div className="flex-column alignCenter-AJ">
+                    <ChooseFile formik={formik} />  
+                    {formik.touched.file && formik.errors.file && (
+                        <div className="formError" colSpan={2} >{formik.errors.file}</div>
+                    )}   
+                </div>
+                
+                <MainBtn name={"Mettre à jour"} isSubmit={true} className={"btnInMain"} />
+            </form>
+          }/>  
+    )
+}
+
 const Article = ({title, text, src, alt, click}) => {
     return (
         <section onClick={click}>
             <div>
+            
             <h2>{title}</h2>
             <p>{text}</p>
             </div>  
@@ -62,12 +166,34 @@ const Articles = () => {
     useEffect(() => {
         getFetchApi("articles")
             .then(data => {
-                setArticles(data[0]); // ✅ Store the full array, not just `data[0]`
+                console.log(data);
+                setArticles(data); // ✅ Store the full array, not just `data[0]`
             })
             .catch(err => {
                 console.error(err);
             });
     }, []);
+
+    const [canEditArray, setCanEditArray] = useState([]);
+    const [canDeleteArray, setCanDeleteArray] = useState([]);
+    useEffect(() => {
+        if (articles) {
+            setCanEditArray(new Array(articles.length).fill(false));
+            setCanDeleteArray(new Array(articles.length).fill(false));
+        }
+    }, [articles]);
+
+    const toggleEdit = (index) => {
+        const updated = [...canEditArray];
+        updated[index] = !updated[index];
+        setCanEditArray(updated);
+    }
+
+    const toggledelete = (index) => {
+        const updated = [...canDeleteArray];
+        updated[index] = !updated[index];
+        setCanDeleteArray(updated);
+    }
     const navigate = useNavigate()
     const handleClick = (event, id) => {
         event.preventDefault();
@@ -153,14 +279,29 @@ const Articles = () => {
                 )}
                 <h1>Nos derniers articles</h1>
                 {articles.map((article, index) => (
-                    <Article 
-                        key={index}
+                    <div className='relative' key={index}>
+                    {isGranted && (
+                        <div className='flex-row alignCenter-AJ'>
+                            <EditElement onEdit={() => toggleEdit(index)}/>
+                            <SupElement  onDelete={() => toggledelete(index) }/>
+                        </div>
+                        
+                    )}
+                    {canEditArray[index] && (
+                        <EditArticle onEdit={() => toggleEdit(index)} article={article}/>
+                    )}
+                    {canDeleteArray[index] && (
+                        <AreYouSure setter={() => toggledelete(index)} apiUrl={`articles/delete/${article.id}`}/>
+                    )}
+                    <Article   
                         title={article.title}
                         text={article.description}
                         src={upluadsImgUrl(article.imgName)}
                         alt={""}
                         click={(event) => handleClick(event, article.id)}
+                        isGranted={isGranted}
                     />
+                    </div>
                 ))}
             </article>
         </main>

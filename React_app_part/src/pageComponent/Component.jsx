@@ -202,6 +202,30 @@ export const Logout = ({message}) => {
     )
 }
 
+export const PasswordInput = ({ name, formik, placeholder }) => {
+    const [showPassword, setShowPassword] = useState(false);
+  
+    return (
+      <div>
+        <div className="flex-row alignCenter-AJ relative">
+            <input
+            type={showPassword ? 'text' : 'password'}
+            placeholder={placeholder}
+            name={name}
+            value={formik.values[name]}         // ✅ Accès dynamique à la clé
+            onChange={formik.handleChange}
+            />
+            <span className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"} eye`} onClick={() => setShowPassword(!showPassword)}></span>   
+        </div>
+        
+  
+        {formik.touched[name] && formik.errors[name] && (
+          <div className='formError'>{formik.errors[name]}</div>
+        )}
+      </div>
+    );
+  };
+
 export const HorizontaleLine = () => {
     return (
         <div className="line"></div>

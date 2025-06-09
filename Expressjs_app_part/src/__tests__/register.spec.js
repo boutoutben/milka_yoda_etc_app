@@ -1,14 +1,22 @@
-import { registerBlock } from "../handles/register.mjs";
-import db from "../mysqlDatabase.mjs";
-import { hashPassword } from "../utils/hashPassword.mjs";
+const registerBlock = require("../handles/register");
+const db = require("../mysqlDatabase.js");
+const { encryptData } = require("../Routes/encryptData");
+const { hashPassword } = require("../utils/hashPassword.js");
 
-jest.mock('../mysqlDatabase.mjs', () => {
+jest.mock('../mysqlDatabase.js', () => {
     return {
         connect: jest.fn(),
         query: jest.fn()
     };
 });
 
+const mockData = {
+    firstname:"John",
+    lastname:'Doe',
+    email:'john@gmail.com',
+    phone:"0650405040",
+    password:'securePass123'
+}
 
 jest.mock('../utils/hashpassword', () => ({
     hashPassword: jest.fn()
@@ -20,11 +28,7 @@ describe("create users", () => {
     beforeEach(() => {
         mockReq = {
             body: {
-                firstname:"John",
-                lastname:'Doe',
-                email:'john@gmail.com',
-                phone:"0650405040",
-                password:'securePass123'
+                data: encryptData(mockData) 
             }
         };
 
@@ -109,5 +113,5 @@ describe("create users", () => {
             expect(mockRes.status).toHaveBeenCalledWith(500);
             expect(mockRes.send).toHaveBeenCalledWith(expect.any(Error));
         });
-    })
+    });
 });

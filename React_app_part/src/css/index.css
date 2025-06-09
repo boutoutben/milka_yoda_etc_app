@@ -170,6 +170,8 @@ select{
 a {
     width: fit-content;
     text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
 }
 .flex-row, .flex-column{
     display: flex;
