@@ -1,7 +1,8 @@
 import './../css/contact.css';
-import { Formik, Form, Field, useFormik } from 'formik';
+import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { MainBtn, WelcomeSection } from './Component';
+import MainBtn from '../components/mainBtn';
+import AppSection from '../components/AppSection';
 import { useRef } from 'react';
 import emailjs from '@emailjs/browser';
 
@@ -78,7 +79,7 @@ const ContactForm = () => {
     })
 
     return (
-        <WelcomeSection 
+        <AppSection 
             id={"contactForm"}
             title={"Contactez-nous"}
             content={

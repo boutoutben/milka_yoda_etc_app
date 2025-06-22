@@ -1,5 +1,6 @@
 import { Formik, Form, Field } from "formik";
-import { MainBtn, WelcomeSection } from "./Component";
+import MainBtn from "../components/mainBtn";
+import AppSection from "../components/AppSection";
 import './../css/donnation.css'
 import PhoneInput from "react-phone-number-input"
 import { useState, useEffect } from "react";
@@ -101,7 +102,7 @@ const CordonateDonnation = () => {
   }, []);
 
   return (
-    <WelcomeSection
+    <AppSection
       id="coordonateDonnation"
       title="Mes coordonnées"
       content={ 
@@ -188,7 +189,7 @@ const CreditCardType = () => {
 const PayementDonnation = () => {
   const [paymentType, setPaymentType] = useState("creditCard");
   return (
-    <WelcomeSection 
+    <AppSection 
       id='payementDonnation'
       title={"Réglement"}
       content={

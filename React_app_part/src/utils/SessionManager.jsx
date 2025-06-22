@@ -6,13 +6,12 @@ const SessionManager = () => {
 
     useEffect(() => {
         const expiration = localStorage.getItem("tokenExpiration");
-        console.log(expiration);
+        
         if (expiration) {
             const expirationDate = new Date(expiration);
 
             if (Date.now() > expirationDate.getTime()) {
                 localStorage.clear();
-                navigate("/login");
             }
         }
     }, [navigate]);

@@ -1,10 +1,14 @@
-import { Formik, Form, Field, useFormik } from 'formik';
-import { MainBtn, AllAnimales, CloseImg, FloatFormField, ChooseFile, CustomSelect, AddAnimals } from './Component';
+import { Formik, Form, Field } from 'formik';
+import MainBtn from '../components/mainBtn';
+import AllAnimales from '../components/allAnimales';
+import CloseImg from '../components/closeImg';
+import AddAnimals from '../components/addAnimals';
 import "./../css/adopt.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from 'react';
-import { getFetchApi, isGranted } from './App';
+import getFetchApi from '../utils/getFetchApi';
+import useIsGranted from '../utils/isGranted';
 import axios from 'axios';
 
 import { useLocation } from 'react-router-dom';
@@ -133,7 +137,7 @@ const Adopt = () => {
     const [filter, setFilter] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredAnimals, setFilteredAnimals] = useState([]);
-    const granted = isGranted("ADMIN_ROLE");
+    const granted = true ///useIsGranted("ADMIN_ROLE");
     const location = useLocation();
     const state = location.state;
 

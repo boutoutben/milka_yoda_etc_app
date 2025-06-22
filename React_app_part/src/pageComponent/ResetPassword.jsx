@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react"
-import { encryptWithPublicKey, getFetchApi } from "./App"
+import encryptWithPublicKey from "../utils/encryptWithPublicKey";
+import getFetchApi from "../utils/getFetchApi";
 import { useNavigate, useParams } from "react-router-dom"
-import { MainBtn, WelcomeSection } from "./Component";
+import MainBtn from "../components/mainBtn";
+import AppSection from "../components/AppSection";
 import { useFormik } from "formik";
 import axios from "axios";
 import * as Yup from 'yup';
@@ -57,7 +59,7 @@ const ResetPassword = () => {
                   },
                 withCredentials: true
               })
-            .then(response => {
+            .then(() => {
                 navigation("/login", {state: {error: 'Mot de passe changé avec succès.'}});
             })
             .catch(err => {
@@ -69,7 +71,7 @@ const ResetPassword = () => {
     return(
         <main>
             {message=="Can reset password" ? (
-                <WelcomeSection title={"Modifier le mot de passe"} content={
+                <AppSection title={"Modifier le mot de passe"} content={
                     <form onSubmit={formik.handleSubmit} className="flex-column row-gap-15">
                          <PasswordInput name="password" formik={formik} placeholder={"Mot de passe"} />
                           <PasswordInput name="confirmPassword" formik={formik} placeholder={"Confirmation du mot de passe"} />

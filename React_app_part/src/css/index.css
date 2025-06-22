@@ -41,7 +41,7 @@ form{
     width: 100%;
 }
 
-p,label, a,li, td {
+p,label, a,li, td, button {
     font-size: 1.2em;
     font-family: "Source Serif 4", serif;
     font-optical-sizing: auto;
@@ -194,6 +194,11 @@ a {
     color: rgb(14, 46, 151);
     cursor: pointer;
     margin-left: 15px;
+    font-size: 1.2em;
+    font-family: "Source Serif 4", serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
 }
 
 .relative{
@@ -223,6 +228,13 @@ td{
 .gap-25{
     gap: 25px;
 }
+
+.unstyled-button {
+    background-color: unset;
+    border: unset;
+    display: inline;
+    cursor: pointer;
+  }
 
 @media screen and (max-width:1180px) {
     h2{

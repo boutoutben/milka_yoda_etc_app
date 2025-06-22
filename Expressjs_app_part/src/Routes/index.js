@@ -9,8 +9,7 @@ const loginRouter = require("./login.js");
 const { verifyToken } = require("../utils/tokens.js");
 const { authRole } = require("../utils/handleRoles.js");
 const adopterSumaryRouter = require('./AdopterSumary.js');
-const userSpaceRouter = require('./userSpace.js');
-const adminSpaceRouter = require('./adminSpace.js');
+const userRouter = require('./user.js');
 const actionsRouter = require('./actions.js');
 const {encryptRouter} = require('./encryptData.js');
 
@@ -23,8 +22,7 @@ router.use("/api/mediator", mediatorRouter);
 router.use("/api/articles", articleRouter);
 router.use('/api/register', registerRouter);
 router.use("/api", loginRouter);
-router.use("/api/userSpace",verifyToken,authRole("USER_ROLE"), userSpaceRouter);
-router.use("/api/adminSpace", verifyToken, authRole("ADMIN_ROLE"), adminSpaceRouter);
+router.use("/api/user",verifyToken, userRouter);
 router.use("/api/adopterSumary", adopterSumaryRouter);
 router.use("/api/action", actionsRouter);
 router.use("/api/encrypt", encryptRouter)

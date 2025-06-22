@@ -1,13 +1,12 @@
 import '@fortawesome/fontawesome-free/css/all.min.css'; 
 import './../css/writeArticle.css'
-import { use, useEffect, useRef, useState } from 'react';
-
+import { useEffect, useRef, useState } from 'react';
 import { ColorPicker, Text, MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css'
-import { MainBtn } from './Component';
+import MainBtn from '../components/mainBtn';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getFetchApi } from './App';
+import getFetchApi from '../utils/getFetchApi';
 
 const EditColor = ({ editColorRef }) => {
   const [color, setColor] = useState('rgb(0,0,0)');
@@ -340,7 +339,7 @@ const convertStyleToHtml = (jsx) => {
                 `http://localhost:5000/api/articles/edit/${id}`,
                 {content},
                 { withCredentials: true }
-            ).then(response => {
+            ).then(() => {
                 navigate(`/article/${id}`)
             })
             }  catch (err) {

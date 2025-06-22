@@ -1,8 +1,15 @@
 import { useEffect, useState } from 'react'
-import './../css/article.css'
-import { getFetchApi, isGranted, upluadsArticle, upluadsImgUrl } from './App'
+import './../css/article.css';
+import getFetchApi from '../utils/getFetchApi';
+import useIsGranted from '../utils/isGranted';
+import uploadsImgUrl from '../utils/uploadsImgUrl';
 import { useNavigate } from 'react-router-dom'
-import { AreYouSure, ChooseFile, EditElement, FloatFormField, MainBtn, SupElement } from './Component'
+import AreYouSure from '../components/areYouSure';
+import ChooseFile from '../components/chooseFile';
+import EditElement from '../components/editElement';
+import FloatFormField from '../components/floatFormField';
+import MainBtn from '../components/mainBtn';
+import DeleteElement from '../components/deleteElement'
 import axios from 'axios'
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -160,7 +167,7 @@ const Article = ({title, text, src, alt, click}) => {
 
 const Articles = () => {
     const [articles, setArticles] = useState([]); // ✅ Initialize as an empty array
-    const granted = isGranted("ADMIN_ROLE");
+    const granted = true //useIsGranted("ADMIN_ROLE");
     const [canAdd, setAdd] = useState(false);
  
     useEffect(() => {
@@ -280,10 +287,10 @@ const Articles = () => {
                 <h1>Nos derniers articles</h1>
                 {articles.map((article, index) => (
                     <div className='relative' key={index}>
-                    {isGranted && (
+                    {granted && (
                         <div className='flex-row alignCenter-AJ'>
                             <EditElement onEdit={() => toggleEdit(index)}/>
-                            <SupElement  onDelete={() => toggledelete(index) }/>
+                            <DeleteElement  onDelete={() => toggledelete(index) }/>
                         </div>
                         
                     )}
@@ -296,10 +303,10 @@ const Articles = () => {
                     <Article   
                         title={article.title}
                         text={article.description}
-                        src={upluadsImgUrl(article.imgName)}
+                        src={uploadsImgUrl(article.imgName)}
                         alt={""}
                         click={(event) => handleClick(event, article.id)}
-                        isGranted={isGranted}
+                        isGranted={granted}
                     />
                     </div>
                 ))}

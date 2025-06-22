@@ -1,12 +1,15 @@
-import { AddAnimals, AllAnimales, WelcomeSection } from "./Component";
+import AddAnimals from "../components/addAnimals";
+import AllAnimales from "../components/allAnimales";
+import AppSection from "../components/AppSection";
 import './../css/mediatorAnimal.css'
-import { getFetchApi } from "./App";
+import getFetchApi from "../utils/getFetchApi";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import useIsGranted from "../utils/isGranted";
 
 const PresentationMediation = () => {
     return (
-        <WelcomeSection 
+        <AppSection 
             id={"presentationMediation"}
             content={
                 <>
@@ -21,6 +24,7 @@ const MediatorAnimal = () => {
     const location = useLocation();
     const state = location.state;
     const [animals, setAnimals] = useState(null);
+    const granted = true// useIsGranted("ADMIN_ROLE")
     useEffect(() => {
             getFetchApi("mediator")
                 .then(data => {
@@ -37,7 +41,9 @@ const MediatorAnimal = () => {
             {state && (
                 <p className="formError">{state.message}</p>
             )}
-            <AddAnimals apiUrl={'mediator/add'} />
+            {granted &&
+                <AddAnimals apiUrl={'mediator/add'} />
+            }
             <PresentationMediation />
             <AllAnimales animalData={animals} className='mediator' root={"/mediatorAnimal/"} />    
         </main>

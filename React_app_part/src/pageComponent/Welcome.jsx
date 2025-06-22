@@ -1,9 +1,11 @@
-import React, { use, useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import "./../css/welcome.css"
-
-import {MainBtn, PresentationAnimal, WelcomeSection} from "./Component"
-import { redirect, useNavigate } from "react-router-dom"
-import { getFetchApi, upluadsImgUrl } from "./App"
+import PresentationAnimal from "../components/presentationAnimal"
+import AppSection from "../components/AppSection"
+import { useNavigate } from "react-router-dom"
+import getFetchApi from "../utils/getFetchApi";
+import uploadsImgUrl from "../utils/uploadsImgUrl"
+import ChooseFile from "../components/chooseFile"
 
 
 const WelcomeToMilkaYodaEtc = () => {
@@ -78,7 +80,7 @@ const ArrowSeeMore = ({redirection}) => {
 
 const AssociationPresentation = () => {
     return (
-        <WelcomeSection 
+        <AppSection 
         id="assocationPresentation"
         title="Présentation de l'association"
         content={
@@ -109,7 +111,7 @@ const ActionSumary = () => {
             })
     }, []);
     return (
-        <WelcomeSection 
+        <AppSection 
         id="actionSumary"
         title="Avant goût des actions"
         content={
@@ -117,7 +119,7 @@ const ActionSumary = () => {
                 {actions.map((action, index) => (
                     <WelcomeImg
                         key={index}
-                        src={upluadsImgUrl(action.imgName)}
+                        src={uploadsImgUrl(action.imgName)}
                         alt="Action img"
                         redirection={action.pageUrl || undefined}
                     />
@@ -158,7 +160,7 @@ const AnimalToAdopt = () => {
     };
 
     return (
-        <WelcomeSection
+        <AppSection
             id='animalToAdopt'
             title='Nos animaux à adopter'
             content={
@@ -210,14 +212,14 @@ const BeingCarefullAboutAnimales = ({redirection}) => {
 
 
     return (
-        <WelcomeSection
+        <AppSection
         id='beingCarefullAboutAnimales'
         title='Les animaux ne sont pas des objets'
         content={
             <div className="flex-row alignCenter-AJ">
                 {articles.map((article) => (
                     <div className="borderBlue" key={article.id} onClick={(event) => handleArticleClick(event, article.id)}>
-                        <img src={upluadsImgUrl(article.imgName)} alt="" />
+                        <img src={uploadsImgUrl(article.imgName)} alt="" />
                         <p>{article.title}</p>
                     </div>
                 ))}

@@ -1,7 +1,7 @@
-import { WelcomeSection, HorizontaleLine, MainBtn, ChooseFile, CloseImg, FloatFormField, AreYouSure } from "./Component";
 import { useNavigate } from "react-router-dom";
 import "./../css/action.css"
-import { getFetchApi, isGranted, upluadsImgUrl } from "./App";
+import getFetchApi from "../utils/getFetchApi";
+import uploadsImgUrl from "../utils/uploadsImgUrl";
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import axios from "axios";
@@ -9,6 +9,12 @@ import * as Yup from 'yup';
 import {closestCorners, DndContext} from '@dnd-kit/core'
 import {arrayMove, SortableContext, useSortable, verticalListSortingStrategy} from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities";
+import ChooseFile from "../components/chooseFile";
+import MainBtn from "../components/mainBtn";
+import AppSection from "../components/AppSection";
+import FloatFormField from "../components/floatFormField";
+import AreYouSure from "../components/areYouSure";
+import isGranted from "../utils/isGranted";
 
 const AddActionSchema = Yup.object().shape({
     title: Yup.string()
@@ -48,6 +54,7 @@ const AddActionSchema = Yup.object().shape({
 })
 
 const EditActionForm = ({ action }) => {
+    const token = localStorage.getItem("token");
   const formik = useFormik({
     initialValues: {
       title: action.title,
@@ -65,10 +72,11 @@ const EditActionForm = ({ action }) => {
             axios.patch('http://localhost:5000/api/action/editAction', formData, {
                 withCredentials: true,
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
                 }
             })
-            .then(response => {
+            .then(() => {
                 formik.resetForm();
                 location.reload();
             })
@@ -137,7 +145,7 @@ const Action = ({id,title, src, alt, text, asBtn, editClick, supClick, btnClick,
         transform: CSS.Transform.toString(transform),
     }
     return (
-        <WelcomeSection
+        <AppSection
             ref={setNodeRef}
             {...(granted
                 ? { attributes, listeners }
@@ -147,7 +155,7 @@ const Action = ({id,title, src, alt, text, asBtn, editClick, supClick, btnClick,
             id={`action-${id}`}
             title={title}
             editAndSup={true}
-            editClick={editClick}
+            onEdit={editClick}
             onDelete={supClick}
             content={
                 <div className="flex-column alignCenter-AJ">
@@ -164,9 +172,8 @@ const Action = ({id,title, src, alt, text, asBtn, editClick, supClick, btnClick,
 
 const Actions = () => {
     const [canAdd, setAdd] = useState(false);
-    const granted = isGranted("ADMIN_ROLE");
     const [actions, setActions] = useState(null);
-
+    const granted = isGranted();
     const AddActionformik = useFormik({
         initialValues: {
             title: '',
@@ -185,7 +192,7 @@ const Actions = () => {
             axios.post('http://localhost:5000/api/action/addAction', formData, {
                 withCredentials: true
             })
-            .then(response => {
+            .then(() => {
                 AddActionformik.resetForm();
                 setAdd(false);
                 location.reload();
@@ -247,7 +254,7 @@ const Actions = () => {
             'http://localhost:5000/api/action/updateOrder',
             { actions },
             { withCredentials: true }
-        ).then(response => {
+        ).then(() => {
             location.reload();
         })
         }  catch (err) {
@@ -318,7 +325,7 @@ const Actions = () => {
                     <div className="flex-column row-gap-15">
                         {actions.map((action, index) => (
                             <div key={index} className="relative">
-                                <Action id={action.id} title={action.title} src={upluadsImgUrl(action.imgName)} alt="cc" 
+                                <Action id={action.id} title={action.title} src={uploadsImgUrl(action.imgName)} alt="cc" 
                                     text={action.description} isAdmin={granted} editClick={() =>toggleEdit(index)} supClick={() => toggletDelete(index)}
                                     asBtn={true} btnClick={action.pageUrl} granted={granted}
                                 />  

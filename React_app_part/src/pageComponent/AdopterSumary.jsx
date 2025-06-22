@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import Sumary from "./Sumary";
-import { HorizontaleLine, MainBtn } from "./Component";
+import HorizontaleLine from "../components/horizontaleLine";
+import MainBtn from "../components/mainBtn";
 import "../css/sumary.css";
 
 export const ValidBtn = ({data}) => {

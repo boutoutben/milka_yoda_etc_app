@@ -4,6 +4,7 @@ const db = require('../mysqlDatabase.js');
 const router = express.Router();
 
 router.get("/", async (req, res) => {
+    console.log(req.user);
     try {
         const [actions] = await db.promise().query("SELECT * FROM actions LIMIT 2")
         const [animals] = await db.promise().query("SELECT * FROM animals WHERE isMediator=false && isAdopted=false LIMIT 2");

@@ -1,9 +1,14 @@
 import { useFormik } from 'formik';
 import '../css/adopterProfile.css';
-import { MainBtn, PLusBtn, WelcomeSection, SupElement, PersonnelInfo } from './Component';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import * as Yup from 'yup';
+import MainBtn from '../components/mainBtn';
+import PLusBtn from '../components/plusBtn';
+import AppSection from '../components/AppSection';
+import DeleteElement from '../components/deleteElement';
+import PersonnelInfo from '../components/personnelInfo';
+import getFetchApi from '../utils/getFetchApi';
 
 const generateAnimalNumberSchema = (animalCase) => {
   const shape = {};
@@ -161,7 +166,7 @@ const CheckBoxElement = ({ array, formik, name }) => {
 const AnimalsPlace = ({formik}) =>{
     const values = ['Maison avec jardin',"Maison avec cour", "Maison sans jardin", "Appart avec balcon sécurisé", "Apport sans balcon"]
     return (
-        <WelcomeSection
+        <AppSection
                 title={"Lieux de vie de l'animal"}
                 content={
                     <>
@@ -320,7 +325,7 @@ const FamillyField = ({ formik }) => {
         <div className="flex-column alignCenter-AJ" key={index}>
           <div className="flex-row">
             <label>Enfant {index + 1}:</label>
-            <SupElement
+            <DeleteElement
               onDelete={() => {
                 const newChildren = [...formik.values.child];
                 newChildren.splice(index, 1);
@@ -434,10 +439,32 @@ const AdopterBtn = ({handleResetClick}) => {
 
 const AdopterForm = () => {
     const location = useLocation();
-     const userInfo = JSON.parse(localStorage.getItem("userInformation"))
+    const token = localStorage.getItem("token");
+    const [userInfo, setUserInfo] = useState({});
+    useEffect(() => {
+      if (!token) return;
+      getFetchApi("userSpace/fetchPersonnelInfos", {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+      })
+        .then(data => {
+          if (data && data.length > 0) {
+            setUserInfo(data[0])
+          }
+        })
+        .catch(err => {
+          if (err.name !== 'AbortError') {
+            console.error("Erreur lors de la récupération des infos personnelles :", err);
+          }
+
+        });
+    }, [token]);
     const navigate = useNavigate();
     const state = location.state;
     const formik = useFormik({
+      enableReinitialize: true,
         initialValues: {
             civility: state?.previousValues?.civility || userInfo?.civility || '',
             lastname: state?.previousValues?.lastname || userInfo?.lastname || '',

@@ -1,13 +1,19 @@
-import { AreYouSure, ChooseFile, CustomSelect, FloatFormField, MainBtn, WelcomeSection } from "./Component";
+import AreYouSure from "../components/areYouSure";
+import ChooseFile from "../components/chooseFile";
+import FloatFormField from "../components/floatFormField";
+import MainBtn from "../components/mainBtn";
+import AppSection from "../components/AppSection";
 import "./../css/animalDetail.css"
 import { useNavigate, useParams } from "react-router-dom";
-import { getFetchApi, upluadsImgUrl } from "./App";
+import getFetchApi from "../utils/getFetchApi";
+import uploadsImgUrl from "../utils/uploadsImgUrl";
 import { useEffect, useState } from "react";
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import axios from "axios";
 import { useFormik } from "formik";
 import * as Yup from 'yup';
+import CustomSelect from "../components/customSelect";
 
 const AddUpdateAdoptSchema = Yup.object().shape({
     name: Yup.string()
@@ -288,66 +294,79 @@ const RaceAnimal = ({race}) => {
 
 const AnimalIdentity = () => {
     const { animal, error, races } = useApiData();
-    const [canEdit, setEdit] = useState(false);
-    const [canSup, setSup] = useState(false)
+    const [canEdit, setCanEdit] = useState(false);
+    const [canDelete, setCanDelete] = useState(false);
+
+    useEffect(() => {
+        console.log("canEdit:", canEdit);
+    }, [canEdit]);
+
     if (error) return <p className="error">{error}</p>;
-    if (!animal&&!races) return <p>Chargement ...</p>;
+    if (!animal || !races) return <p>Chargement ...</p>;
+
+    const sexeLabel = animal.sexe === 1 ? "Mâle" : "Femelle";
+    const sexeImage = `/img/animal${animal.sexe === 1 ? "Male" : "Female"}.png`;
+    const naissanceLabel = `Né${animal.sexe === 2 ? "e" : ""} le ${format(new Date(animal.born), "dd MMMM yyyy", { locale: fr })}`;
+    const sterilisationLabel = animal.isSterile === 1 ? "oui" : "non";
 
     return (
         <div className="relative">
-        <WelcomeSection
-            id="AnimalIdentity"
-            title={animal.name || "Nom inconnu"}
-            editAndSup={true}
-            editClick={() => setEdit(true)}
-            onDelete={() => setSup(true)}
-            content={
-                <div className="flex-row alignCenter-AJ">
-                    <div className="flex-column alignCenter-AJ">
-                        <div className="flex-row alignCenter-AJ">
-                            <p>
-                                Né{animal.sexe === 2 ? "e" : ""} le {format(new Date(animal.born), "dd MMMM yyyy", { locale: fr })}
-                            </p>
-                            <div className="flex-row alignCenter-AJ sexe">
-                                <img 
-                                    src={`/img/animal${animal.sexe === 1 ? "Male" : "Female"}.png`} 
-                                    alt={`Icône de sexe ${animal.sexe}`} 
-                                />
-                                <p>{animal.sexe === 1 ? 'Mâle': "Female"}</p>
-                            </div>
-                        </div>
-                        <div className="flex-row">
-                            <p>Espèce: {races[0].espece}</p>
-                            <div className="flex-row">
-                                <p>Race(s): </p>
-                                <div className="all-races flex-row alignCenter-AJ">
-                                    {races.map((race, index) => (
-                                        <RaceAnimal key={index} race={race.name} />
-                                    ))}  
+            <AppSection
+                id="AnimalIdentity"
+                title={animal.name || "Nom inconnu"}
+                editAndSup
+                onEdit={() => setCanEdit(true)}
+                onDelete={() => setCanDelete(true)}
+                content={
+                    <div className="flex-row alignCenter-AJ">
+                        <div className="flex-column alignCenter-AJ">
+                            <div className="flex-row alignCenter-AJ">
+                                <p>{naissanceLabel}</p>
+                                <div className="flex-row alignCenter-AJ sexe">
+                                    <img src={sexeImage} alt={`Icône de sexe ${animal.sexe}`} />
+                                    <p>{sexeLabel}</p>
                                 </div>
                             </div>
-                        </div>
-                        <div>
-                            <p>Castré/Stérilisé: {animal.isSterile === 0 ? "oui" : "non"}</p>
-                        </div>
-                    </div>
-                    {animal.imgName && (
-                        <img 
-                            src={upluadsImgUrl(animal.imgName)} 
-                            alt={`Photo de ${animal.name || "l'animal"}`} 
-                        />
-                    )}
-                </div>
-            }
-        />
-        {canEdit && (
-          <EditAnimal setEdit={setEdit} />  
-        )}
 
-        {canSup && (
-            <AreYouSure setter={() => setSup(false)} apiUrl={`adopt/delete/${animal.id}`} />
-        )}
-        
+                            <div className="flex-row">
+                                <p>Espèce : {races[0].espece}</p>
+                                <div className="flex-row">
+                                    <p>Race(s) : </p>
+                                    <div className="all-races flex-row alignCenter-AJ">
+                                        {races.map((race, index) => (
+                                            <RaceAnimal key={index} race={race.name} />
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <p>Castré/Stérilisé : {sterilisationLabel}</p>
+                            </div>
+                        </div>
+
+                        {animal.imgName && (
+                            <img
+                                src={uploadsImgUrl(animal.imgName)}
+                                alt={`Photo de ${animal.name || "l'animal"}`}
+                            />
+                        )}
+                    </div>
+                }
+            />
+
+            {canEdit && (
+                <>
+                    <EditAnimal setEdit={setCanEdit} />
+                </>
+            )}
+
+            {canDelete && (
+                <AreYouSure
+                    setter={() => setCanDelete(false)}
+                    apiUrl={`adopt/delete/${animal.id}`}
+                />
+            )}
         </div>
     );
 };
@@ -385,7 +404,7 @@ const AnimalDescription = ({btnName}) => {
     if (error) return <p className="error">{error}</p>;
     if (!animal) return <p>Chargement ...</p>;
     return (
-        <WelcomeSection 
+        <AppSection 
         id={"animalDescription"}
         content={
             <div className="flex-row alignCenter-AJ">

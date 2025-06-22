@@ -1,11 +1,11 @@
-import { WelcomeSection } from "./Component";
+import AppSection from "../components/AppSection";
 import "../css/sumary.css"
-import { upluadsImgUrl } from "./App";
+import uploadsImgUrl from "../utils/uploadsImgUrl";
 
 const AnimalAdopted = ({animal}) => {
     return(
         <div className="flex-column alignCenter-AJ">
-            <img src={upluadsImgUrl(animal.imgName)} alt="" />
+            <img src={uploadsImgUrl(animal.imgName)} alt="" />
             <h3>{animal.name}</h3>
             <p>{new Date().getFullYear() - new Date(animal.born).getFullYear()} ans</p>
         </div>
@@ -14,7 +14,7 @@ const AnimalAdopted = ({animal}) => {
 
 const AdopterInfo = ({data}) => {
     return (
-        <WelcomeSection 
+        <AppSection 
             title={"personnel info"}
             content={
                 <div className="flex-column alignCenter-AJ">
@@ -40,7 +40,7 @@ const AdopterInfo = ({data}) => {
 const HaveAnimals = ({values}) => {
     console.log(values)
     return (
-        <WelcomeSection
+        <AppSection
             title={"Bilan de nos animaux"}
             content={
                 <div className="flex-column alignCenter-AJ">
@@ -63,7 +63,7 @@ const HaveAnimals = ({values}) => {
 
 const LifeRoutine = ({values}) => {
     return (
-        <WelcomeSection
+        <AppSection
             title={"Rythme de vie"}
             content={
                 <div className="flex-column alignCenter-AJ">
@@ -80,7 +80,7 @@ const LifeRoutine = ({values}) => {
 
 const HouseType = ({values}) => {
     return (
-        <WelcomeSection
+        <AppSection
             title={'Type d\'habitat'}
             content={
                  <div className="flex-column alignCenter-AJ">
@@ -97,7 +97,7 @@ const HouseType = ({values}) => {
 
 const Motivation = ({data}) => {
     return (
-        <WelcomeSection 
+        <AppSection 
             title={"Motivation"}
             content={
                 <p>{data.values.motivation}</p>

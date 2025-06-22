@@ -1,6 +1,6 @@
-const { json } = require("body-parser");
+const {setPersonnelInfo, fetchPersonnelsInfos, fetchAdoptedAnimals, getRole, fetchAdoptionNotApprouved, fetchApprouveAdoption, deleteAdoptionNotApprouved, approuveAdoption, fetchAllUsers, blockUpdate } = require("../handles/user");
 const db = require("../mysqlDatabase.js");
-const { fetchAdoptionNotApprouved, fetchApprouveAdoption, deleteAdoptionNotApprouved, approuveAdoption, fetchAllUsers, blockUpdate } = require("../handles/adminSpace.js");
+const { encryptData } = require("../Routes/encryptData");
 
 jest.mock('../mysqlDatabase.js', () => {
     return {
@@ -14,7 +14,191 @@ let mockReq, mockRes = {};
 mockRes = {
     status: jest.fn().mockReturnThis(),
     json: jest.fn()
-};
+}
+
+describe("Fetch adopted animals", () => {
+    beforeEach(() => {
+        mockReq = {
+            user: {
+                userId: 1
+            }
+        }
+        jest.clearAllMocks();
+    })
+    it("should return the animals", async () => {
+        db.promise = jest.fn().mockReturnValue({
+        query: jest.fn().mockResolvedValue([[{
+            email: "boutout.ben@gmail.com"
+        }]])
+        })
+        db.promise = jest.fn().mockReturnValue({
+            query: jest.fn().mockResolvedValue([[{
+                id: 1,
+                name: "test",
+                description: "test'description",
+            },
+            {
+                id:2,
+                name: "test",
+                description: "description",
+            }
+        ]])
+        })
+        await fetchAdoptedAnimals(mockReq, mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(200);
+        expect(mockRes.json).toHaveBeenCalledWith([{
+            id: 1,
+            name: "test",
+            description: "test'description",
+        },
+        {
+            id:2,
+            name: "test",
+            description: "description",
+        }
+    ])
+    });
+    it("should return an error", async () => {
+        db.promise = jest.fn().mockReturnValue({
+            query: jest.fn().mockRejectedValue(new Error("DB error"))
+        })
+        await fetchAdoptedAnimals(mockReq, mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(500);
+        expect(mockRes.json).toHaveBeenCalledWith({error: "Erreur serveur: DB error"})
+    })
+})
+
+describe("Fetch personnel info", () => {
+    beforeEach(() => {
+        mockReq = {
+            user: {
+                userId: 1
+            }
+        };
+        jest.clearAllMocks();
+    });
+    it("Should fetch personnel info with sucess", async () => {
+        db.promise = jest.fn().mockReturnValue({
+            query: jest.fn().mockResolvedValue([[{
+                id: 1,
+                name: "test",
+                description: "test'description",
+            }]])
+        })
+        await fetchPersonnelsInfos(mockReq, mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(200);
+        expect(mockRes.json).toHaveBeenCalledWith([{
+            id: 1,
+            name: "test",
+            description: "test'description",
+        }])
+    });
+    it("Should return an error if DB query fails", async () => {
+        db.promise = jest.fn().mockReturnValue({
+            query: jest.fn().mockRejectedValue(new Error("DB error"))
+        });
+    
+        await fetchPersonnelsInfos(mockReq, mockRes);
+    
+        expect(mockRes.status).toHaveBeenCalledWith(500);
+        expect(mockRes.json).toHaveBeenCalledWith({ error: "Erreur serveur: DB error" });
+    });
+})
+
+describe("Set personnel Info", () => {
+    const mockData = {
+        civility: 1,
+        lastname: "testname",
+        firstname:'test',
+        age:'18',
+        adressePostale: "59000",
+        email: "boutout.ben@gmail.com",
+        phone: "0600000000"
+    }
+    beforeEach(() => {
+        mockReq = {
+            body: {
+                data: encryptData(mockData),
+                id: 1
+            }
+        }
+        jest.clearAllMocks();
+    })
+    it("Should set personnel data with success", async () => {
+        db.promise = jest.fn().mockReturnValue({
+            query: jest.fn().mockResolvedValue([[{
+                id: 1,
+                civility: 1,
+                lastname: "testname",
+                firstname:'test',
+                age:'18',
+                adressePostale: "59000",
+                email: "boutout.ben@gmail.com",
+                phone: "0600000000"
+            }]])
+        })
+        await setPersonnelInfo(mockReq, mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(200);
+        expect(mockRes.json).toHaveBeenCalledWith({message: "Infos mises à jour !", userInfo: {
+            id: 1,
+                civility: 1,
+                lastname: "testname",
+                firstname:'test',
+                age:'18',
+                adressePostale: "59000",
+                email: "boutout.ben@gmail.com",
+                phone: "0600000000"
+        }})
+    });
+    it("Should return not user found", async () => {
+        db.promise = jest.fn().mockReturnValue({
+          query: jest.fn().mockResolvedValue([{ affectedRows: 0 }]) // no rows updated
+        });
+      
+        await setPersonnelInfo(mockReq, mockRes);
+      
+        expect(mockRes.status).toHaveBeenCalledWith(404);
+        expect(mockRes.json).toHaveBeenCalledWith({ message: "Aucun utilisateur trouvé avec cet ID" });
+      });
+    it("Should return an error is error", async () => {
+        db.promise = jest.fn().mockReturnValue({
+            query: jest.fn().mockRejectedValue(new Error("DB error"))
+          });
+        await setPersonnelInfo(mockReq, mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(500);
+        expect(mockRes.json).toHaveBeenCalledWith({error: "Erreur serveur: DB error"});
+    })
+})
+
+describe("getRole", () => {
+    beforeEach(() => {
+        mockReq = {
+            user: {
+                userId: 1
+            }
+        }
+        jest.clearAllMocks();
+    })
+    it("should return the role", async () => {
+        db.promise = jest.fn().mockReturnValue({
+            query: jest.fn().mockResolvedValue([
+                [{roleName: 'MOCK_ROLE'}]
+            ])
+        });
+        await getRole(mockReq, mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(200);
+        expect(mockRes.json).toHaveBeenCalledWith({role: [{roleName: 'MOCK_ROLE'}]} )
+  
+    });
+    it("should return an error", async () => {
+        db.promise = jest.fn().mockReturnValue({
+            query: jest.fn().mockRejectedValue(new Error("DB error"))
+        })
+        await getRole(mockReq, mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(500);
+        expect(mockRes.json).toHaveBeenCalledWith({error: "Erreur serveur: DB error"})
+    })
+})
 
 describe("Fetch doption not approuved", () => {
     beforeEach(() => {

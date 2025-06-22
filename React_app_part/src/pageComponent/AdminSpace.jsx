@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
-import { Logout, PresentationAnimal, WelcomeSection } from "./Component";
-import { getFetchApi } from "./App";
+import getFetchApi from "../utils/getFetchApi";
 import { useNavigate } from "react-router-dom";
 import '../css/adminSpace.css'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
+import AppSection from "../components/AppSection";
+import Logout from "../components/logout";
 
 const AskForAdoption = () => {
     const [animals, setAnimals] = useState(null);
     const token = localStorage.getItem('token');
     const navigate = useNavigate();
     useEffect(() => {
-        getFetchApi("adminSpace", {
+        getFetchApi("user/admin", {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${token}`
@@ -22,18 +23,21 @@ const AskForAdoption = () => {
             setAnimals(data);
           })
           .catch(err => {
-            console.error(err);
-          })
-    }, []);
-
+            if (err.status === 403) {
+              navigate("/login", { state: { error: "Vous n'êtes pas ou plus authorisée" } });
+            } else {
+              console.error("Unexpected error:", err.message);
+            }
+          });
+    });
     const handleClick = (id) => {
-        navigate(`/adopterApprouved/${id}`)
+        navigate(`/user/admin/adopterApprouved/${id}`)
     }
 
     if(!animals) return <p>Chargement ...</p>
 
     return (
-        <WelcomeSection
+        <AppSection
             id={"askForAdopt"}
             title={"Demande d'adoption"}
             content={
@@ -59,8 +63,9 @@ const AskForAdoption = () => {
 const UserPresentation = ({user}) => {
     const token = localStorage.getItem('token');
     const [isBan, setBan] = useState(user.isBlock);
+    const navigate = useNavigate()
     const handleClick = () => {
-        axios.patch("http://localhost:5000/api/adminSpace/blockUpdate", {
+        axios.patch("http://localhost:5000/api/user/admin/blockUpdate", {
             id: user.id,
             argument: !isBan
           },
@@ -72,11 +77,11 @@ const UserPresentation = ({user}) => {
             }
           }
         )
-        .then(response => {
+        .then(() => {
             setBan(!isBan);
         })
         .catch(error => {
-          console.error("Erreur lors de l'envoi :", error);
+          navigate("/login")
         });
     }
     return (
@@ -96,9 +101,10 @@ const BanUser = () => {
     const token = localStorage.getItem('token');
     const [users, setUsers] = useState(null);
     const [filteredUsers, setFilteredUsers] = useState(null);
+    const navigate = useNavigate()
 
     useEffect(() => {
-        getFetchApi("adminSpace/users", {
+        getFetchApi("user/admin/users", {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${token}`
@@ -108,7 +114,7 @@ const BanUser = () => {
             setUsers(data.users);
           })
           .catch(err => {
-            console.error(err);
+              navigate("/login")
           })
     }, []);
     
@@ -126,7 +132,7 @@ const BanUser = () => {
       }, [users, searchTerm]);
     if(!filteredUsers || !users) return <p>Chargement ...</p>
     return (
-        <WelcomeSection 
+        <AppSection
             title={"Blocker des utilisateurs"}
             content={
                 <div className="flex-column row-gap-25">

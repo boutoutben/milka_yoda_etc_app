@@ -2,6 +2,11 @@ const db = require("../mysqlDatabase.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { decryptData } = require("../Routes/encryptData.js");
+const dotenv = require('dotenv');
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
+const { hashPassword } = require("../utils/hashPassword.js");
+dotenv.config();
 
 const loginBlock = async (req, res) => {
   try {
@@ -55,7 +60,7 @@ const loginBlock = async (req, res) => {
       const token = jwt.sign(
         { userId: user.id },
         process.env.JWT_SECRET,
-        { expiresIn: remember_me ? "30d" : "1h" } // 15 minutes pour une session classique
+        { expiresIn: remember_me ? "30d" : "1h" } 
       );
 
     const { id, firstname, lastname, email: userEmail, age, phone, roleName, civility, adressePostale } = user;
@@ -63,8 +68,77 @@ const loginBlock = async (req, res) => {
       const expiresIn = remember_me ? "30d" : "1h";
       res.status(200).json({ token, userInfo, expiresIn });
       } catch (err) {
-          res.status(500).send("Server Error");
+        console.error("Erreur serveur :", err);
+        res.status(500).json({ error: "Erreur serveur", details: err.message });
       }
 }
 
-module.exports = loginBlock;
+const forgotPassword = async (req, res) => {
+  const {email} = req.body;
+  try {
+    const [user] = await db.promise().query("SELECT users.id as id FROM users INNER JOIN roles ON users.role = roles.id WHERE roles.name = 'USER_ROLE' AND users.email = ?", [email]);
+    if(user.length === 1) {
+        const token = crypto.randomBytes(20).toString('hex');
+        await db.promise().query("UPDATE users SET resetToken = ?, resetTokenExpires = ? WHERE id = ?" , [token, new Date(Date.now() + 10 * 60 * 1000) ,user[0].id])
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'boutout.ben@gmail.com',
+                pass: process.env.GMAIL_SERVICE_PASSWORD,
+            },
+        });
+        const mailOptions = {
+            from: 'boutout.ben@gmail.com',
+            to: email,
+            subject: "Modifier le mot de passe",
+            text: `Click sur le lien pour modifier ton mot de passe: http://localhost:5173/reset-password/${token}`
+        };
+        transporter.sendMail(mailOptions, (error, info) => {
+            if(error) {
+                res.status(500).send("Vérifier votre email pour modifier le mot de passe");
+            }
+        });
+        res.send("Sucess")
+    } else {
+        res.status(404).send("Email non trouvé");
+    }  
+  } catch (err) {
+    res.status(500).json({error: `Erreur server: ${err.message}`})
+  }
+}
+
+const canResetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const [users] = await db.promise().query("SELECT users.id AS id, resetToken, resetTokenExpires FROM users INNER JOIN roles ON roles.id = users.role WHERE roles.name = 'USER_ROLE'");
+    const condition = users.find(u => u.resetToken == token && u.resetTokenExpires > Date.now());
+    if (condition) {
+        res.send('Can reset password');  // ou render/redirect vers formulaire
+    } else {
+        res.status(404).send("Invalid or expired token");
+    }  
+  } catch (err) {
+    res.status(500).json({error: `Erreur server: ${err.message}`})
+  }
+}
+
+const resetPassword = async (req, res) => {
+  try {
+      const [users] = await db.promise().query("SELECT users.id AS id, resetToken, resetTokenExpires FROM users INNER JOIN roles ON roles.id = users.role WHERE roles.name = 'USER_ROLE'");
+      const data = decryptData(req.body.data);
+      const  {token, password} = data.responseData.data;
+      const user = users.find(user => user.resetToken === token);
+      if(user) {
+          const hash = hashPassword(password);
+          await db.promise().query("UPDATE users set password= ?, resetToken = null WHERE id = ?", [hash, user.id]);
+          res.send("Success");
+      }
+      else {
+        res.status(404).send("User not found");
+      }
+  } catch(err) {
+      res.status(500).json({error: `Erreur server: ${err.message}`})
+  }
+}
+
+module.exports = {loginBlock, forgotPassword, canResetPassword, resetPassword};

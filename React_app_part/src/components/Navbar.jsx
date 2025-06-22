@@ -1,8 +1,10 @@
-import {Link} from 'react-router-dom';
-import { CloseImg, MainBtn } from './Component';
-import { useNavigate } from "react-router-dom"
+import CloseImg from './closeImg';
+import MainBtn from './mainBtn';
+import { useNavigate, Link } from "react-router-dom"
 import './../css/navbar.css'
 import { useEffect, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
+import getFetchApi from '../utils/getFetchApi';
 
 const NavElement = ({navClass}) => {
     return (
@@ -17,14 +19,39 @@ const NavElement = ({navClass}) => {
     )
 }
 
+NavElement.propTypes = {
+    navClass: PropTypes.string.isRequired
+}
+
 
 const UserBtn = () => {
     const navigate = useNavigate();
-
+    const [userInfo, setUserInfo] = useState({});
+    const token = localStorage.getItem("token")
+    useEffect(() => {
+        if (!token) return;
+        getFetchApi("user/getRole", {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+        })
+        .then(data => {
+          if (data) {
+            setUserInfo(data.role[0]);
+          }
+        })
+        .catch(err => {
+          if (err.name !== 'AbortError') {
+            console.error("Erreur lors de la récupération des infos personnelles :", err);
+          }
+        });
+        console.log(userInfo)
+      }, [token]);
+      
     const handleAccountClick = (event) => {
         event.preventDefault();
         try {
-            const userInfo = JSON.parse(localStorage.getItem("userInformation"));
             if (userInfo) {
                 switch (userInfo.roleName) {
                     case "USER_ROLE":
@@ -44,9 +71,9 @@ const UserBtn = () => {
     };
 
     return (
-        <a onClick={handleAccountClick}>
+        <button onClick={handleAccountClick} className="unstyled-button" aria-label="Compte utilisateur">
             <img src="/img/user.png" alt="Compte utilisateur" />
-        </a>
+        </button>
     );
 };
 
@@ -54,22 +81,26 @@ const Menu = ({redirection}) => {
     const [menuType, setMenuType] = useState("btn");
     const wrapperRef = useRef(null);
 
-   useEffect(() => {
+    useEffect(() => {
         const mobileNavLinks = document.querySelectorAll("header>div :is(nav>ul>a, a)");
-        if (mobileNavLinks.length > 0) {
-            
-            mobileNavLinks.forEach(link => {
-                link.addEventListener("click", () => {
-                    setMenuType("btn");
-                });
-            });
-        }
+
+        // Définir la fonction en dehors de forEach
+        const handleClick = () => {
+            setMenuType("btn");
+        };
+
+        mobileNavLinks.forEach(link => {
+            link.addEventListener("click", handleClick);
+        });
+
+        // Nettoyage propre avec la même référence de fonction
         return () => {
             mobileNavLinks.forEach(link => {
-                link.removeEventListener("click", () => setMenuType("btn"));
+                link.removeEventListener("click", handleClick);
             });
         };
     }, []);
+
     useEffect(() => {
         const handleClickOutside = (event) => {
           if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
@@ -90,12 +121,13 @@ const Menu = ({redirection}) => {
     }
     return (
         <div ref={wrapperRef}>
-            <img 
-                src="/img/menu.png" 
-                id="menuBtn" 
-                onClick={() => setMenuType("menu")}
-                alt="Menu"
-            />
+            <button id="menuBtn" className='unstyled-button' onClick={() => setMenuType("menu")}>
+                <img 
+                    src="/img/menu.png"  
+                    alt="Menu"
+                />       
+            </button>
+            
             <div className={`${menuType === "menu" ? "dropdownMenu" : "normalMenu"} flex-column`}>
                 <CloseImg click={() => setMenuType('btn')} />
                 <NavElement navClass={"flex-column"} />
@@ -108,6 +140,10 @@ const Menu = ({redirection}) => {
     );
 };
 
+Menu.propTypes = {
+    redirection: PropTypes.string.isRequired
+}
+
 const Navbar = () => {
     const navigate = useNavigate();
 
@@ -119,11 +155,14 @@ const Navbar = () => {
 
     return (
         <header>
-            <img src="/img/AssocJuliette.png" alt="logo" id='headerLogo' onClick={handleClick} />
+            <button onClick={handleClick} className='unstyled-button'>
+                <img src="/img/AssocJuliette.png" alt="logo" id='headerLogo' />        
+            </button>
+            
             <NavElement />
             <div className='flex-row alignCenter-AJ'>
                 <UserBtn />
-                <a href=""><img src='/img/shopping-cart.png' alt='shop en ligne' className='shopImg'/></a>
+                <button href="" className='unstyled-button'><img src='/img/shopping-cart.png' alt='shop en ligne' className='shopImg'/></button>
                 <Menu redirection={'/don'}/>
                 <div className='verticalLine'></div>
                 <Link to={'/don'}><MainBtn name={"Nous soutenir"}/></Link>    

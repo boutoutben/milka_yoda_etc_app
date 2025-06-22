@@ -1,18 +1,20 @@
 const express = require('express');
 const db = require('../mysqlDatabase.js');
-const upload = require('../utils/uploadImg.js');
+const {upload} = require('../utils/uploadImg.js');
 
 const { addAction, fetchActions, editActions, deleteActions, updateOrder } = require('../handles/actions.js');
+const { verifyToken } = require('../utils/tokens.js');
+const { authRole } = require('../utils/handleRoles.js');
 const router = express.Router();
 
 router.get("/", fetchActions);
 
-router.post("/addAction", upload.single("file"), addAction);
+router.post("/addAction", verifyToken, authRole("ADMIN_ROLE"), upload.single("file"), addAction);
 
-router.patch("/editAction", upload.single("file"), editActions);
+router.patch("/editAction", verifyToken, authRole("ADMIN_ROLE"), upload.single("file"), editActions);
 
-router.delete("/delete/:id", deleteActions);
+router.delete("/delete/:id", verifyToken, authRole("ADMIN_ROLE"), deleteActions);
 
-router.patch('/updateOrder', updateOrder);
+router.patch('/updateOrder', verifyToken, authRole("ADMIN_ROLE"), updateOrder);
 
 module.exports = router;

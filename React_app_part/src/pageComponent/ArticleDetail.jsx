@@ -1,8 +1,10 @@
 import { useNavigate, useParams } from "react-router-dom";
 import "../css/articleDetail.css"
 import { Suspense, useEffect, useState } from "react";
-import { getFetchApi, isGranted } from "./App";
-import { EditElement, SupElement } from "./Component";
+import getFetchApi from "../utils/getFetchApi";
+import useIsGranted from "../utils/isGranted";
+import EditElement from "../components/editElement";
+import DeleteElement from "../components/deleteElement";
 import axios from "axios";
 
 
@@ -12,7 +14,7 @@ const ArticleDetail = () => {
     const {id} = useParams();
     const [article, setArticle] = useState(null);
     const [ArticleComponent, setArticleComponent] = useState(null);
-    const granted = isGranted("ADMIN_ROLE");
+    const granted = true //useIsGranted("ADMIN_ROLE");
     useEffect(() => {
             getFetchApi(`articles/${id}`)
                 .then(data => {
@@ -46,7 +48,7 @@ const ArticleDetail = () => {
             {granted && (
                 <div className="flex-row">
                     <EditElement onEdit={() => navigate(`/writeArticle/${id}`)}/>
-                    <SupElement onDelete={handleDeleteArtilce} />
+                    <DeleteElement onDelete={handleDeleteArtilce} />
                 </div>    
             )}
             

@@ -1,12 +1,16 @@
-import { FloatFormField, WelcomeSection,PasswordInput } from "./Component";
-import { MainBtn } from "./Component";
+import MainBtn from "../components/mainBtn";
+import FloatFormField from "../components/floatFormField";
+import AppSection from "../components/AppSection";
+import PasswordInput from "../components/passwordInput";
 import {useState, useEffect } from 'react';
 import '../css/auth.css'
-import { Form, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {useFormik} from 'formik';
 import axios from "axios";
 import * as Yup from 'yup';
-import { convertExpiresInToMs, encryptWithPublicKey, getFetchApi } from "./App";
+import convertExpiresInToMs from "../utils/convertExpiresInToMS";
+import encryptWithPublicKey from "../utils/encryptWithPublicKey";
+import getFetchApi from "../utils/getFetchApi";
 
 
 const loginSchema = Yup.object().shape({
@@ -78,9 +82,8 @@ const LoginSection = ({setForgot}) => {
                 console.log(expirationDate)
 
                 localStorage.setItem("token", token);
-                localStorage.setItem("userInformation", JSON.stringify(userInfo));
                 localStorage.setItem("tokenExpiration", expirationDate);
-                switch (response.data.userInfo.roleName) {
+                switch (userInfo.roleName) {
                     case "USER_ROLE":
                         navigate("/userSpace");
                         break;
@@ -117,7 +120,7 @@ const LoginSection = ({setForgot}) => {
 
 
     return (
-        <WelcomeSection 
+        <AppSection 
             title={"Connexion"}
             content={
                 <div className="flex-column alignCenter-AJ row-gap-15">

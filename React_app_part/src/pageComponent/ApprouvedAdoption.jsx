@@ -1,8 +1,10 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getFetchApi } from "./App";
+import getFetchApi from "../utils/getFetchApi";
 import Sumary from "./Sumary";
-import { AlertBox, HorizontaleLine, MainBtn } from "./Component";
+import AlertBox from "../components/alertBox";
+import HorizontaleLine from "../components/horizontaleLine";
+import MainBtn from "../components/mainBtn";
 import axios from "axios";
 import emailjs from '@emailjs/browser';
 
@@ -16,7 +18,7 @@ const ApprouvedBtn = ({data, alert, setAlert}) => {
                 'Authorization': `Bearer ${token}`
             }
             })
-            .then(response => {
+            .then(() => {
                 emailjs.send(
                 "service_rudbrtp", // Remplacez par votre ID de service EmailJS
                 "template_19q913g", // Remplacez par votre ID de modèle EmailJS
@@ -58,7 +60,7 @@ const ApprouvedBtn = ({data, alert, setAlert}) => {
                 }
                 }
             )
-            .then(response => {
+            .then(() => {
                 console.log("Demande d'adoption acceptée.");
                 console.log(data.values.email);
 
@@ -117,7 +119,6 @@ const ApprouvedAdoption = () => {
             console.log(err);
         })
     }, []);
-    console.log(data)
 
     if(!data) return <p>Chargement ...</p>
     return (

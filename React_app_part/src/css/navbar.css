@@ -44,7 +44,7 @@ header>div>div{
     display: none;
 }
 
-header div>a>img{
+header div>button>img{
     cursor: pointer;
     width: 45px;
     height: 45px;
@@ -67,7 +67,7 @@ header div>a>img{
         display: none;
     }
 
-    header div>a>img {
+    header>div>button:not(#menuBtn)>img {
         display: none;
     }
 
@@ -81,6 +81,7 @@ header div>a>img{
     #menuBtn {
         display: block;
         width: 50px;
+        height: 50px;
         cursor: pointer;
         transition: width 2s;
     }

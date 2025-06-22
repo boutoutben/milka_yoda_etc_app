@@ -25,7 +25,7 @@ const AddUpdateAnimalSchema = (isRequired=false) => {
             .min(3, "Le nom doit comporter au moins 3 caractères.")
             .max(50, "Le nombre maximal de caractères du nom est 50.")
             .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9.,!?'"()\-:;@#*\/\n\r ]+$/, "Format invalide")
-            .required("Le titre est requis."),
+            .required("Le nom est requis."),
         description: Yup.string()
             .min(30, "Le nom doit comporter au moins 30 caractères.")
             .max(750, "Le nombre maximal de caractères de la description est 750.")

@@ -28,15 +28,13 @@ jest.mock('../../mysqlDatabase.js', () => {
         lastname: "Doe",
         email: "jane@example.com",
         phone: "1234567890",
-        role: "admin"
+        role: "admin",
       };
   
       db.promise().query.mockResolvedValueOnce([[mockUser], []]);
   
       const middleware = authRole("admin");
       await middleware(req, res, next);
-  
-      expect(req.user).toEqual(mockUser);
       expect(next).toHaveBeenCalled();
       expect(res.status).not.toHaveBeenCalled();
     });

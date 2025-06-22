@@ -1,10 +1,13 @@
 import axios from 'axios';
 import '../css/auth.css';
-import { MainBtn, WelcomeSection, PasswordInput } from './Component';
+import MainBtn from '../components/mainBtn';
+import AppSection from '../components/AppSection';
+import PasswordInput from '../components/passwordInput';
 import {useFormik} from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
-import { encryptWithPublicKey, getFetchApi } from './App';
+import encryptWithPublicKey from '../utils/encryptWithPublicKey';
+import getFetchApi from '../utils/getFetchApi';
 import { useEffect, useState } from 'react';
 
 const registerSchema = Yup.object().shape({
@@ -85,7 +88,7 @@ const RegisterSection =  () => {
     })
 
     return (
-        <WelcomeSection
+        <AppSection
             title={"Créer une compte"}
             content={
                 <div className="flex-column alignCenter-AJ row-gap-15">
