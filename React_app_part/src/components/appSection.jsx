@@ -4,9 +4,18 @@ import EditElement from "./editElement";
 import MainBtn from "./mainBtn";
 import isGranted from "../utils/isGranted";
 import '../css/component.css'
+import { useEffect, useState } from "react";
 
 const AppSection = ({id, title, content, nameBtn, sectionClick, click,isSubmit=false, editAndSup, onEdit, onDelete, ref, attributes, listeners, style}) => {
-    const granted = isGranted("ADMIN_ROLE");
+    const [granted, setGranted] = useState(false);
+    useEffect(() => {
+        async function checkSomething() {
+           const granted = await isGranted("ADMIN_ROLE");
+           setGranted(granted);
+        }
+      
+        checkSomething();
+      }, []);
     return (
         <section ref={ref} style={style} data-testid={id} onClick={sectionClick} id={id} className='welcomeSection flex-column'>
             {granted && attributes && listeners && (

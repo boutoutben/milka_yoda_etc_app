@@ -11,7 +11,7 @@ router.get("/", fetchActions);
 
 router.post("/addAction", verifyToken, authRole("ADMIN_ROLE"), upload.single("file"), addAction);
 
-router.patch("/editAction", verifyToken, authRole("ADMIN_ROLE"), upload.single("file"), editActions);
+router.patch("/editAction/:id", verifyToken, authRole("ADMIN_ROLE"), upload.single("file"), editActions);
 
 router.delete("/delete/:id", verifyToken, authRole("ADMIN_ROLE"), deleteActions);
 

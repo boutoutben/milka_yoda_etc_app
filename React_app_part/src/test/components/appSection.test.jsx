@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import isGranted from "../../utils/isGranted";
 import AppSection from "../../components/AppSection";
 
@@ -11,14 +11,15 @@ const attributes = { 'data-testid': 'drag-handle' };
 const listeners = { onMouseDown: jest.fn() };
 
 describe("AppSection", () => {
-    test("render for admin", () => {
+    test("render for admin", async () => {
         isGranted.mockReturnValue(true);
         const mockEdit = jest.fn();
         const mockDelete = jest.fn();
 
         render(<AppSection id={"test"} title={"test"} click={() => {}} nameBtn={"make test"} editAndSup={true} onEdit={mockEdit} onDelete={mockDelete} listeners={listeners} attributes={attributes} />);
-        const attriAndListSpan = document.querySelector("span.attriAndList");
-        expect(attriAndListSpan).not.toBeNull()
+        await waitFor(() => {
+            expect(document.querySelector("span.attriAndList")).not.toBeNull();
+        });
         expect(screen.getByText('modifier')).toBeInTheDocument();
         expect(screen.getByText("supprimer")).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /make test/i })).toBeInTheDocument();

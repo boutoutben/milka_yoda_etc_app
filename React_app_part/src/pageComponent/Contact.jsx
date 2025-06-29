@@ -5,39 +5,7 @@ import MainBtn from '../components/mainBtn';
 import AppSection from '../components/AppSection';
 import { useRef } from 'react';
 import emailjs from '@emailjs/browser';
-
-const ContactSchema = Yup.object().shape({
-    lastname: Yup.string()
-       .min(3, "Le nom doit comporter au moins 3 caractères.")
-       .max(50, "Le nombre maximal de caractères du nom est 50.")
-       .matches(/^[A-ZÀ-Ÿ][a-zà-ÿ'-]+(?: [A-ZÀ-Ÿ][a-zà-ÿ'-]+)*$/, "Format invalide : ex. Dupont ou Legrand-Duval")
-       .required("Le nom est requis."),
-    
-    firstname: Yup.string()
-       .min(2, "Il faut au moins 2 caractères.")
-       .max(50, "Le nombre maximal de caractères est 50.")
-       .matches(/^[A-ZÀ-Ÿ][a-zà-ÿ'-]+(?: [A-ZÀ-Ÿ][a-zà-ÿ'-]+)*$/, "Format invalide : ex. Jean ou Marie-Thérèse")
-       .required("Le prénom est requis."),
-
-    email: Yup.string()
-       .email("Adresse e-mail invalide")
-       .required("L'e-mail est requis."),
-    
-    phone: Yup.string() 
-       .matches(/^(\+33|0)[1-9](\s?\d{2}){4}$/, "Numéro de téléphone invalide"),
-
-    subject: Yup.string() 
-       .min(5, "Le sujet doit contenir au moins 5 caractères.")
-       .max(100, "Le sujet ne doit pas dépasser 100 caractères.")
-       .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9.,!?'"()\- ]+$/, "Le sujet contient des caractères non autorisés.")
-       .required("Le sujet est requis."),
-
-    message: Yup.string()
-       .min(10, "Le message doit contenir au moins 10 caractères.")
-       .max(1000, "Le message ne doit pas dépasser 1000 caractères.")
-       .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9.,!?'"()\-:;@#*\/\n\r ]+$/, "Le message contient des caractères non autorisés.")
-       .required("Le message est requis."),
-});
+import ContactSchema from '../validationSchema/ContactSchema';
 
 const ContactForm = () => {
     const formRef = useRef(); // ✅ Still needed for emailjs

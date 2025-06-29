@@ -1,162 +1,35 @@
-import { Formik, Form, Field } from 'formik';
-import MainBtn from '../components/mainBtn';
+
+
 import AllAnimales from '../components/allAnimales';
-import CloseImg from '../components/closeImg';
 import AddAnimals from '../components/addAnimals';
 import "./../css/adopt.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from 'react';
-import getFetchApi from '../utils/getFetchApi';
-import useIsGranted from '../utils/isGranted';
-import axios from 'axios';
 
 import { useLocation } from 'react-router-dom';
-
-
-
-
-const ChoiceField = ({filteredAnimals, setFilteredAnimals}) => {
-    const initialValues = {
-        espece: "",
-        gender:"",
-        age: "",
-    }
-    const onSubmit = async (values) => {
-        try {
-            const response = await axios.post("http://localhost:5000/api/filter", {values,filteredAnimals});
-            setFilteredAnimals(response.data);
-            } catch (error) {
-                console.error("Error:", error);
-        }
-    };
-    return (
-        <Formik initialValues={initialValues} onSubmit={onSubmit} validate={null}>
-            <Form>
-                <div className='flex-column row-gap-15'>
-                <div className='flex-column row-gap-15'>
-                    <h3>Espèces: </h3>
-                    <div className='flex-column'>
-                        <label>
-                            <Field type="radio" name="espece" value="" />
-                            Indifférent
-                        </label>
-                        <label>
-                            <Field type="radio" name="espece" value="chien" />
-                            Chien
-                        </label>
-                        <label>
-                            <Field type="radio" name="espece" value="chat" />
-                            Chat
-                        </label>
-                    </div>
-                </div>
-
-                {/* Sélection du genre */}
-                <div className='flex-column row-gap-15'>
-                    <h3>Genre: </h3>
-                    <div className='flex-column'>
-                        <label>
-                            <Field type="radio" name="gender" value="" />
-                            Indifférent
-                        </label>
-                        <label>
-                            <Field type="radio" name="gender" value="1" />
-                            Mâle
-                        </label>
-                        <label>
-                            <Field type="radio" name="gender" value="2" />
-                            Femelle
-                        </label>
-                    </div>
-                </div>
-
-                {/* Sélection de l'âge */}
-                <div className='flex-column row-gap-15'>
-                    <h3>Âge: </h3>
-                    <div className='flex-column'>
-                        <label>
-                            <Field type="radio" name="age" value="" />
-                            Indifférent
-                        </label>
-                        <label>
-                            <Field type="radio" name="age" value="young" />
-                            Jeune
-                        </label>
-                        <label>
-                            <Field type="radio" name="age" value="adult" />
-                            Adulte
-                        </label>
-                        <label>
-                            <Field type="radio" name="age" value="senior" />
-                            Sénior
-                        </label>
-                    </div>
-                </div>
-                
-                {/* Bouton de soumission */}
-                <MainBtn name="Filtrer" className="btnInMain" isSubmit={true} />
-                </div>
-            </Form>
-        </Formik>
-
-    )
-}
-
-const Filter = ({filter, setFilter, filteredAnimals, setFilteredAnimals}) => {
-    return (
-        <aside className={`flex-column ${filter === true ? 'showFilter': ''}`} >
-            <CloseImg click={()=> setFilter(false)} />
-            <h2>Filter</h2>
-            <ChoiceField filteredAnimals={filteredAnimals} setFilteredAnimals={setFilteredAnimals}/>   
-        </aside>
-    )
-}
-
-const SearchBottom = ({filter, setFilter, setSearchTerm, count}) => {
-    return (
-        <>
-            <div className="search-container">
-                <FontAwesomeIcon icon={faSearch} className="search-icon" />
-                <input type="search" placeholder="Rechercher..." onChange={(e) => setSearchTerm(e.target.value)}/>
-            </div>
-            <div id='filterInfo'>
-                <div id='filterBtn' className='flex-row' onClick={() => setFilter(!filter)}>
-                    <img src="img/filter.png" alt="" className='filterImg' />
-                    <h2>Filtre</h2>
-                </div>
-                <h3>{count} résultat</h3>
-            </div>
-            
-        </>
-    )
-}
-
+import isGranted from '../utils/isGranted';
+import { Filter, useAdoptAnimals, SearchBottom } from '../handles/Adopt';
 
 const Adopt = () => {
     const [filter, setFilter] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredAnimals, setFilteredAnimals] = useState([]);
-    const granted = true ///useIsGranted("ADMIN_ROLE");
+    const [granted, setGranted] = useState(false);
+    
     const location = useLocation();
     const state = location.state;
 
     const [animals, setAnimals] = useState([]);
     useEffect(() => {
-        getFetchApi("adopt")
-            .then(data => {
-                setAnimals(data.animals);
-            })
-            .catch(err => {
-                console.error(err);
-            });
-    }, []); 
-    useEffect(() => {
-        const filtered = Object.values(animals).filter(animal =>
-            animal.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setFilteredAnimals(filtered);
-    }, [searchTerm, animals]);
+        async function checkSomething() {
+           const granted = await isGranted("ADMIN_ROLE");
+           setGranted(granted);
+        }
+      
+        checkSomething();
+      }, []);
+
+      useAdoptAnimals(setAnimals, setFilteredAnimals);
+    
     return (
         <main id='adopt'>
             {state && (
@@ -166,7 +39,7 @@ const Adopt = () => {
                 <AddAnimals apiUrl="adopt/add" />
             )}
            
-            <SearchBottom filter={filter} setFilter={setFilter} setSearchTerm={setSearchTerm} count={filteredAnimals.length}/>
+            <SearchBottom filter={filter} searchTerm={searchTerm} setFiltered={setFilteredAnimals} setSearchTerm={setSearchTerm} count={filteredAnimals.length} elements={animals} />
             <section id="adoptInterface">
                 <Filter filter={filter} setFilter={setFilter} filteredAnimals={animals} setFilteredAnimals={setFilteredAnimals} />
                 

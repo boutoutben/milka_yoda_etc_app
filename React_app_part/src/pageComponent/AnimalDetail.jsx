@@ -12,52 +12,10 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import axios from "axios";
 import { useFormik } from "formik";
-import * as Yup from 'yup';
 import CustomSelect from "../components/customSelect";
+import AddUpdateAdoptSchema from "../validationSchema/AddUpdateAnimalSchema";
 
-const AddUpdateAdoptSchema = Yup.object().shape({
-    name: Yup.string()
-        .min(3, "Le nom doit comporter au moins 3 caractères.")
-        .max(50, "Le nombre maximal de caractères du nom est 50.")
-        .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9.,!?'"()\-:;@#*\/\n\r ]+$/, "Format invalide")
-        .required("Le titre est requis."),
-    description: Yup.string()
-        .min(30, "Le nom doit comporter au moins 30 caractères.")
-        .max(750, "Le nombre maximal de caractères de la description est 750.")
-        .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9.,!?'"()\-:;@#*\/\n\r ]+$/, "Format invalide")
-        .required("La description est requis."),
-    sexe: Yup.number()
-        .required("Le sexe est requis"),
-    isSterile: Yup.boolean()
-        .required("La sterilité est requise"),
-    file: Yup.mixed()
-    .test(
-        'fileFormat', 
-        'Vous extension n\'est pas correcte, seuls png, jpg, jpeg, gif, webp sont autorisés',
-        function (file) {
-            if (!file) return true; // Pas de fichier → pas d'erreur (à adapter selon besoin)
-            const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-            const extension = file.name.split('.').pop().toLowerCase();
-            return validExtensions.includes(extension);
-        }
-    )
-    .test(
-        'fileSize', 
-        'Le fichier est trop lourd, max 700ko',
-        function (file) {
-            if (!file) return true; // Pas de fichier → pas d'erreur
-            return file.size <= 700 * 1024;
-        }
-    ),
-    animal: Yup.string()
-        .required("l'animal est requis"),
-    born: Yup.date()
-        .max(new Date(), "La date de naissance doit être inférieur à aujourd'hui")
-        .required("La date est requise"),
-    races: Yup.array()
-        .min(1, 'Il faut au moins une race')
-        .max(6, 'Un animal peut avoir que 6 race maximum'),
-})
+
 
 const useApiData = () => {
     const { id } = useParams();
@@ -135,7 +93,7 @@ const EditAnimal = ({setEdit}) => {
                     'Content-Type': 'multipart/form-data'
                 }
             })
-            .then(response => {
+            .then(() => {
                 location.reload();
             })
             .catch(error => {

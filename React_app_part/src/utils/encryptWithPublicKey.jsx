@@ -18,7 +18,6 @@ async function encryptWithPublicKey(data, pemKey) {
         false,
         ['encrypt']
       );
-      console.log("cc")
   
       const encoded = new TextEncoder().encode(JSON.stringify(data));
   

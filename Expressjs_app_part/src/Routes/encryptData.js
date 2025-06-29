@@ -11,7 +11,7 @@ encryptRouter.get("/public-key", (req, res) => {
 });
 
 
-function decryptData(encryptedData) {
+function decryptData(data) {
   try {
     const decryptedBuffer = crypto.privateDecrypt(
       {
@@ -19,14 +19,14 @@ function decryptData(encryptedData) {
         padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
         oaepHash: "sha256",
       },
-      Buffer.from(encryptedData, 'base64')
+      Buffer.from(data, 'base64')
     );
 
     const jsonData = JSON.parse(decryptedBuffer.toString());
 
     return {
       success: true,
-      data: {
+      responseData: {
         message: 'Data received successfully',
         data: jsonData,
       }

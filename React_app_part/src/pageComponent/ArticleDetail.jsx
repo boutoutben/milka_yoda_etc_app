@@ -2,10 +2,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import "../css/articleDetail.css"
 import { Suspense, useEffect, useState } from "react";
 import getFetchApi from "../utils/getFetchApi";
-import useIsGranted from "../utils/isGranted";
 import EditElement from "../components/editElement";
 import DeleteElement from "../components/deleteElement";
 import axios from "axios";
+import isGranted from "../utils/isGranted";
 
 
 
@@ -14,7 +14,7 @@ const ArticleDetail = () => {
     const {id} = useParams();
     const [article, setArticle] = useState(null);
     const [ArticleComponent, setArticleComponent] = useState(null);
-    const granted = true //useIsGranted("ADMIN_ROLE");
+    const granted = isGranted("ADMIN_ROLE");
     useEffect(() => {
             getFetchApi(`articles/${id}`)
                 .then(data => {

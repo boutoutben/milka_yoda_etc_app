@@ -7,30 +7,11 @@ import '../css/auth.css'
 import { useLocation, useNavigate } from "react-router-dom";
 import {useFormik} from 'formik';
 import axios from "axios";
-import * as Yup from 'yup';
 import convertExpiresInToMs from "../utils/convertExpiresInToMS";
 import encryptWithPublicKey from "../utils/encryptWithPublicKey";
 import getFetchApi from "../utils/getFetchApi";
-
-
-const loginSchema = Yup.object().shape({
-    email: Yup.string()
-       .email("Adresse e-mail invalide")
-       .required("L'e-mail est requis."),
-
-    password: Yup.string() 
-       .min(8, "Le mot de passe doit contenir au moins 5 caractères.")
-       .max(100, "Le mot de passe ne doit pas dépasser 100 caractères.")
-       .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, "Le mot de passe n'est pas conforme")
-       .required("Le mot de passe est requis."),
-});
-
-const emailSchema = Yup.object().shape({
-    email: Yup.string()
-       .email("Adresse e-mail invalide")
-       .required("L'e-mail est requis."),
-});
-
+import loginSchema from "../validationSchema/LoginSchema";
+import emailSchema from "../validationSchema/emailSchema";
 
 const LoginSection = ({setForgot}) => {
     const navigate = useNavigate();
@@ -95,9 +76,7 @@ const LoginSection = ({setForgot}) => {
                 setErr("Token non reçu !");
             }
         } catch (error) {
-            console.log(error);
-            if (error.response?.data) {
-                console.log(error)
+            if (error.response?.data) {        
                 const data = error.response.data;
                 if (typeof data === "string") {
                     setErr(data);
@@ -110,14 +89,10 @@ const LoginSection = ({setForgot}) => {
                 }
             } else {
                 setErr("Impossible de contacter le serveur.");
-            }
-            
+            }     
         }
     }
     });
-
-    
-
 
     return (
         <AppSection 

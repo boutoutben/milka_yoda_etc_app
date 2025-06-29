@@ -1,11 +1,12 @@
 const db = require("../mysqlDatabase.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { decryptData } = require("../Routes/encryptData.js");
 const dotenv = require('dotenv');
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const { hashPassword } = require("../utils/hashPassword.js");
+const { decryptData } = require("../Routes/encryptData.js");
+
 dotenv.config();
 
 const loginBlock = async (req, res) => {

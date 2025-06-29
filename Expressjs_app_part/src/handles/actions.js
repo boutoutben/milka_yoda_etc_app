@@ -27,12 +27,13 @@ const fetchActions = async (req, res) => {
   };
 
 const editActions = async (req, res) => {
-    const { title, description, actionId } = req.body;
+    const { title, description } = req.body;
       const file = req.file;
+      const {id} = req.params;
     
       try {
         // 1️⃣ Récupérer l'ancien imgName
-        const [rows] = await db.promise().query("SELECT imgName FROM actions WHERE id = ?", [actionId]);
+        const [rows] = await db.promise().query("SELECT imgName FROM actions WHERE id = ?", [id]);
         const oldImgName = rows[0]?.imgName;
     
         //2️⃣ Si un nouveau fichier est uploadé
@@ -49,13 +50,13 @@ const editActions = async (req, res) => {
           // Mettre à jour titre, description et imgName
           await db.promise().query(
             "UPDATE actions SET title = ?, description = ?, imgName = ? WHERE id = ?",
-            [title, description, file.filename, actionId]
+            [title, description, file.filename, id]
           );
         } else {
           // Aucun nouveau fichier → juste mettre à jour titre et description
           await db.promise().query(
             "UPDATE actions SET title = ?, description = ? WHERE id = ?",
-            [title, description, actionId]
+            [title, description, id]
           );
         }
     

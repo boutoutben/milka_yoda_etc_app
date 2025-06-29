@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import "./../css/welcome.css"
 import PresentationAnimal from "../components/presentationAnimal"
 import AppSection from "../components/AppSection"
 import { useNavigate } from "react-router-dom"
 import getFetchApi from "../utils/getFetchApi";
 import uploadsImgUrl from "../utils/uploadsImgUrl"
-import ChooseFile from "../components/chooseFile"
 
 
 const WelcomeToMilkaYodaEtc = () => {

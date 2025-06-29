@@ -5,7 +5,7 @@ import './../css/mediatorAnimal.css'
 import getFetchApi from "../utils/getFetchApi";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import useIsGranted from "../utils/isGranted";
+import isGranted from "../utils/isGranted";
 
 const PresentationMediation = () => {
     return (
@@ -24,7 +24,7 @@ const MediatorAnimal = () => {
     const location = useLocation();
     const state = location.state;
     const [animals, setAnimals] = useState(null);
-    const granted = true// useIsGranted("ADMIN_ROLE")
+    const granted = isGranted("ADMIN_ROLE")
     useEffect(() => {
             getFetchApi("mediator")
                 .then(data => {

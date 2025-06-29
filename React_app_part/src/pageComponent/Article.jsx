@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import './../css/article.css';
 import getFetchApi from '../utils/getFetchApi';
-import useIsGranted from '../utils/isGranted';
 import uploadsImgUrl from '../utils/uploadsImgUrl';
 import { useNavigate } from 'react-router-dom'
 import AreYouSure from '../components/areYouSure';
@@ -12,73 +11,14 @@ import MainBtn from '../components/mainBtn';
 import DeleteElement from '../components/deleteElement'
 import axios from 'axios'
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
 
-const AddArticleSchema = Yup.object().shape({
-    title: Yup.string()
-        .min(3, "Le nom doit comporter au moins 3 caractères.")
-        .max(50, "Le nombre maximal de caractères du titre est 50.")
-        .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9.,!?'"()\-:;@#*\/\n\r ]+$/, "Format invalide")
-        .required("Le titre est requis."),
-    description: Yup.string()
-        .min(30, "Le nom doit comporter au moins 30 caractères.")
-        .max(750, "Le nombre maximal de caractères de la description est 750.")
-        .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9.,!?'"()\-:;@#*\/\n\r ]+$/, "Format invalide")
-        .required("La description est requis."),
-    file: Yup.mixed()
-        .required('L\'image est requis')
-        .test(
-            'fileFormat', // nom du test (optionnel mais recommandé)
-            'Please provide a supported file type',
-            function (file) {
-                if (!file) return true; // Pas de fichier → pas d'erreur (ou à adapter)
-                const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-                const extension = file.name.split('.').pop().toLowerCase();
-                const isValid = validExtensions.includes(extension);
-                return isValid || this.createError({ message: "Vous extension n'est pas correct seul png, jpg, jpeg, gif, webp" });
-            }
-        )
-        .test({
-            message: `File too big, can't exceed 500ko`,
-            test: (file) => {
-            const isValid = file?.size < 500 * 1024;
-            return isValid;
-        }
-  })
-})
+import EditArticleSchema from '../validationSchema/EditArticleSchema';
+import AddArticleSchema from '../validationSchema/AddArticleSchema';
+import isGranted from '../utils/isGranted';
 
-const EditArticleSchema = Yup.object().shape({
-    title: Yup.string()
-        .min(3, "Le nom doit comporter au moins 3 caractères.")
-        .max(50, "Le nombre maximal de caractères du titre est 50.")
-        .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9.,!?'"()\-:;@#*\/\n\r ]+$/, "Format invalide")
-        .required("Le titre est requis."),
-    description: Yup.string()
-        .min(30, "Le nom doit comporter au moins 30 caractères.")
-        .max(750, "Le nombre maximal de caractères de la description est 750.")
-        .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9.,!?'"()\-:;@#*\/\n\r ]+$/, "Format invalide")
-        .required("La description est requis."),
-        file: Yup.mixed()
-        .test(
-          'fileFormat',
-          'Vous extension n\'est pas correct seul png, jpg, jpeg, gif, webp',
-          function (file) {
-            if (!file) return true; // Accepte l'absence de fichier
-            const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-            const extension = file.name.split('.').pop().toLowerCase();
-            return validExtensions.includes(extension);
-          }
-        )
-        .test(
-          'fileSize',
-          'Le fichier est trop volumineux (max 500Ko)',
-          function (file) {
-            if (!file) return true;
-            const isValid = file.size < 500 * 1024;
-            return isValid;
-          }
-        )
-})
+
+
+
 
 const EditArticle = ({onEdit, article}) => {
     const formik = useFormik({
@@ -102,7 +42,7 @@ const EditArticle = ({onEdit, article}) => {
                           'Content-Type': 'multipart/form-data'
                       }
                   })
-                  .then(response => {
+                  .then(() => {
                       formik.resetForm();
                       location.reload();
                   })
@@ -167,7 +107,7 @@ const Article = ({title, text, src, alt, click}) => {
 
 const Articles = () => {
     const [articles, setArticles] = useState([]); // ✅ Initialize as an empty array
-    const granted = true //useIsGranted("ADMIN_ROLE");
+    const granted = isGranted("ADMIN_ROLE");
     const [canAdd, setAdd] = useState(false);
  
     useEffect(() => {

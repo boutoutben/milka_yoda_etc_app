@@ -12,7 +12,7 @@ const ApprouvedBtn = ({data, alert, setAlert}) => {
     const token = localStorage.getItem('token');
     const navigate = useNavigate();
     const handleRefuseClick = () => {
-        axios.delete(`http://localhost:5000/api/adminSpace/refuse/${data.values.id}`, {
+        axios.delete(`http://localhost:5000/api/user/admin/refuse/${data.values.id}`, {
             withCredentials: true,
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -51,7 +51,7 @@ const ApprouvedBtn = ({data, alert, setAlert}) => {
     }
     const handleAcceptClick = () => {
         axios.patch(
-                `http://localhost:5000/api/adminSpace/accept/${data.values.id}`,
+                `http://localhost:5000/api/user/admin/accept/${data.values.id}`,
                 {},
                 {
                 withCredentials: true,
@@ -104,7 +104,7 @@ const ApprouvedAdoption = () => {
     const [data, setData] = useState(null);
     const [alert, setAlert] = useState(null);
     useEffect(() => {
-        getFetchApi(`adminSpace/adopterApprouved/${id}`,
+        getFetchApi(`user/admin/adopterApprouved/${id}`,
             {
             method: 'GET',
             headers: {

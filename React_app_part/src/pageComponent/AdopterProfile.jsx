@@ -2,134 +2,13 @@ import { useFormik } from 'formik';
 import '../css/adopterProfile.css';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import * as Yup from 'yup';
 import MainBtn from '../components/mainBtn';
 import PLusBtn from '../components/plusBtn';
 import AppSection from '../components/AppSection';
 import DeleteElement from '../components/deleteElement';
 import PersonnelInfo from '../components/personnelInfo';
 import getFetchApi from '../utils/getFetchApi';
-
-const generateAnimalNumberSchema = (animalCase) => {
-  const shape = {};
-
-  animalCase.forEach((label) => {
-    if (label !== "Pas encore" && label !== "Autre") {
-      shape[label] = Yup.number()
-        .typeError(`Le nombre de ${label} doit être un chiffre`)
-        .required(`Vous devez indiquer un nombre de ${label}`)
-        .min(1, `Vous devez indiquer au moins un ${label}`)
-        .positive(`Le nombre de ${label} doit être positif`);
-    }
-  });
-
-  return Yup.object().shape(shape);
-};
-
-const AdopterProfileSchema = Yup.object().shape({
-    civility: Yup.string()
-        .oneOf(['1', '2', '3'], 'Civilité invalide.')
-        .required('La civilité est requise.'),
-  lastname: Yup.string()
-    .min(3, "Le nom doit comporter au moins 3 caractères.")
-    .max(50, "Le nombre maximal de caractères du nom est 50.")
-    .matches(/^[A-ZÀ-Ÿ][a-zà-ÿ'-]+(?: [A-ZÀ-Ÿ][a-zà-ÿ'-]+)*$/, "Format invalide : ex. Dupont ou Legrand-Duval")
-    .required("Le nom est requis."),
-
-  firstname: Yup.string()
-    .min(2, "Il faut au moins 2 caractères.")
-    .max(50, "Le nombre maximal de caractères est 50.")
-    .matches(/^[A-ZÀ-Ÿ][a-zà-ÿ'-]+(?: [A-ZÀ-Ÿ][a-zà-ÿ'-]+)*$/, "Format invalide : ex. Jean ou Marie-Thérèse")
-    .required("Le prénom est requis."),
-
-  age: Yup.number("Merci d'entrer un nombre")
-    .required("L'âge est requis")
-    .integer("L'âge doit être un nombre entier")
-    .moreThan(17, "L'âge doit être supérieur à 18 ans"),
-
-  email: Yup.string()
-    .email("Adresse e-mail invalide")
-    .required("L'e-mail est requis."),
-
-  phone: Yup.string()
-    .matches(/^(\+33|0)[1-9](\s?\d{2}){4}$/, "Numéro de téléphone invalide")
-    .required("Téléphone requis"),
-
-  adressePostale: Yup.string()
-    .matches(/^[0-9]{5}$/, "Le code postal n'est pas conforme")
-    .required("Code postal requis"),
-
-  animalPlace: Yup.array()
-    .min(1, "Il faut choisir au moins une option"),
-
-  lifeRoutine: Yup.array()
-    .min(1, "Il faut choisir au moins une option"),
-
-  animalCase: Yup.array()
-    .min(1, "Vous devez choisir au moins une option"),
-
-  haveChildren: Yup.boolean()
-    .required("Vous devez indiquer si vous avez des enfants ou non"),
-
-  child: Yup.lazy((value, context) => {
-    const haveChildren = context.parent.haveChildren; // Assuming `haveChildren` is a field in the parent form
-
-    if (haveChildren) {
-      return Yup.array()
-        .of(
-          Yup.number()
-            .typeError('L\'âge doit être un nombre')
-            .required('L\'âge de l\'enfant est requis')
-            .min(1, 'L\'âge doit être au moins 1')
-            .max(10, 'L\'âge doit être inférieur ou égal à 10') // Adjusted max value
-        )
-        .min(1, 'Ajoutez au moins un enfant'); // Ensures that at least one child is added
-    }
-
-    // If `haveChildren` is false or not present, don't require the `child` field.
-    return Yup.array().notRequired();
-  }),
-
-  motivation: Yup.string()
-    .required("La motivation est requise.")
-    .min(10, "La motivation doit contenir au moins 10 caractères.")
-    .max(1000, "La motivation ne doit pas dépasser 1000 caractères.")
-    .matches(/^[A-Za-zÀ-ÖØ-öø-ÿ0-9.,!?'"()\-:;@#*\/\n\r ]+$/, "La motivation contient des caractères non autorisés."),
-
-  animalNumber: Yup.lazy((_, context) => {
-    const animalCase = context.parent.animalCase || [];
-    return generateAnimalNumberSchema(animalCase);
-  }),
-
-  otherAnimals: Yup.lazy((value, context) => {
-  const animalCase = context.parent.animalCase || [];
-  if (animalCase.includes("Autre")) {
-    return Yup.array()
-      .of(
-        Yup.object().shape({
-          name: Yup.string()
-            .required("Le nom de l'animal est requis")
-            .min(3, "Le nom doit comporter au moins 3 caractères.")
-            .max(50, "Le nombre maximal de caractères du nom est 50.")
-            .matches(/^[A-ZÀ-Ÿ][a-zà-ÿ'-]+(?: [A-ZÀ-Ÿ][a-zà-ÿ'-]+)*$/, "Format invalide"), // Le nom est requis en tous les cas
-
-          number: Yup.number()
-            .typeError("Le nombre doit être un chiffre")
-            .required("Le nombre est requis")
-            .min(1, "Le nombre doit être au moins 1")
-            .max(15,"Le nombre doit être inférieur à 15")
-            .positive("Le nombre doit être positif"),
-
-        })
-      )
-      .min(1, "Ajoutez au moins un animal");
-  }
-  return Yup.array().notRequired();
-}),
-
-  accept: Yup.boolean()
-    .oneOf([true], "Vous devez accepter la condition")
-});
+import AdopterProfileSchema from '../validationSchema/adoptProfileSchema';
 
 const CheckBoxElement = ({ array, formik, name }) => {
   return (
@@ -443,7 +322,7 @@ const AdopterForm = () => {
     const [userInfo, setUserInfo] = useState({});
     useEffect(() => {
       if (!token) return;
-      getFetchApi("userSpace/fetchPersonnelInfos", {
+      getFetchApi("user/fetchPersonnelInfos", {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`

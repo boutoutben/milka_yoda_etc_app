@@ -30,3 +30,6 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
+const listEndpoints = require('express-list-endpoints');
+//console.log(listEndpoints(app));
+

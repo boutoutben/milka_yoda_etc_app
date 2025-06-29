@@ -4,11 +4,6 @@ async function isGranted(roleName) {
     try {
         const token = localStorage.getItem("token");
 
-        if (!token) {
-            console.warn("❌ Token absent ou expiré");
-            return false;
-        }
-
         const data = await getFetchApi("user/getRole", {
             method: 'GET',
             headers: {

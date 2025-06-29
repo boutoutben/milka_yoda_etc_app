@@ -10,42 +10,10 @@ import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
+import UserInfoSchema from '../validationSchema/UserInfoSchema';
 
 
-const UserInfoSchema = Yup.object().shape({
-    civility: Yup.string()
-        .oneOf(['1', '2', '3'], 'Civilité invalide.')
-        .required('La civilité est requise.'),
-  lastname: Yup.string()
-    .min(3, "Le nom doit comporter au moins 3 caractères.")
-    .max(50, "Le nombre maximal de caractères du nom est 50.")
-    .matches(/^[A-ZÀ-Ÿ][a-zà-ÿ'-]+(?: [A-ZÀ-Ÿ][a-zà-ÿ'-]+)*$/, "Format invalide : ex. Dupont ou Legrand-Duval")
-    .required("Le nom est requis."),
 
-  firstname: Yup.string()
-    .min(2, "Il faut au moins 2 caractères.")
-    .max(50, "Le nombre maximal de caractères est 50.")
-    .matches(/^[A-ZÀ-Ÿ][a-zà-ÿ'-]+(?: [A-ZÀ-Ÿ][a-zà-ÿ'-]+)*$/, "Format invalide : ex. Jean ou Marie-Thérèse")
-    .required("Le prénom est requis."),
-
-  age: Yup.number("Merci d'entrer un nombre")
-    .required("L'âge est requis")
-    .integer("L'âge doit être un nombre entier")
-    .moreThan(17, "L'âge doit être supérieur à 18 ans"),
-
-  email: Yup.string()
-    .email("Adresse e-mail invalide")
-    .required("L'e-mail est requis."),
-
-  phone: Yup.string()
-    .matches(/^(\+33|0)[1-9](\s?\d{2}){4}$/, "Numéro de téléphone invalide")
-    .required("Téléphone requis"),
-
-  adressePostale: Yup.string()
-    .matches(/^[0-9]{5}$/, "Le code postal n'est pas conforme")
-    .required("Code postal requis"),
-
-});
 
 const UserInfo = ({ personnelInfo }) => {
   const [publicKey, setPublicKey] = useState('');

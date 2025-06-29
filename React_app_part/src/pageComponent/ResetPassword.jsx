@@ -6,19 +6,9 @@ import MainBtn from "../components/mainBtn";
 import AppSection from "../components/AppSection";
 import { useFormik } from "formik";
 import axios from "axios";
-import * as Yup from 'yup';
+import resetPasswordSchema from "../validationSchema/resetPasswordSchema";
 
-const resetPasswordSchema = Yup.object().shape({
-    password: Yup.string() 
-       .min(8, "Le mot de passe doit contenir au moins 5 caractères.")
-       .max(100, "Le mot de passe ne doit pas dépasser 100 caractères.")
-       .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, "Le mot de passe n'est pas conforme")
-       .required("Le mot de passe est requis."),
 
-    confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password'), null], 'Les mots de passe doivent correspondre')
-    .required('La confirmation est requis'),    
-});
 
 const ResetPassword = () => {
     const {token} = useParams();

@@ -4,46 +4,11 @@ import MainBtn from '../components/mainBtn';
 import AppSection from '../components/AppSection';
 import PasswordInput from '../components/passwordInput';
 import {useFormik} from 'formik';
-import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import encryptWithPublicKey from '../utils/encryptWithPublicKey';
 import getFetchApi from '../utils/getFetchApi';
 import { useEffect, useState } from 'react';
-
-const registerSchema = Yup.object().shape({
-    lastname: Yup.string()
-       .min(3, "Le nom doit comporter au moins 3 caractères.")
-       .max(50, "Le nombre maximal de caractères du nom est 50.")
-       .matches(/^[A-ZÀ-Ÿ][a-zà-ÿ'-]+(?: [A-ZÀ-Ÿ][a-zà-ÿ'-]+)*$/, "Format invalide : ex. Dupont ou Legrand-Duval")
-       .required("Le nom est requis."),
-    
-    firstname: Yup.string()
-       .min(2, "Il faut au moins 2 caractères.")
-       .max(50, "Le nombre maximal de caractères est 50.")
-       .matches(/^[A-ZÀ-Ÿ][a-zà-ÿ'-]+(?: [A-ZÀ-Ÿ][a-zà-ÿ'-]+)*$/, "Format invalide : ex. Jean ou Marie-Thérèse")
-       .required("Le prénom est requis."),
-
-    email: Yup.string()
-       .email("Adresse e-mail invalide")
-       .required("L'e-mail est requis."),
-    
-    phone: Yup.string() 
-       .matches(/^(\+33|0)[1-9](\s?\d{2}){4}$/, "Numéro de téléphone invalide"),
-
-    password: Yup.string() 
-       .min(8, "Le mot de passe doit contenir au moins 5 caractères.")
-       .max(100, "Le mot de passe ne doit pas dépasser 100 caractères.")
-       .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, "Le mot de passe n'est pas conforme")
-       .required("Le mot de passe est requis."),
-
-    confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password'), null], 'Les mots de passe doivent correspondre')
-    .required('La confirmation est requis'),
-
-    accept: Yup.boolean()
-  .oneOf([true], "Vous devez accepter la condition")
-    
-});
+import registerSchema from '../validationSchema/RegisterSchema';
 
 const RegisterSection =  () => {
     const [publicKey, setPublicKey] = useState("");

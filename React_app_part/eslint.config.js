@@ -5,7 +5,16 @@ import js from '@eslint/js';
 
 export default [
   { ignores: ['dist'] },
-
+  js.configs.recommended,
+  ...compat.config({
+    env: {
+      jest: true,        // ✅ Enables globals like `test`, `expect`, etc.
+      browser: true,
+      es2021: true
+    },
+    plugins: ['jest'],
+    extends: ['plugin:jest/recommended'],
+  }),
   // Jest environment for test files
   {
     files: ['**/*.test.{js,jsx}', '**/*.spec.{js,jsx}'],

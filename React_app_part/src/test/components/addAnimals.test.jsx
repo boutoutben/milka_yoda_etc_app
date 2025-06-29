@@ -124,7 +124,7 @@ describe('AddAnimals component', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /créer/i }));
 
-    expect(await screen.findByText(/le nom est requis/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Le nom de l'animal est requis./i)).toBeInTheDocument();
   });
 
   test('gère les erreurs d’envoi avec axios.post', async () => {
