@@ -46,7 +46,6 @@ const UserBtn = () => {
             console.error("Erreur lors de la récupération des infos personnelles :", err);
           }
         });
-        console.log(userInfo)
       }, [token]);
       
     const handleAccountClick = (event) => {
@@ -60,6 +59,8 @@ const UserBtn = () => {
                     case "ADMIN_ROLE":
                         navigate("/adminSpace");
                         break;
+                    default:
+                        navigate("/login")
                 }
             } else {
                 navigate("/login");
@@ -162,7 +163,7 @@ const Navbar = () => {
             <NavElement />
             <div className='flex-row alignCenter-AJ'>
                 <UserBtn />
-                <button href="" className='unstyled-button'><img src='/img/shopping-cart.png' alt='shop en ligne' className='shopImg'/></button>
+                <button href="/" className='unstyled-button'><img src='/img/shopping-cart.png' alt='shop en ligne' className='shopImg'/></button>
                 <Menu redirection={'/don'}/>
                 <div className='verticalLine'></div>
                 <Link to={'/don'}><MainBtn name={"Nous soutenir"}/></Link>    

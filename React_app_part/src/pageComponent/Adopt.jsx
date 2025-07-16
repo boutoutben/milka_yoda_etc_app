@@ -3,30 +3,19 @@
 import AllAnimales from '../components/allAnimales';
 import AddAnimals from '../components/addAnimals';
 import "./../css/adopt.css";
-import { useEffect, useState } from 'react';
-
 import { useLocation } from 'react-router-dom';
-import isGranted from '../utils/isGranted';
 import { Filter, useAdoptAnimals, SearchBottom } from '../handles/Adopt';
+import useIsGrandted from '../hook/useIsgranted';
+import { useState } from 'react';
 
 const Adopt = () => {
     const [filter, setFilter] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
-    const [filteredAnimals, setFilteredAnimals] = useState([]);
-    const [granted, setGranted] = useState(false);
-    
+    const [filteredAnimals, setFilteredAnimals] = useState([]); 
     const location = useLocation();
     const state = location.state;
-
     const [animals, setAnimals] = useState([]);
-    useEffect(() => {
-        async function checkSomething() {
-           const granted = await isGranted("ADMIN_ROLE");
-           setGranted(granted);
-        }
-      
-        checkSomething();
-      }, []);
+    const granted = useIsGrandted("ADMIN_ROLE")
 
       useAdoptAnimals(setAnimals, setFilteredAnimals);
     

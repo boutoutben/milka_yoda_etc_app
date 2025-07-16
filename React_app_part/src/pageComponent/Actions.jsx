@@ -14,21 +14,13 @@ import FloatFormField from "../components/floatFormField";
 import AreYouSure from "../components/areYouSure";
 import { Action, AddActionForm, changeOrderClick, EditActionForm, handleDragEnd } from "../handles/actions";
 import isGranted from "../utils/isGranted";
-import toggleAtIndex from "../test/utils/toggleAtIndex";
+import toggleAtIndex from "../utils/toggleAtIndex";
+import useIsGrandted from "../hook/useIsgranted";
 
 const Actions = () => {
     const [canAdd, setAdd] = useState(false);
     const [actions, setActions] = useState(null);
-    const [granted, setGranted] = useState(false);
-    useEffect(() => {
-        async function checkSomething() {
-           const granted = await isGranted("ADMIN_ROLE");
-           setGranted(granted);
-        }
-      
-        checkSomething();
-      }, []);
-    
+    const granted = useIsGrandted("ADMIN_ROLE")
     useEffect(() => {
             getFetchApi("action")
                 .then(data => {

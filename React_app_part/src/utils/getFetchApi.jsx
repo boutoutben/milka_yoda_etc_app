@@ -13,7 +13,7 @@ const getFetchApi = async (endpoint, options = {}) => {
         return response.data;     // Return only the data from the response
     } catch (err) {
 
-        console.error("❌ Erreur API :", err?.response?.data || err.message);
+        //console.error("❌ Erreur API :", err?.response?.data || err.message);
     
         // Build a clean error object
         const error = new Error(err.response?.data?.message || err.message || "API error");

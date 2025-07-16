@@ -1,4 +1,4 @@
-import toggleAtIndex from "../test/utils/toggleAtIndex";
+import toggleAtIndex from "../../utils/toggleAtIndex";
 
 describe('toggleAtIndex', () => {
     it('should toggle the value at the specified index', () => {

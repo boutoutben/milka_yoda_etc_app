@@ -10,6 +10,7 @@ import MainBtn from "../components/mainBtn";
 import AppSection from "../components/AppSection";
 
 const AddActionForm = ({onReload = () => window.location.reload()}) => {
+    const token = localStorage.getItem("token")
     const formik = useFormik({
         initialValues: {
             title: '',
@@ -27,7 +28,11 @@ const AddActionForm = ({onReload = () => window.location.reload()}) => {
             formData.append("pageUrl", values.pageUrl)
 
             await axios.post('http://localhost:5000/api/action/addAction', formData, {
-                withCredentials: true
+                withCredentials: true,
+                headers: {
+                'Content-Type': 'application/json', 
+                'Authorization': `Bearer ${token}`
+                }
             });
             onReload();
             

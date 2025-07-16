@@ -11,7 +11,7 @@ const PLusBtn = ({ formik, array, element, objectOption }) => {
     };
 
     return (
-        <button onClick={handleClick} data-testid = "plusBtn">
+        <button className="unstyled-button editLink" onClick={handleClick} data-testid = "plusBtn">
             <img
                 src='/img/plus.png'
                 alt='Bouton pour ajouter'

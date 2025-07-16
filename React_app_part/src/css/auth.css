@@ -31,7 +31,7 @@
     margin: 0;
     width: 100%;
 }
-#auth a {
+#auth a, #auth .link {
     color: rgb(143, 212, 240);
     text-decoration: underline;
 }

@@ -3,7 +3,7 @@ import MainBtn from '../components/mainBtn';
 import CloseImg from "../components/closeImg";
 import SearchBar from "../components/searchBar";
 import axios from 'axios';
-import PropTypes, { element } from 'prop-types';
+import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 import getFetchApi from '../utils/getFetchApi';
 

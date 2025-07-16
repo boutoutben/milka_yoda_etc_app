@@ -13,6 +13,7 @@ const PersonnelInfo = ({formik, btn, message}) => {
                     <div className='flex-row'>
                         <div>
                             <select
+                                data-testid="civility"
                                 name="civility"
                                 value={formik.values.civility}
                                 onChange={formik.handleChange}

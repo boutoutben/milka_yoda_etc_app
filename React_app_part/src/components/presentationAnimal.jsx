@@ -15,7 +15,7 @@ const PresentationAnimal = ({img, isWaiting, name, age, isMale, handleClick}) =>
                 <div>
                     <div>
                         <p>{name}</p>
-                        <p>{age} ans</p> 
+                        <p>{age}</p> 
                     </div>
                     <div className='verticalLine'></div>
                     <img data-testid="sexe-img" src={`img/${isMale ? "animalMale.png" : "animalFemale.png"}`} alt="" />

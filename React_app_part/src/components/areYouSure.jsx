@@ -16,7 +16,7 @@ const AreYouSure = ({setter, apiUrl, onReload = () => location.reload()}) => {
             });
     }
     return(
-        <div className="flex-column row-gap-15 alignCenter-AJ floatFormField" id='areYouSure'>
+        <div data-testid={"areYouSure"} className="flex-column row-gap-15 alignCenter-AJ floatFormField" id='areYouSure'>
             <h3>Êtes-vous sûre ?</h3>
             <div className='flex-row gap-15 alignCenter-AJ'>
                 <MainBtn name={"Non"} click={setter}/>

@@ -57,7 +57,6 @@ describe('AddAction', () => {
         const file = new File(['dummy content'], 'photo.png', { type: 'image/png' });
         await userEvent.upload(screen.getByTestId('mock-file-select-btn'), file);
     
-        // Attendre que le fichier soit bien pris en compte
         await waitFor(() => {
             expect(axios.post).not.toHaveBeenCalled(); // S'assure que submit pas encore lancé
             const fileInput = screen.getByTestId('mock-file-select-btn');

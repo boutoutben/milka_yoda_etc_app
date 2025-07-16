@@ -41,7 +41,7 @@ form{
     width: 100%;
 }
 
-p,label, a,li, td, button {
+p,label, a,li, td, button, .link {
     font-size: 1.2em;
     font-family: "Source Serif 4", serif;
     font-optical-sizing: auto;

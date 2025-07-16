@@ -1,26 +1,25 @@
 import getFetchApi from "./getFetchApi";
 
 async function isGranted(roleName) {
-    try {
-        const token = localStorage.getItem("token");
+  try {
+    const token = localStorage.getItem("token");
 
-        const data = await getFetchApi("user/getRole", {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-        });
-
-        if (!data || data.error) {
-            console.warn("❌ Erreur côté serveur :", data?.error);
-            return false;
-        }
-
-        return data.role[0].roleName === roleName;
-    } catch (e) {
-        console.error("❌ Erreur dans isGranted :", e.message);
-        return false;
+    if (!token || token === "null" || token === "undefined") {
+      return false;
     }
+    const response = await getFetchApi("user/getRole", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (!response.ok) {
+      return false; // Pas d’erreur affichée dans console
+    }
+
+    return response.role[0].roleName === roleName;
+  } catch (err) {
+    console.error("Erreur dans isGranted :", err.message)
+    return false; // silence côté console
+  }
 }
 
 export default isGranted;

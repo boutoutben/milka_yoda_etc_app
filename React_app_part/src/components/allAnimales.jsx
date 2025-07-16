@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import PresentationAnimal from "./presentationAnimal";
 import PropTypes from 'prop-types';
 import '../css/component.css'
+import getAnimalAge from "../utils/getAnimalAge";
 
 const AllAnimales = ({animalData, className, root=""}) => {
     const navigate = useNavigate();
@@ -14,7 +15,7 @@ const AllAnimales = ({animalData, className, root=""}) => {
         <div id='allAnimal' className={className}>
             {Object.values(animalData).map((animal) => (
                 
-                <PresentationAnimal key={animal.id} img={animal.imgName} name={animal.name} age={new Date().getFullYear() - new Date(animal.born).getFullYear()} isMale={animal.isMale} handleClick={(event) => handleClick(event, animal.id)} />
+                <PresentationAnimal key={animal.id} img={animal.imgName} name={animal.name} age={getAnimalAge(animal.born)} isMale={animal.isMale} handleClick={(event) => handleClick(event, animal.id)} />
             ))}
         </div> 
     );

@@ -17,7 +17,7 @@ describe("PresentationAnimal", () => {
         expect(uploadsImgUrl).toHaveBeenCalledTimes(1);
         expect(uploadsImgUrl).toHaveBeenCalledWith("test.jpg")
         expect(screen.getByText("test")).toBeInTheDocument();
-        expect(screen.getByText("5 ans")).toBeInTheDocument();
+        expect(screen.getByText("5")).toBeInTheDocument();
         expect(screen.getByTestId("sexe-img").getAttribute("src")).toBe("img/animalMale.png");
     })
     test("should render img for female and is not waiting", () => {
