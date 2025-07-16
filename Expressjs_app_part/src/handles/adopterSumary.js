@@ -10,7 +10,7 @@ const setAdopterSumary = async (req, res) => {
 
         const animal = req.body.animal;
 
-        await db.promise().query(
+        await db.query(
             "INSERT INTO adopter (id, firstname, lastname, civility, adressePostale, email, phone, animalCase, animalNumber, otherAnimals, lifeRoutine, haveChildren, motivation, animalPlace, child, animal_id) VALUES (uuid(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
                 firstname,
@@ -31,7 +31,7 @@ const setAdopterSumary = async (req, res) => {
             ]
         );
 
-        await db.promise().query(
+        await db.query(
             "UPDATE animals SET isAdopted = true WHERE id = ?",
             [animal.id]
         );

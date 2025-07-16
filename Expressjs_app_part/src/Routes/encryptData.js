@@ -7,7 +7,7 @@ const { publicKey, privateKey } = generateKeys();
 const encryptRouter = express.Router();
 
 encryptRouter.get("/public-key", (req, res) => {
-    res.send({ publicKey: publicKey.export({ type: 'spki', format: 'pem' }) });
+  res.send({ publicKey });
 });
 
 

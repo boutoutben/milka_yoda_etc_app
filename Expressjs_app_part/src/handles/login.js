@@ -1,4 +1,4 @@
-const db = require("../mysqlDatabase.js");
+const db = require("../mysqlDatabase")
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const dotenv = require('dotenv');
@@ -11,17 +11,16 @@ dotenv.config();
 
 const loginBlock = async (req, res) => {
   try {
-
     const data = decryptData(req.body.data);
     const {email, password, remember_me } = data.responseData.data
-    const [rows] = await db.promise().query(`
+    const [rows] = await db.query(`
       SELECT users.*, roles.name as roleName
       FROM users
       INNER JOIN roles ON users.role = roles.id
       WHERE users.email = ?
       `, [email]);
 
-    if (rows.length === 0 ) return res.status(400).send("L'email ou le mot de passe est incorect");
+    if (rows.length === 0) return res.status(400).send("L'email ou le mot de passe est incorect");
 
     const user = rows[0];
      if (user.lockout_until && new Date(user.lockout_until) > new Date()) {
@@ -46,7 +45,7 @@ const loginBlock = async (req, res) => {
         
 
         values.push(email);
-        await db.promise().query(`UPDATE users SET ${updates.join(", ")} WHERE email = ?`, values);
+        await db.query(`UPDATE users SET ${updates.join(", ")} WHERE email = ?`, values);
 
         return res.status(400).send("L'email ou le mot de passe est incorect");
       }
@@ -55,7 +54,7 @@ const loginBlock = async (req, res) => {
         return res.status(400).send("Votre compte est bloqué suite à une infraction");
       }
 
-      await db.promise().query("UPDATE users SET failed_attempts = 0, lockout_until = NULL WHERE email = ?", [email]);
+      await db.query("UPDATE users SET failed_attempts = 0, lockout_until = NULL WHERE email = ?", [email]);
       // If "Remember Me" is checked, extend session duration
 
       const token = jwt.sign(
@@ -77,10 +76,10 @@ const loginBlock = async (req, res) => {
 const forgotPassword = async (req, res) => {
   const {email} = req.body;
   try {
-    const [user] = await db.promise().query("SELECT users.id as id FROM users INNER JOIN roles ON users.role = roles.id WHERE roles.name = 'USER_ROLE' AND users.email = ?", [email]);
+    const [user] = await db.query("SELECT users.id as id FROM users INNER JOIN roles ON users.role = roles.id WHERE roles.name = 'USER_ROLE' AND users.email = ?", [email]);
     if(user.length === 1) {
         const token = crypto.randomBytes(20).toString('hex');
-        await db.promise().query("UPDATE users SET resetToken = ?, resetTokenExpires = ? WHERE id = ?" , [token, new Date(Date.now() + 10 * 60 * 1000) ,user[0].id])
+        await db.query("UPDATE users SET resetToken = ?, resetTokenExpires = ? WHERE id = ?" , [token, new Date(Date.now() + 10 * 60 * 1000) ,user[0].id])
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -111,7 +110,7 @@ const forgotPassword = async (req, res) => {
 const canResetPassword = async (req, res) => {
   try {
     const { token } = req.params;
-    const [users] = await db.promise().query("SELECT users.id AS id, resetToken, resetTokenExpires FROM users INNER JOIN roles ON roles.id = users.role WHERE roles.name = 'USER_ROLE'");
+    const [users] = await db.query("SELECT users.id AS id, resetToken, resetTokenExpires FROM users INNER JOIN roles ON roles.id = users.role WHERE roles.name = 'USER_ROLE'");
     const condition = users.find(u => u.resetToken == token && u.resetTokenExpires > Date.now());
     if (condition) {
         res.send('Can reset password');  // ou render/redirect vers formulaire
@@ -125,13 +124,13 @@ const canResetPassword = async (req, res) => {
 
 const resetPassword = async (req, res) => {
   try {
-      const [users] = await db.promise().query("SELECT users.id AS id, resetToken, resetTokenExpires FROM users INNER JOIN roles ON roles.id = users.role WHERE roles.name = 'USER_ROLE'");
+      const [users] = await db.query("SELECT users.id AS id, resetToken, resetTokenExpires FROM users INNER JOIN roles ON roles.id = users.role WHERE roles.name = 'USER_ROLE'");
       const data = decryptData(req.body.data);
       const  {token, password} = data.responseData.data;
       const user = users.find(user => user.resetToken === token);
       if(user) {
           const hash = hashPassword(password);
-          await db.promise().query("UPDATE users set password= ?, resetToken = null WHERE id = ?", [hash, user.id]);
+          await db.query("UPDATE users set password= ?, resetToken = null WHERE id = ?", [hash, user.id]);
           res.send("Success");
       }
       else {

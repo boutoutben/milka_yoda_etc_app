@@ -8,7 +8,7 @@ const crypto = require("crypto");
 
 const fetchArticles = async (req, res) => {
     try {
-      const [articles] = await db.promise().query("SELECT * FROM articles WHERE isPublish=true");
+      const [articles] = await db.query("SELECT * FROM articles WHERE isPublish=true");
       res.status(200).json(articles); // ✅ CORRIGÉ
     } catch (error) {
       res.status(500).json({ error: `Erreur serveur: ${error}`});
@@ -18,7 +18,7 @@ const fetchArticles = async (req, res) => {
 const fetchArticlesById = async(req,res) => {
     try {
         const {id} = req.params;
-        const [row] = await db.promise().query("select * from articles where id = ?",[id]);
+        const [row] = await db.query("select * from articles where id = ?",[id]);
         if(row.length == 0) res.status(404).json({message: "L'article n'est pas été trouvé"});
         const article = row[0];
         res.status(200).json(article);
@@ -31,7 +31,7 @@ const fetchArticlesById = async(req,res) => {
 const fetchArticlesDetail = async (req, res) => {
     try {
       const { id } = req.params;
-      const [article] = await db.promise().query(
+      const [article] = await db.query(
         "SELECT fileName FROM articles WHERE id = ?",
         [id]
       );
@@ -80,7 +80,7 @@ const fetchArticlesDetail = async (req, res) => {
         await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
         try {
           await fs.promises.writeFile(filePath, fileContent);
-            await db.promise().query(
+            await db.query(
             "INSERT INTO articles VALUES (?, ?, ?, ?, ?, false)",
               [uuid, title, description, file.filename, articleName]
             );   
@@ -106,7 +106,7 @@ const editDescriptionArticle = async (req, res) => {
   const file = req.file;
 
   try {
-    const [rows] = await db.promise().query("SELECT imgName FROM articles WHERE id = ?", [articleId]);
+    const [rows] = await db.query("SELECT imgName FROM articles WHERE id = ?", [articleId]);
     const oldImgName = rows[0]?.imgName;
 
     if (file) {
@@ -119,12 +119,12 @@ const editDescriptionArticle = async (req, res) => {
         }
       }
 
-      await db.promise().query(
+      await db.query(
         "UPDATE articles SET title = ?, description = ?, imgName = ? WHERE id = ?",
         [title, description, file.filename, articleId]
       );
     } else {
-      await db.promise().query(
+      await db.query(
         "UPDATE articles SET title = ?, description = ? WHERE id = ?",
         [title, description, articleId]
       );
@@ -149,9 +149,9 @@ const editArticles = async (req, res) => {
             )
         };
         export default Article;`
-        const [article] = await db.promise().query("SELECT fileName, isPublish FROM articles WHERE id = ?", [id]);
+        const [article] = await db.query("SELECT fileName, isPublish FROM articles WHERE id = ?", [id]);
         const filePath = path.join(process.env.CLIENT_APP_PART, 'src', 'articles', article[0].fileName);
-        if(!article[0].isPublish) await db.promise().query("UPDATE articles SET isPublish = true");
+        if(!article[0].isPublish) await db.query("UPDATE articles SET isPublish = true");
         fs.writeFile(filePath, fileContent, function (err) {
             if (err)  res.status(500).json({ error: `Write file error: ${err.message}` });
             res.status(200).json({message:"update"})
@@ -164,7 +164,7 @@ const editArticles = async (req, res) => {
   const cancelleEditArticle = async (req, res) => {
     try {
         const {id} = req.params;
-        const [article] = await db.promise().query("SELECT isPublish, fileName FROM articles WHERE id = ?", [id]);
+        const [article] = await db.query("SELECT isPublish, fileName FROM articles WHERE id = ?", [id]);
         const filePath = path.join(process.env.CLIENT_APP_PART, 'src', 'articles', article[0].fileName);
         if(article[0].isPublish){
         res.status(200).json({url: `/article/${id}`});
@@ -172,7 +172,7 @@ const editArticles = async (req, res) => {
         fs.unlink(filePath, (err) => {
             if (err) res.status(500).json({error: `Delete file error: ${err.message}` });
         });
-        db.promise().query("DELETE FROM articles WHERE id = ?", [id]);
+        db.query("DELETE FROM articles WHERE id = ?", [id]);
         res.status(200).json({url:`/article`})
         }
     } catch (err) {
@@ -185,7 +185,7 @@ const editArticles = async (req, res) => {
     try {
       const { id } = req.params;
   
-      const [rows] = await db.promise().query(
+      const [rows] = await db.query(
         "SELECT fileName, imgName FROM articles WHERE id = ?",
         [id]
       );
@@ -211,7 +211,7 @@ const editArticles = async (req, res) => {
         return res.status(500).json({ error: `Delete img error: ${err.message}` });
       }
   
-      await db.promise().query("DELETE FROM articles WHERE id = ?", [id]);
+      await db.query("DELETE FROM articles WHERE id = ?", [id]);
   
       return res.status(200).json({ url: "/article" });
     } catch (err) {

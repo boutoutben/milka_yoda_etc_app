@@ -3,9 +3,9 @@ const { decryptData } = require("../Routes/encryptData.js");
 
 const fetchAdoptedAnimals = async (req, res) => {
     try {
-        const [users] = await db.promise().query("SELECT email FROM users WHERE id= ?", [req.user.userId]);
+        const [users] = await db.query("SELECT email FROM users WHERE id= ?", [req.user.userId]);
         const email = users[0].email;
-      const [animals] = await db.promise().query(
+      const [animals] = await db.query(
         "SELECT animals.id, name, description, isSterile, imgName, isMediator, races, born, incompatibility, createdAt, isApprouved FROM adopter INNER JOIN animals ON animals.id = adopter.animal_id WHERE email = ? LIMIT 3",
         [email]
       );
@@ -18,7 +18,7 @@ const fetchAdoptedAnimals = async (req, res) => {
 const fetchPersonnelsInfos = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const [user] = await db.promise().query("SELECT users.id, civility, lastname, firstname, adressePostale, email, phone, age, roles.name as roleName FROM users INNER JOIN roles on roles.id = users.role WHERE users.id = ?", [userId]);
+    const [user] = await db.query("SELECT users.id, civility, lastname, firstname, adressePostale, email, phone, age, roles.name as roleName FROM users INNER JOIN roles on roles.id = users.role WHERE users.id = ?", [userId]);
     res.status(200).json(user);
   } catch (err) {
     res.status(500).json({error: `Erreur serveur: ${err.message}`})
@@ -29,7 +29,7 @@ const setPersonnelInfo = async (req, res) => {
     const data = decryptData(req.body.data); 
     const {civility, lastname, firstname, age, adressePostale, email, phone} = data.responseData.data;
     try {
-      const [result] = await db.promise().query(
+      const [result] = await db.query(
         "UPDATE users SET civility = ?, firstname = ?, lastname = ?, adressePostale = ?, email = ?, age = ?, phone = ? WHERE id = ?",
         [civility, firstname, lastname, adressePostale, email, age, phone, req.body.id]
       );
@@ -38,7 +38,7 @@ const setPersonnelInfo = async (req, res) => {
          res.status(404).json({ message: "Aucun utilisateur trouvé avec cet ID" });
       }
   
-      const [user] = await db.promise().query("SELECT users.id, firstname, lastname, email, age, phone, roles.name as roleName, civility,adressePostale FROM users INNER JOIN roles on roles.id = users.role WHERE users.id = ?", [req.body.id])
+      const [user] = await db.query("SELECT users.id, firstname, lastname, email, age, phone, roles.name as roleName, civility,adressePostale FROM users INNER JOIN roles on roles.id = users.role WHERE users.id = ?", [req.body.id])
   
       res.status(200).json({ message: "Infos mises à jour !", userInfo: user[0] });
     } catch (err) {
@@ -48,8 +48,8 @@ const setPersonnelInfo = async (req, res) => {
 
   const getRole = async (req, res) => {
     try {
-      const [role] = await db.promise().query("SELECT roles.name as roleName FROM users INNER JOIN roles ON users.role = roles.id WHERE users.id = ?", [req.user.userId])
-      res.status(200).json({role: role});  
+      const [role] = await db.query("SELECT roles.name as roleName FROM users INNER JOIN roles ON users.role = roles.id WHERE users.id = ?", [req.user.userId])
+      res.status(200).json({role: role, ok: true});  
     } catch (err) {
       res.status(500).json({error: `Erreur serveur: ${err.message}`})
     }
@@ -58,7 +58,7 @@ const setPersonnelInfo = async (req, res) => {
 
   const fetchAdoptionNotApprouved = async (req, res) => {
     try {
-      const [animals] = await db.promise().query(
+      const [animals] = await db.query(
         "SELECT adopter.id, animals.id as animalId, name, description, isSterile, imgName, isMediator, races, born, incompatibility, createdAt, isApprouved FROM adopter INNER JOIN animals ON animals.id = adopter.animal_id WHERE !isApprouved"
       );
       res.status(200).json(animals);
@@ -70,7 +70,7 @@ const setPersonnelInfo = async (req, res) => {
 const fetchApprouveAdoption = async (req, res) => {
     const {id} = req.params;
     try {
-    const [row] = await db.promise().query(
+    const [row] = await db.query(
       "SELECT adopter.id AS adopterId,firstname, lastname, civility, adressePostale, email, phone,animalCase, animalNumber, otherAnimals, lifeRoutine, haveChildren, motivation, animalPlace, child,animals.id AS animalId,name, description, isSterile, imgName, isMediator, races, born, incompatibility, createdAt, isApprouved FROM adopter INNER JOIN animals ON animals.id = adopter.animal_id WHERE adopter.id = ?",
       [id]
     );
@@ -116,7 +116,7 @@ const deleteAdoptionNotApprouved = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const [rows] = await db.promise().query(
+        const [rows] = await db.query(
             "SELECT animal_id FROM adopter WHERE id = ?",
             [id]
         );
@@ -127,8 +127,8 @@ const deleteAdoptionNotApprouved = async (req, res) => {
 
         const animalId = rows[0].animal_id;
 
-        await db.promise().query("UPDATE animals SET isAdopted = false WHERE id = ?", [animalId]);
-        await db.promise().query("DELETE FROM adopter WHERE id = ?", [id]);
+        await db.query("UPDATE animals SET isAdopted = false WHERE id = ?", [animalId]);
+        await db.query("DELETE FROM adopter WHERE id = ?", [id]);
 
         res.status(200).json({ message: "Adoption refusée" });  
     } catch (err) {
@@ -139,7 +139,7 @@ const deleteAdoptionNotApprouved = async (req, res) => {
 const approuveAdoption = async (req, res) => {
     try {
         const {id} = req.params;
-        await db.promise().query("UPDATE adopter SET isApprouved=true WHERE id = ?", [id]);
+        await db.query("UPDATE adopter SET isApprouved=true WHERE id = ?", [id]);
         res.status(200).json({message: "Adoption acceptée"});    
     } catch (err) {
         res.status(500).json({error: `Erreur serveur: ${err.message}`})
@@ -148,7 +148,7 @@ const approuveAdoption = async (req, res) => {
 
 const fetchAllUsers = async (req, res) => {
     try {
-        const [users] = await db.promise().query(
+        const [users] = await db.query(
             "SELECT users.id, firstname, lastname, email, isBlock FROM users INNER JOIN roles ON users.role = roles.id WHERE roles.name = 'USER_ROLE'"
         );
         res.status(200).json({users});
@@ -160,7 +160,7 @@ const fetchAllUsers = async (req, res) => {
   const blockUpdate = async (req, res) => {
     try {
         const {id, argument} = req.body;
-        await db.promise().query("UPDATE users set isBlock=? WHERE users.id = ?", [argument, id]);
+        await db.query("UPDATE users set isBlock=? WHERE users.id = ?", [argument, id]);
         res.status(200).json({message: "Update"});      
     } catch (err) {
         res.status(500).json({error: `Erreur serveur: ${err.message}`})

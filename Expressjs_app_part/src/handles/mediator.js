@@ -2,7 +2,7 @@ const db = require('../mysqlDatabase.js');
 
 const fetchMediatorAnimals = async (req, res) => {
     try {
-        const [animals] = await db.promise().query("SELECT * FROM animals WHERE isMediator = 1 ");
+        const [animals] = await db.query("SELECT * FROM animals WHERE isMediator = 1 ");
 
         res.status(200).json(animals); // Renvoie directement un tableau d'objets
     } catch (error) {
@@ -15,7 +15,7 @@ const addMediatorAnimals = async (req, res) => {
       const { name, description, sexe, isSterile, races, born, incompatibility } = req.body;
       const file = req.file;
   
-      await db.promise().query(
+      await db.query(
         "INSERT INTO animals(id, name, description, sexe, isSterile, imgName, races, born, incompatibility, isMediator, createdAt) VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, true, ?)", 
         [name, description, sexe, isSterile, file.filename, JSON.stringify(races), born, JSON.stringify(incompatibility), new Date()]
       );

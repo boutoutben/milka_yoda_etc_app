@@ -5,9 +5,9 @@ const path = require("path");
 const addAction = async (req, res) => {
     const { title, description, pageUrl } = req.body;
     const file = req.file;
-    
+    console.log(file)
     try {
-        await db.promise().query(
+        await db.query(
           "INSERT INTO actions(title, description, imgName, pageUrl) VALUES (?, ?, ?, ?)",
           [title, description, file.filename, pageUrl]
         );
@@ -19,7 +19,7 @@ const addAction = async (req, res) => {
 
 const fetchActions = async (req, res) => {
     try {
-      const [actions] = await db.promise().query("SELECT * FROM actions ORDER BY actionOrder");
+      const [actions] = await db.query("SELECT * FROM actions ORDER BY actionOrder");
       res.json({ actions });
     } catch (err) {
       res.status(500).json({ error: `Error fetching actions: ${err}`  });
@@ -27,13 +27,13 @@ const fetchActions = async (req, res) => {
   };
 
 const editActions = async (req, res) => {
-    const { title, description } = req.body;
+    const { title, description, pageUrl } = req.body;
       const file = req.file;
       const {id} = req.params;
     
       try {
         // 1️⃣ Récupérer l'ancien imgName
-        const [rows] = await db.promise().query("SELECT imgName FROM actions WHERE id = ?", [id]);
+        const [rows] = await db.query("SELECT imgName FROM actions WHERE id = ?", [id]);
         const oldImgName = rows[0]?.imgName;
     
         //2️⃣ Si un nouveau fichier est uploadé
@@ -48,15 +48,15 @@ const editActions = async (req, res) => {
           }
     
           // Mettre à jour titre, description et imgName
-          await db.promise().query(
-            "UPDATE actions SET title = ?, description = ?, imgName = ? WHERE id = ?",
-            [title, description, file.filename, id]
+          await db.query(
+            "UPDATE actions SET title = ?, description = ?, imgName = ?, pageUrl = ? WHERE id = ?",
+            [title, description, file.filename, pageUrl, id]
           );
         } else {
           // Aucun nouveau fichier → juste mettre à jour titre et description
-          await db.promise().query(
-            "UPDATE actions SET title = ?, description = ? WHERE id = ?",
-            [title, description, id]
+          await db.query(
+            "UPDATE actions SET title = ?, description = ?, pageUrl = ? WHERE id = ?",
+            [title, description, pageUrl, id]
           );
         }
     
@@ -70,7 +70,7 @@ const deleteActions = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const [actions] = await db.promise().query("SELECT imgName FROM actions WHERE id = ?", [id]);
+    const [actions] = await db.query("SELECT imgName FROM actions WHERE id = ?", [id]);
     if (actions.length === 0) {
       return res.status(404).json({ error: "Action not found" });
     }
@@ -86,7 +86,7 @@ const deleteActions = async (req, res) => {
       return res.status(500).json({ error: `Delete img error: ${err.message}` });
     }
 
-    await db.promise().query("DELETE FROM actions WHERE id = ?", [id]);
+    await db.query("DELETE FROM actions WHERE id = ?", [id]);
 
     res.json({ message: "Supprimé" });
 
@@ -107,7 +107,7 @@ const updateOrder = async (req, res) => {
     const updatePromises = actions.map((action, index) => {
       // index is 0-based; if you want 1-based ordering use (index + 1)
       return db
-        .promise()
+        
         .query(
           'UPDATE actions SET actionOrder = ? WHERE id = ?',
           [index, action.id]

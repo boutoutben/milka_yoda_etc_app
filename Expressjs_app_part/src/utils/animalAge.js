@@ -1,5 +1,4 @@
 const animalAge = (animal, age) => {
-    console.log("animal: "+animal+", age: " + age)
     const ageCase = [
         {
             espece: "chien",

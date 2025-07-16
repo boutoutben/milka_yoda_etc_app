@@ -1,5 +1,4 @@
 const express = require('express');
-const db = require('../mysqlDatabase.js');
 const {upload} = require('../utils/uploadImg.js');
 
 const { addAction, fetchActions, editActions, deleteActions, updateOrder } = require('../handles/actions.js');

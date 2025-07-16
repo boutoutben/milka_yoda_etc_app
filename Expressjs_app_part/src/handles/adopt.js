@@ -7,7 +7,7 @@ const path = require("path");
 
 const fetchAdopt = async (req, res) => {
     try {
-        const [animals] = await db.promise().query("SELECT * FROM animals WHERE isMediator=false AND isAdopted = false");
+        const [animals] = await db.query("SELECT * FROM animals WHERE isMediator=false AND isAdopted = false");
         res.json({animals}); 
     } catch (error) {
         res.status(500).json({ error: `Erreur serveur ${error}` });
@@ -19,7 +19,7 @@ const fetchAnimalsById = async (req, res) => {
         const { id } = req.params;
         
         // Requête pour récupérer les informations de l'animal
-        const [rows] = await db.promise().query(
+        const [rows] = await db.query(
             "SELECT animals.id, animals.name, animals.born, animals.sexe, animals.imgName, animals.description, animals.isSterile, animals.isMediator, animals.createdAt, animals.races, animals.incompatibility FROM animals WHERE animals.id = ?;",
             [id]
         );
@@ -77,7 +77,7 @@ const addAnimals = async (req, res) => {
       const file = req.file;
   
       await db
-        .promise()
+        
         .query(
           "INSERT INTO animals(id, name, description, sexe, isSterile, imgName, races, born, incompatibility, createdAt) VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?)",
           [name, description, sexe, isSterile, file.filename, JSON.stringify(races), born, JSON.stringify(incompatibility), new Date()]
@@ -95,7 +95,7 @@ const addAnimals = async (req, res) => {
     const file = req.file;
   
     try {
-      const [rows] = await db.promise().query("SELECT imgName FROM animals WHERE id = ?", [id]);
+      const [rows] = await db.query("SELECT imgName FROM animals WHERE id = ?", [id]);
       const oldImgName = rows[0]?.imgName;
   
       const racesJson = races ? JSON.stringify(races) : null;
@@ -112,12 +112,12 @@ const addAnimals = async (req, res) => {
           }
         }
   
-        await db.promise().query(
+        await db.query(
           "UPDATE animals SET name = ?, description = ?, sexe = ?, isSterile = ?, born = ?, races = ?, incompatibility = ?, imgName = ? WHERE id = ?",
           [name, description, sexe, isSterile, born, racesJson, incompatibilityJson, file.filename, id]
         );
       } else {
-        await db.promise().query(
+        await db.query(
           "UPDATE animals SET name = ?, description = ?, sexe = ?, isSterile = ?, born = ?, races = ?, incompatibility = ? WHERE id = ?",
           [name, description, sexe, isSterile, born, racesJson, incompatibilityJson, id]
         );
@@ -132,7 +132,7 @@ const addAnimals = async (req, res) => {
   const deleteAnimal = async (req, res) => {
     try {
       const { id } = req.params;
-      const [animal] = await db.promise().query("SELECT imgName FROM animals WHERE id = ?", [id]);
+      const [animal] = await db.query("SELECT imgName FROM animals WHERE id = ?", [id]);
       const {imgName} = animal[0];
       const imgPath = path.join(__dirname,"..",'..', 'uploads', imgName);
       
@@ -142,7 +142,7 @@ const addAnimals = async (req, res) => {
         return res.status(500).json({ error: `Delete img error: ${err.message}` });
       }
 
-      const [result] = await db.promise().query("DELETE FROM animals WHERE id = ?", [id]);
+      const [result] = await db.query("DELETE FROM animals WHERE id = ?", [id]);
   
       if (result.affectedRows === 0) {
         return res.status(404).json({ message: "Animal non trouvé" });

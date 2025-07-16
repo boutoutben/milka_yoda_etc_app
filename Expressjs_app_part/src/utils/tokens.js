@@ -9,19 +9,24 @@ function isTokenExpired(token) {
 }
 
 function verifyToken(req, res, next) {
-  const token = req.headers.authorization?.split(" ")[1]; // format: Bearer <token>
-  if (!token) {
-    return res.status(401).json({ error: "Token manquant" });
+  const token = req.headers.authorization?.split(" ")[1];
+
+  // Cas 1 : pas de token OU token égal à "null" ou "undefined"
+  if (!token || token === "null" || token === "undefined") {
+    res.status(401).json({ error: "Token manquant ou invalide" });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // userId, role, etc.
-    if(isTokenExpired(token)) return res.status(403).json({error: "No allow"})
+
+    if (isTokenExpired(token)) {
+      return res.status(403).json({ error: "Token expiré" });
+    }
+
+    req.user = decoded;
     next();
-  } catch {
-    
-    return res.status(403).json({ error: "No allow" });
+  } catch (err) {
+    res.status(403).json({ error: "Token invalide" });
   }
 }
 

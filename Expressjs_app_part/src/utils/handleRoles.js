@@ -4,7 +4,6 @@ function authRole(role) {
     return async (req, res, next) => {
         try {
             const [rows] = await db
-                .promise()
                 .query("SELECT firstname, lastname, email, phone, roles.name as role FROM users INNER JOIN roles ON users.role = roles.id WHERE users.id = ?", [req.user.userId]);
                     const user = rows[0];
             if(user.role === role){
