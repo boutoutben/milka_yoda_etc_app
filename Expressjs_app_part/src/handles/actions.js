@@ -5,11 +5,13 @@ const path = require("path");
 const addAction = async (req, res) => {
     const { title, description, pageUrl } = req.body;
     const file = req.file;
-    console.log(file)
     try {
+      const [actions] = await db.query("select id from actions");
+      console.log(actions)
+      const order = actions.length;
         await db.query(
-          "INSERT INTO actions(title, description, imgName, pageUrl) VALUES (?, ?, ?, ?)",
-          [title, description, file.filename, pageUrl]
+          "INSERT INTO actions(id, title, description, imgName, pageUrl, actionOrder) VALUES (uuid(), ?, ?, ?, ?, ?)",
+          [title, description, file.filename, pageUrl, order]
         );
         res.status(201).json({ message: "Action ajoutée avec succès !" });
       } catch (err) {

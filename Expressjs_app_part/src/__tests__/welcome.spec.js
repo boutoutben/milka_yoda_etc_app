@@ -17,8 +17,7 @@ mockRes = {
 
 describe("fetch welcome data", () => {
     it("Should fetch the welcome data", async () => {
-        db.promise = jest.fn().mockReturnValue({
-            query: jest
+        db.query= jest
                 .fn()
                 // 1ère requête : actions
                 .mockResolvedValueOnce([
@@ -42,7 +41,6 @@ describe("fetch welcome data", () => {
                     { id: 3, title: "Article 3", description: "Desc 3" }
                 ]
             ])
-        })
         await fetchWelcomeData(mockReq, mockRes);
         expect(mockRes.json).toHaveBeenCalledWith(
             {"actions": 
@@ -76,9 +74,7 @@ describe("fetch welcome data", () => {
         )
     });
     it("Should return an error if error", async () => {
-        db.promise.mockReturnValue({
-            query: jest.fn().mockRejectedValueOnce(new Error("DB error"))
-        });
+        db.query= jest.fn().mockRejectedValueOnce(new Error("DB error"))
         await fetchWelcomeData(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(500);
         expect(mockRes.json).toHaveBeenCalledWith({error: "Erreur serveur: DB error"})

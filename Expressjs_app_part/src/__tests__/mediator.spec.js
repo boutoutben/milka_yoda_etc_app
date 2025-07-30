@@ -10,9 +10,7 @@ const mockRes = {
 jest.mock('../mysqlDatabase', () => {
     const queryMock = jest.fn();
     return {
-        promise: jest.fn(() => ({
-            query: queryMock
-        })),
+        query: queryMock,
         __queryMock: queryMock
     };
 });

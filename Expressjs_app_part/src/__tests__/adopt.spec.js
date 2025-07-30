@@ -43,8 +43,7 @@ describe("Fetch adopt", () => {
       });
 
     it('Should fetch adopt', async () => {
-        db.promise = jest.fn().mockReturnValue({
-            query: jest.fn()
+        db.query = jest.fn()
                 .mockResolvedValueOnce([[{ 
                     id: 1, 
                     name: 'Test', 
@@ -55,7 +54,6 @@ describe("Fetch adopt", () => {
                         description: 'Mocked2' }
                 ]])
                 .mockResolvedValueOnce([]) // or whatever your update query returns
-        });
         await fetchAdopt(mockReq, mockRes);
         expect(mockRes.json).toHaveBeenCalledWith({animals: [{ 
             id: 1, 
@@ -68,9 +66,7 @@ describe("Fetch adopt", () => {
             description: 'Mocked2' }]})
     });
     it('Should return an error',  async () => {
-        db.promise.mockImplementation(() => ({
-            query: jest.fn().mockRejectedValue(new Error("DB error"))
-          }));
+        db.query= jest.fn().mockRejectedValue(new Error("DB error"))
         await fetchAdopt(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(500);
         expect(mockRes.json).toHaveBeenCalledWith({error: "Erreur serveur Error: DB error"});
@@ -101,9 +97,7 @@ describe("fetchAnimalsById", () => {
         incompatibility: JSON.stringify([201, 202])
       };
   
-      db.promise = jest.fn().mockReturnValue({
-        query: jest.fn().mockResolvedValue([[mockAnimalRow]])
-      });
+      db.query = jest.fn().mockResolvedValue([[mockAnimalRow]])
   
       // Step 2: Mock related model methods
       AnimalsRaces.findById.mockImplementation(id =>
@@ -145,9 +139,7 @@ describe("fetchAnimalsById", () => {
     });
 
     it("Should return animal not found", async () => {
-        db.promise = jest.fn().mockReturnValue({
-            query: jest.fn().mockResolvedValue([[]])
-        });
+        db.query = jest.fn().mockResolvedValue([[]])
         await fetchAnimalsById(mockReq, mockRes);
         expect(mockRes.json).toHaveBeenCalledWith({ message: "Animal non trouvé" })
     });
@@ -161,9 +153,7 @@ describe("fetchAnimalsById", () => {
             incompatibility: null
           };
       
-          db.promise = jest.fn().mockReturnValue({
-            query: jest.fn().mockResolvedValue([[mockAnimalRow]])
-          });
+          db.query= jest.fn().mockResolvedValue([[mockAnimalRow]])
     
           // Step 2: Mock related model methods
           AnimalsRaces.findById.mockImplementation(id =>
@@ -193,9 +183,7 @@ describe("fetchAnimalsById", () => {
     });
 
     it("Should return an error is error", async () => {
-        db.promise.mockImplementation(() => ({
-            query: jest.fn().mockRejectedValue(new Error("DB error"))
-          }));
+        db.query = jest.fn().mockRejectedValue(new Error("DB error"))
 
         await fetchAnimalsById(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(500);
@@ -313,7 +301,7 @@ describe("fetchAnimalsById", () => {
   
     it("should add the animal and respond with success", async () => {
       const mockQuery = jest.fn().mockResolvedValueOnce([]);
-      db.promise.mockReturnValue({ query: mockQuery });
+      db.query= mockQuery
   
       await addAnimals(mockReq, mockRes);
   
@@ -323,7 +311,7 @@ describe("fetchAnimalsById", () => {
   
     it("Should return error if error", async () => {
       const mockQueryError = jest.fn().mockRejectedValueOnce(new Error("DB Error"));
-      db.promise.mockReturnValue({ query: mockQueryError });
+      db.query= mockQueryError 
   
       await addAnimals(mockReq, mockRes);
   
@@ -364,14 +352,11 @@ describe("fetchAnimalsById", () => {
   
     it("should update animal without new file", async () => {
         // Mock SELECT imgName result (no file)
-        db.promise = jest.fn().mockReturnValue({
-            query: jest.fn()
+        db.query= jest.fn()
                 .mockResolvedValueOnce([[{
                     imgName: "test1"
                 }]])
                 .mockResolvedValueOnce([])
-        })
-        // Mock UPDATE query success
     
         await editAnimals(mockReq, mockRes);
     
@@ -396,12 +381,10 @@ describe("fetchAnimalsById", () => {
           }
         };
     
-        db.promise = jest.fn().mockReturnValue({
-          query: jest
+        db.query= jest
             .fn()
             .mockResolvedValueOnce([[{ imgName: "oldImage.jpg" }]]) // SELECT imgName
             .mockResolvedValueOnce([]) // UPDATE
-        });
     
         fs.promises.unlink.mockResolvedValue();
     
@@ -426,12 +409,10 @@ describe("fetchAnimalsById", () => {
               id: 1
           }
         };  
-        db.promise = jest.fn().mockReturnValue({
-          query: jest
+        db.query = jest
             .fn()
             .mockResolvedValueOnce([[{ imgName: "oldImage.jpg" }]]) // SELECT imgName
             .mockResolvedValueOnce([]) // UPDATE
-        });
         fs.promises.unlink.mockRejectedValue(new Error("Delete error"));
         await editAnimals(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(500);
@@ -439,7 +420,7 @@ describe("fetchAnimalsById", () => {
       })
       it("Should return an error if error", async () => {
         const mockQueryError = jest.fn().mockRejectedValueOnce(new Error("DB Error"));
-        db.promise.mockReturnValue({ query: mockQueryError });
+        db.query= mockQueryError 
         await editAnimals(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(500);
         expect(mockRes.json).toHaveBeenCalledWith(
@@ -475,7 +456,7 @@ describe("fetchAnimalsById", () => {
         .mockResolvedValueOnce([[{ imgName: "test.jpg" }]])  // 1ère requête SELECT
         .mockResolvedValueOnce([{ affectedRows: 1 }]);       // 2ème requête DELETE
     
-      db.promise = jest.fn().mockReturnValue({ query: mockQuery });
+      db.query= mockQuery 
     
       await deleteAnimal(mockReq, mockRes);
     
@@ -488,15 +469,13 @@ describe("fetchAnimalsById", () => {
        .mockResolvedValueOnce([[{ imgName: "test.jpg" }]])  // 1ère requête SELECT
        .mockResolvedValueOnce([{ affectedRows: 0 }]);       // 2ème requête DELETE
    
-     db.promise = jest.fn().mockReturnValue({ query: mockQuery });
+     db.query= mockQuery 
       await deleteAnimal(mockReq, mockRes);
       expect(mockRes.status).toHaveBeenCalledWith(404);
       expect(mockRes.json).toHaveBeenCalledWith({ message: "Animal non trouvé" });
     });
     it("Should return delete img error", async () => {
-      db.promise = jest.fn().mockReturnValue({
-        query: jest.fn().mockResolvedValueOnce([[{ imgName: "test.jpg" }]])
-      });
+      db.query= jest.fn().mockResolvedValueOnce([[{ imgName: "test.jpg" }]])
     
       jest.spyOn(fs.promises, "unlink")
         .mockImplementationOnce(() => Promise.reject(new Error("Delete error"))); // simulate error
@@ -510,7 +489,7 @@ describe("fetchAnimalsById", () => {
     });
     it("Should return an error if error", async () => {
       const mockQueryError = jest.fn().mockRejectedValueOnce(new Error("DB Error"));
-      db.promise.mockReturnValue({ query: mockQueryError });
+      db.query= mockQueryError
       await deleteAnimal(mockReq, mockRes);
       expect(mockRes.status).toHaveBeenCalledWith(500);
       expect(mockRes.json).toHaveBeenCalledWith({"error": "Erreur serveur : DB Error"}

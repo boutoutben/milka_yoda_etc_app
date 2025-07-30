@@ -53,7 +53,7 @@ const Actions = () => {
             
             {granted && (
                 <div className="addAction">
-                    <MainBtn name={"Ajouter un action"} click={() => setAdd(true)} className={"btnInMain"} />
+                    <MainBtn name={"Ajouter une action"} click={() => setAdd(true)} className={"btnInMain"} />
                     {canAdd && (
                         <FloatFormField isTop={true} setter={() => setAdd(false)} action={"Ajouter une action"} content={
                                 <AddActionForm />

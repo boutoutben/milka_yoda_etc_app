@@ -4,9 +4,8 @@ const { authRole } = require("../../utils/handleRoles.js");
 jest.mock('../../mysqlDatabase.js', () => {
     const queryMock = jest.fn();
     return {
-        promise: () => ({
+
         query: queryMock
-        }),
     };
 });
   
@@ -31,7 +30,7 @@ jest.mock('../../mysqlDatabase.js', () => {
         role: "admin",
       };
   
-      db.promise().query.mockResolvedValueOnce([[mockUser], []]);
+      db.query.mockResolvedValueOnce([[mockUser], []])
   
       const middleware = authRole("admin");
       await middleware(req, res, next);
@@ -48,7 +47,7 @@ jest.mock('../../mysqlDatabase.js', () => {
         role: "user"
       };
   
-      db.promise().query.mockResolvedValueOnce([[mockUser]]);
+      db.query.mockResolvedValueOnce([[mockUser]]);
   
       const middleware = authRole("admin");
       await middleware(req, res, next);
@@ -58,7 +57,7 @@ jest.mock('../../mysqlDatabase.js', () => {
       expect(res.json).toHaveBeenCalledWith({ error: "Vous n'êtes pas autorisé" });
     });
     it("Should return 500 if error server", async () => {
-        db.promise().query.mockRejectedValue(new Error("DB error"));
+        db.query.mockRejectedValue(new Error("DB error"));
         const middleware = authRole("admin");
         await middleware(req, res, next);
         expect(next).not.toHaveBeenCalled();

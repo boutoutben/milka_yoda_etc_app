@@ -5,16 +5,16 @@ import { useState } from "react";
 import axios from "axios";
 import { useFormik } from "formik";
 import emailSchema from "../validationSchema/emailSchema";
-import useGetPublicKey from "../hook/useGetPublicKey";
 import loginSchema from "../validationSchema/LoginSchema";
 import AppSection from "../components/AppSection";
 import PasswordInput from "../components/passwordInput";
-import encryptWithPublicKey from "../utils/encryptWithPublicKey";
 import convertExpiresInToMs from "../utils/convertExpiresInToMS";
 import PropTypes from "prop-types";
+import encryptData from "../hook/useEncryptData";
 
 const ForgetAndNoAccountBtn = ({onReload = () => location.reload()}) => {
     const [forgot, setForgot] = useState(false);
+    const [message, setMessage] = useState(null);
     const forgetFormik = useFormik({
         initialValues: {
             email:''
@@ -28,8 +28,10 @@ const ForgetAndNoAccountBtn = ({onReload = () => location.reload()}) => {
                 },
               withCredentials: true
             })
-            .then(() => {
-                onReload();
+            .then((response) => {
+                console.log(response)
+                setMessage(response)
+                setForgot(false)
             })
             .catch(err => {
                 console.error("Une erreur est survenue:", err.message);
@@ -38,9 +40,10 @@ const ForgetAndNoAccountBtn = ({onReload = () => location.reload()}) => {
     })
     return (
         <>
+            {message && <p className="sucess_message">{message.data}</p>}
             <div className="flex-row alignCenter-AJ gap-15">
             <a href="/register">pas encore de compte</a>
-            <button type="button" className="unstyled-button link" onClick={() => setForgot(true)}>mot de passe oublié</button>     
+            <button type="button" data-cy="forgot_password" className="unstyled-button link" onClick={() => setForgot(true)}>mot de passe oublié</button>     
             </div>
             {forgot && (
                 <FloatFormField setter={() => setForgot(false)} action={"Entrer votre email"}
@@ -106,12 +109,9 @@ const handleError = (error, setErr) => {
 
 
 const LoginSection = ({navigate}) => {
-    
     const [err, setErr] = useState("");
-    const publicKey = useGetPublicKey();
     const location = useLocation();
-    const errorMessage = location.state?.error;    
-    
+    const message = location.state;  
     const formik = useFormik({
         initialValues:{
             email: '',
@@ -121,7 +121,7 @@ const LoginSection = ({navigate}) => {
         validationSchema: loginSchema,
         onSubmit: async (values) => {
             setErr(""); // Reset l'erreur avant tentative
-            const encryptedData = await encryptWithPublicKey(values, publicKey)
+            const encryptedData = await encryptData(values)
             try {
                 const response = await axios.post("http://localhost:5000/api/login", {
                     data: encryptedData
@@ -148,7 +148,8 @@ const LoginSection = ({navigate}) => {
             content={
                 <div className="flex-column alignCenter-AJ row-gap-15">  
                     {err && <p className="formError">{err}</p>}
-            {errorMessage && <p className="formError">{errorMessage}</p>}
+                    {message?.error && <p className="formError">{message.error}</p>}
+                    {message?.user && <p className="sucess_message">{message.user}</p>}
                     <ForgetAndNoAccountBtn />
                     <form className="flex-column alignCenter-AJ row-gap-15" onSubmit={formik.handleSubmit}>
                         <div className="flex-column all-field">

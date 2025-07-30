@@ -1,0 +1,13 @@
+{
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "cypress": "^14.5.2"
+  },
+  "scripts": {
+    "cy:open": "cypress open"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.0",
+    "mysql2": "^3.14.2"
+  }
+}

@@ -91,8 +91,8 @@ const WriteArticle = () => {
               onPaste={handlePaste}
             ></div>
             <div className="flex-row gap-25">
-                <ArticleCancelle />
-                <ArticleRegister />
+                <ArticleCancelle navigate={navigate} />
+                <ArticleRegister navigate={navigate}/>
             </div>
         </main>
     );

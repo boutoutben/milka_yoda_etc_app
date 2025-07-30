@@ -273,13 +273,19 @@ function toggleTagOnSelection(tagName, tagFormat) {
 
 
       const ArticleCancelle = ({navigate}) => {
+        const token = localStorage.getItem("token")
         const {id} = useParams();
         const handleArticleCancelle = async () => {
             try {
                 await axios.post(
                     `http://localhost:5000/api/articles/cancelle/${id}`,
                     {},
-                    { withCredentials: true }
+                    {
+                        withCredentials: true,
+                        headers: { 
+                            'Content-Type': 'multipart/form-data',
+                            'Authorization': `Bearer ${token}`
+                        }}
                 ).then(response => {
                     navigate(response.data.url);
                 })
@@ -294,13 +300,19 @@ function toggleTagOnSelection(tagName, tagFormat) {
 
     const ArticleRegister = ({editorRef, navigate}) => {
       const {id} = useParams();
+      const token = localStorage.getItem("token")
         const handleArticleRegister =  async () => {
             const content = getContent(editorRef);
             try {
                 await axios.post(
                     `http://localhost:5000/api/articles/edit/${id}`,
                     {content},
-                    { withCredentials: true }
+                    {
+                        withCredentials: true,
+                        headers: { 
+                            'Content-Type': 'multipart/form-data',
+                            'Authorization': `Bearer ${token}`
+                        }}
                 ).then(() => {
                     navigate(`/article/${id}`)
                 })

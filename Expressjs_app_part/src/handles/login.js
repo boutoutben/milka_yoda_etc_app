@@ -11,8 +11,10 @@ dotenv.config();
 
 const loginBlock = async (req, res) => {
   try {
+    console.log(req.body)
     const data = decryptData(req.body.data);
-    const {email, password, remember_me } = data.responseData.data
+    console.log(data)
+    const {email, password, remember_me } = data.data
     const [rows] = await db.query(`
       SELECT users.*, roles.name as roleName
       FROM users
@@ -36,8 +38,10 @@ const loginBlock = async (req, res) => {
         const updates = ["failed_attempts = ?"];
         const values = [failedAttempts];
 
+        const LOGIN_BLOCK_DURATION_MS = process.env.NODE_ENV === 'test' ? 15000 : 15 * 60 * 1000;
+
         if (failedAttempts >= 7) {
-          const lockoutTime = new Date(Date.now() + 15 * 60 * 1000); // 15 min
+          const lockoutTime = new Date(Date.now() + LOGIN_BLOCK_DURATION_MS); // 15 min
           updates.push("lockout_until = ?");
           values.push(lockoutTime);
         }
@@ -98,7 +102,7 @@ const forgotPassword = async (req, res) => {
                 res.status(500).send("Vérifier votre email pour modifier le mot de passe");
             }
         });
-        res.send("Sucess")
+        res.send("Un email vous a été envoyé.")
     } else {
         res.status(404).send("Email non trouvé");
     }  
@@ -126,7 +130,8 @@ const resetPassword = async (req, res) => {
   try {
       const [users] = await db.query("SELECT users.id AS id, resetToken, resetTokenExpires FROM users INNER JOIN roles ON roles.id = users.role WHERE roles.name = 'USER_ROLE'");
       const data = decryptData(req.body.data);
-      const  {token, password} = data.responseData.data;
+      console.log(data)
+      const  {token, password} = data.data;
       const user = users.find(user => user.resetToken === token);
       if(user) {
           const hash = hashPassword(password);

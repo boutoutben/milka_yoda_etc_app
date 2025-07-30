@@ -7,7 +7,7 @@ const filtedAnimals = async (req, res) => {
         const filterValue = await Promise.all(filteredAnimals.map(async (animal) => {
             const races = JSON.parse(animal.races); // Convertir JSON string en tableau
             const raceObjects = await Promise.all(races.map(raceId => AnimalsRaces.findById(raceId)));
-
+           
             const age = animalAge(raceObjects[0].espece, new Date().getFullYear() - new Date(animal.born).getFullYear());
             // Vérifier si l'animal correspond aux critères
             if (
@@ -21,10 +21,12 @@ const filtedAnimals = async (req, res) => {
             return null; // Exclure les autres
         }));
 
+
         // Supprimer les `null` du tableau final
         res.status(200).json(filterValue.filter(animal => animal !== null));
 
     } catch (error) {
+        console.log(error)
         res.status(500).json({ message: `Erreur serveur: ${error.message}` });
     }
 }

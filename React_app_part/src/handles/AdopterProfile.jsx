@@ -14,10 +14,10 @@ const CheckBoxElement = ({ array, formik, name }) => {
   return (
     <div className="flex-row checkbox-align">
       {array.map((label) => (
-        <label htmlFor='checkboxElement' data-testid="checkboxLabel" className="checkbox" key={label}>
+        <label htmlFor={label} data-testid="checkboxLabel" className="checkbox" key={label}>
           {label}
           <input
-            id='checkboxElement'
+            id={label}
             type="checkbox"
             name={name}
             value={label}
@@ -388,6 +388,7 @@ const AdopterForm = () => {
     })
 
     const handleResetClick = () => {
+        state.previousValues = null;
         formik.resetForm();
     }
 

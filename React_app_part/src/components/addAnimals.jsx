@@ -14,6 +14,7 @@ const AddAnimals = ({ apiUrl, onReload = () => window.location.reload() }) => {
   const [races, setRaces] = useState([]);
   const [incompatibility, setIncompatibility] = useState([]);
   const [canAdd, setAdd] = useState(false);
+  const token = localStorage.getItem("token")
 
   useEffect(() => {
     getFetchApi('adopt/races')
@@ -41,7 +42,7 @@ const AddAnimals = ({ apiUrl, onReload = () => window.location.reload() }) => {
       const formData = new FormData();
       for (const key in values) {
         if (Array.isArray(values[key])) {
-          values[key].forEach((v) => formData.append(key, v));
+          formData.append(key, JSON.stringify(values[key]))
         } else {
           formData.append(key, values[key]);
         }
@@ -50,7 +51,10 @@ const AddAnimals = ({ apiUrl, onReload = () => window.location.reload() }) => {
       axios
         .post(`http://localhost:5000/api/${apiUrl}`, formData, {
           withCredentials: true,
-          headers: { 'Content-Type': 'multipart/form-data' },
+          headers: { 
+            'Content-Type': 'multipart/form-data',
+             'Authorization': `Bearer ${token}`
+          },
         })
         .then(() => onReload())
         .catch((error) => console.error(`Erreur lors de l'envoi: ${error.message}`));

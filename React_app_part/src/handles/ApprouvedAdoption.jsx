@@ -8,7 +8,7 @@ import AlertBox from "../components/alertBox";
 import PropTypes from "prop-types";
 import getEnvVars from "../utils/getEnvVars";
 
-const {GMAIL_SERVICE_ID, GMAIL_AUTO_REPLY_MODELE_ID, GMAILJS_PUBLIC_KEY} = getEnvVars();
+const {VITE_GMAIL_SERVICE_ID, VITE_GMAIL_AUTO_REPLY_MODELE_ID, VITE_GMAILJS_PUBLIC_KEY} = getEnvVars();
 
 const handleRefuseClick = (data, setAlert, navigate) => {
     const token = localStorage.getItem('token');
@@ -20,14 +20,14 @@ const handleRefuseClick = (data, setAlert, navigate) => {
         })
         .then(() => {
             emailjs.send(
-              GMAIL_SERVICE_ID, 
-              GMAIL_AUTO_REPLY_MODELE_ID,
+              VITE_GMAIL_SERVICE_ID, 
+              VITE_GMAIL_AUTO_REPLY_MODELE_ID,
             {
                 name: data.values.firstname,
-                message: `Nous avons le ... que votre profil ne convient pas à ${data.animal.name}. Pour plus de détails, vous pouvez nous contacter`,
+                message: `Nous avons le malheure de vous dire que votre profil ne convient pas à ${data.animal.name}. Pour plus de détails, vous pouvez nous contacter`,
                 email: data.values.email
             },
-            GMAILJS_PUBLIC_KEY
+            VITE_GMAILJS_PUBLIC_KEY
             )
             .then(() => {
                 setAlert("Adoption refusée");
@@ -57,15 +57,16 @@ const handleAcceptClick = (data, setAlert, navigate) => {
         }
       )
       .then(() => {
+        console.log(VITE_GMAILJS_PUBLIC_KEY);
         emailjs.send(
-            GMAIL_SERVICE_ID, // ID de service EmailJS
-            GMAIL_AUTO_REPLY_MODELE_ID, // ID de modèle EmailJS
+            VITE_GMAIL_SERVICE_ID, // ID de service EmailJS
+            VITE_GMAIL_AUTO_REPLY_MODELE_ID, // ID de modèle EmailJS
           {
             name: data.values.firstname,
             message: `Nous avons le plaisir de vous annoncer que la demande d'adoption de ${data.animal.name} est acceptée. Nous allons vous contacter d'ici peu afin de convenir d'une date et d'un lieu pour la suite de la procédure.`,
             email: data.values.email
           },
-          GMAILJS_PUBLIC_KEY 
+          VITE_GMAILJS_PUBLIC_KEY 
         )
         .then(() => {
           setAlert("Adoption acceptée");
@@ -74,7 +75,7 @@ const handleAcceptClick = (data, setAlert, navigate) => {
           }, 3000);
         })
         .catch((err) => {
-          console.error("Erreur lors de l'envoi de l'email:", err.message);
+          console.error("Erreur lors de l'envoi de l'email:", err);
         });
       })
         .catch(error => {

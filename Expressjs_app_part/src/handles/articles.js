@@ -8,7 +8,7 @@ const crypto = require("crypto");
 
 const fetchArticles = async (req, res) => {
     try {
-      const [articles] = await db.query("SELECT * FROM articles WHERE isPublish=true");
+      const [articles] = await db.query("SELECT * FROM articles WHERE isPublish=true order by createdAt DESC");
       res.status(200).json(articles); // ✅ CORRIGÉ
     } catch (error) {
       res.status(500).json({ error: `Erreur serveur: ${error}`});
@@ -59,48 +59,48 @@ const fetchArticlesDetail = async (req, res) => {
     }
   };
 
-  const addArticles = async (req, res) => {
-    try {
-      const { title, description } = req.body;
-      const file = req.file;
-      const uuid = crypto.randomUUID();
-      const articleName = generateRandomName();
-      const fileContent = `
-        const Article = () => {
-          return (
-            <>
-            </>
-          )
-        };
-        export default Article;`
-      const filePath = path.join(process.env.CLIENT_APP_PART, 'src', 'articles', articleName);
-  
-      // Await fs.mkdir promise version instead of callback
-      try {
-        await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
-        try {
-          await fs.promises.writeFile(filePath, fileContent);
-            await db.query(
-            "INSERT INTO articles VALUES (?, ?, ?, ?, ?, false)",
-              [uuid, title, description, file.filename, articleName]
-            );   
-        } catch (err) {
-          res.status(500).json({ error: `Write file error: ${err.message}` });
-        }
-        
-  
-        res.status(201).json({ message: "Article créer", id: uuid });
-      } catch (err) {
-        res.status(500).json({ error: `Failed to create folder: ${err.message}` });
-      }
-      
-  
-      
-    } catch (err) {
-      res.status(500).json({ error: `Erreur serveur: ${err.message}` });
-    }
-  };
+ const addArticles = async (req, res) => {
+  try {
+    const { title, description } = req.body;
+    const file = req.file;
 
+    if (!file) {
+      return res.status(400).json({ error: 'Aucun fichier fourni.' });
+    }
+
+    const uuid = crypto.randomUUID();
+    const articleName = generateRandomName();
+    const fileContent = `
+      const Article = () => {
+        return (
+          <>
+          </>
+        )
+      };
+      export default Article;`;
+
+    const filePath = path.join(process.env.CLIENT_APP_PART, 'src', 'articles', articleName);
+
+    // Crée le dossier si nécessaire
+    await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
+
+    // Écrit le fichier
+    await fs.promises.writeFile(filePath, fileContent);
+
+    // Insère dans la base de données
+    await db.query(
+            "INSERT INTO articles(id, title, description,imgName, fileName, isPublish) VALUES (?, ?, ?, ?, ?, false)",
+              [ uuid, title, description, file.filename, articleName]
+            ); 
+
+    // Réponse finale
+    return res.status(201).json({ message: "Article créé", id: uuid });
+
+  } catch (err) {
+    console.error("Erreur dans addArticles:", err);
+    return res.status(500).json({ error: `Erreur serveur : ${err.message}` });
+  }
+};
 const editDescriptionArticle = async (req, res) => {
   const { title, description, articleId } = req.body;
   const file = req.file;
@@ -149,7 +149,9 @@ const editArticles = async (req, res) => {
             )
         };
         export default Article;`
+        console.log(id)
         const [article] = await db.query("SELECT fileName, isPublish FROM articles WHERE id = ?", [id]);
+        console.log(article)
         const filePath = path.join(process.env.CLIENT_APP_PART, 'src', 'articles', article[0].fileName);
         if(!article[0].isPublish) await db.query("UPDATE articles SET isPublish = true");
         fs.writeFile(filePath, fileContent, function (err) {

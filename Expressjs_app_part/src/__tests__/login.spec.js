@@ -2,15 +2,15 @@ const db = require("../mysqlDatabase.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const {loginBlock, forgotPassword, canResetPassword, resetPassword} = require("../handles/login");
-const { encryptData } = require("../Routes/encryptData.js");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
+const { encryptData } = require("../Routes/encryptData.js");
+const { loadKeys } = require("../utils/generateKeys.js");
+const { publicKey, privateKey } = loadKeys();
 
 jest.mock('../mysqlDatabase.js', () => ({
     connect: jest.fn(),
-    promise: jest.fn(() => ({
-        query: jest.fn(),
-    })),
+    query: jest.fn(),
 }));
 
 jest.mock('jsonwebtoken', () => ({
@@ -43,15 +43,13 @@ mockRes = {
 describe("Login user", () => {
    
 
-    beforeEach(() => {
+    beforeEach(async () => {
         mockReq = {
             body: {
-                data: encryptData(mockData)
+                data: await encryptData(mockData, publicKey)
             }
         };
-
-        
-
+        console.log(mockReq)
         process.env.JWT_SECRET = 'mocked_secret';
 
         // Reset mocks
@@ -60,7 +58,7 @@ describe("Login user", () => {
 
         // Préparation globale de la promesse mockée et de la query
         mockQuery = jest.fn();
-        db.promise = jest.fn().mockReturnValue({ query: mockQuery });
+        db.query = mockQuery 
     });
 
     it("Should login successfully", async () => {
@@ -132,7 +130,7 @@ describe("Login user", () => {
     it("Should return 500 on server error", async () => {
         // simulate query throwing an error
         const mockQuery = jest.fn().mockRejectedValue(new Error('Connection failed'));
-        db.promise = jest.fn().mockReturnValue({ query: mockQuery });
+        db.query = mockQuery
     
         await loginBlock(mockReq, mockRes);
     
@@ -161,10 +159,10 @@ describe("Login user", () => {
     it("Should return 200 and set expiresIn to 30d if remember_me is true", async () => {
         mockReq = {
             body: {
-                data: encryptData({
+                data: await encryptData({
                     ...mockData,
                     remember_me: true
-                })
+                }, publicKey)
             }
         };
 
@@ -176,7 +174,7 @@ describe("Login user", () => {
                 failedAttempts: 0
             }]])
             .mockResolvedValueOnce([]);
-
+        console.log(mockQuery)
         bcrypt.compare.mockResolvedValue(true);
         const fakeToken = "mocked.jwt.token";
         jwt.sign.mockReturnValue(fakeToken);
@@ -251,17 +249,17 @@ describe("forgot password", () => {
             .mockResolvedValueOnce([[{ id: 1 }]]) // SELECT user
             .mockResolvedValueOnce([]);          // UPDATE
 
-        db.promise = jest.fn().mockReturnValue({ query: mockQuery });
+        db.query = mockQuery
 
         await forgotPassword(mockReq, mockRes);
 
         expect(sendMailMock).toHaveBeenCalled();
-        expect(mockRes.send).toHaveBeenCalledWith("Sucess");
+        expect(mockRes.send).toHaveBeenCalledWith("Un email vous a été envoyé.");
     });
     it("should return email not find", async () => {
         const mockQuery = jest.fn()
             .mockResolvedValueOnce([[]])
-            db.promise = jest.fn().mockReturnValue({ query: mockQuery });
+            db.query= mockQuery 
         await forgotPassword(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(404);
         expect(mockRes.send).toHaveBeenCalledWith("Email non trouvé");
@@ -271,7 +269,7 @@ describe("forgot password", () => {
             .mockResolvedValueOnce([[{ id: 1 }]]) // SELECT user
             .mockResolvedValueOnce([]);          // UPDATE
 
-        db.promise = jest.fn().mockReturnValue({ query: mockQuery });
+        db.query= mockQuery 
         nodemailer.createTransport.mockReturnValue({
             sendMail: jest.fn((_, callback) => callback(new Error("mock error"), null))
         });
@@ -280,7 +278,7 @@ describe("forgot password", () => {
         expect(mockRes.send).toHaveBeenCalledWith("Vérifier votre email pour modifier le mot de passe");
     });
     it("shoud return an server error",async () => {
-        db.promise = jest.fn().mockReturnValue({query: jest.fn().mockRejectedValue(new Error("DB error"))});
+        db.query= jest.fn().mockRejectedValue(new Error("DB error"))
         await forgotPassword(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(500);
         expect(mockRes.json).toHaveBeenCalledWith({error: "Erreur server: DB error"});
@@ -297,8 +295,7 @@ describe("canResetPassword", () => {
         jest.clearAllMocks();
     });
     it("should accept the reset", async () => {
-        db.promise = jest.fn().mockReturnValue({
-            query: jest.fn().mockResolvedValueOnce([[{
+        db.query= jest.fn().mockResolvedValueOnce([[{
                 id: 1,
                 resetToken: "Mock token",
                 resetTokenExpires: new Date(Date.now() + 1000 * 10)
@@ -309,13 +306,11 @@ describe("canResetPassword", () => {
                 resetTokenExpires: null
             }
         ]])
-        });
         await canResetPassword(mockReq, mockRes);
         expect(mockRes.send).toHaveBeenCalledWith("Can reset password")
     });
     it("should reject the reset for invalid token", async () => {
-        db.promise = jest.fn().mockReturnValue({
-            query: jest.fn().mockResolvedValueOnce([[{
+        db.query= jest.fn().mockResolvedValueOnce([[{
                 id: 1,
                 resetToken: "",
                 resetTokenExpires: new Date(Date.now() + 1000 * 10)
@@ -326,14 +321,13 @@ describe("canResetPassword", () => {
                 resetTokenExpires: null
             }
         ]])
-        });
+
         await canResetPassword(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(404)
         expect(mockRes.send).toHaveBeenCalledWith("Invalid or expired token")
     })
     it("should reject the reset for invalid token", async () => {
-        db.promise = jest.fn().mockReturnValue({
-            query: jest.fn().mockResolvedValueOnce([[{
+        db.query= jest.fn().mockResolvedValueOnce([[{
                 id: 1,
                 resetToken: "Mock token",
                 resetTokenExpires: new Date(Date.now() - 1000 * 10)
@@ -344,15 +338,12 @@ describe("canResetPassword", () => {
                 resetTokenExpires: null
             }
         ]])
-        });
         await canResetPassword(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(404)
         expect(mockRes.send).toHaveBeenCalledWith("Invalid or expired token")    
     })
     it("should return an server error", async () => {
-        db.promise = jest.fn().mockReturnValue({
-            query: jest.fn().mockRejectedValue(new Error("DB error"))
-        })
+        db.query= jest.fn().mockRejectedValue(new Error("DB error"))
         await canResetPassword(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(500);
         expect(mockRes.json).toHaveBeenCalledWith({error: "Erreur server: DB error"})
@@ -364,47 +355,41 @@ describe("resetPassword", () => {
         token: "mock token", 
         password: "password123"
     }
-    beforeEach(() => {
+    beforeEach(async () => {
         mockReq = {
             body: {
-                data: encryptData(mockData)
+                data: await encryptData(mockData, publicKey)
             }
         };
         jest.clearAllMocks();
     });
     it("Should reset the password", async () => {
-        db.promise = jest.fn().mockReturnValue({
-          query: jest
+        db.query = jest
             .fn()
             .mockResolvedValueOnce([
-              [{ resetToken: "mock token", id: 1, resetTokenExpires: Date.now() + 3600000 }],
-            ]) // 1ère requête : SELECT
-            .mockResolvedValueOnce({}), // 2ème requête : UPDATE
-        });
-      
+                [{ resetToken: "mock token", id: 1, resetTokenExpires: Date.now() + 3600000 }],
+            ])
+            .mockResolvedValueOnce({}); // <--- termine bien ici
+
         await resetPassword(mockReq, mockRes);
       
         expect(mockRes.send).toHaveBeenCalledWith("Success");
       });
       it("should not found the user", async () => {
-        db.promise = jest.fn().mockReturnValue({
-            query: jest
+        db.query= jest
               .fn()
               .mockResolvedValueOnce([
                 [],
               ]) // 1ère requête : SELECT
               .mockResolvedValueOnce({}), // 2ème requête : UPDATE
-          });
           await resetPassword(mockReq, mockRes);
           expect(mockRes.status).toHaveBeenCalledWith(404)
         expect(mockRes.send).toHaveBeenCalledWith("User not found");
       });
       it("should return an server error", async () => {
-        db.promise = jest.fn().mockReturnValue({
-            query: jest
+        db.query= jest
               .fn()
               .mockRejectedValue(new Error("DB error")) 
-        });
         await resetPassword(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(500)
         expect(mockRes.json).toHaveBeenCalledWith({error: "Erreur server: DB error"});

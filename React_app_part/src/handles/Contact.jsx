@@ -1,4 +1,5 @@
 import { useFormik } from "formik";
+
 import MainBtn from '../components/mainBtn';
 import AppSection from '../components/AppSection';
 import { useRef } from 'react';
@@ -25,6 +26,7 @@ const handleContactSubmit = (formRef) => (values, { resetForm }) => {
 const ContactForm = () => {
     const formRef = useRef();
     const initialValues = {
+        owner_email: import.meta.env.VITE_OWNER_EMAIL,
         lastname: "",
         firstname: "",
         email: "",

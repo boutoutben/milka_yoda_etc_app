@@ -2,6 +2,8 @@ const registerBlock = require("../handles/register");
 const db = require("../mysqlDatabase.js");
 const { encryptData } = require("../Routes/encryptData");
 const { hashPassword } = require("../utils/hashPassword.js");
+const { loadKeys } = require("../utils/generateKeys.js");
+const { publicKey, privateKey } = loadKeys();
 
 jest.mock('../mysqlDatabase.js', () => {
     return {
@@ -25,12 +27,12 @@ jest.mock('../utils/hashpassword', () => ({
 describe("create users", () => {
     let mockReq, mockRes;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         mockReq = {
             body: {
-                data: encryptData(mockData) 
+                data: await encryptData(mockData, publicKey) 
             }
-        };
+        }; 
 
         mockRes = {
             status: jest.fn().mockReturnThis(),
@@ -39,18 +41,9 @@ describe("create users", () => {
 
         hashPassword.mockReturnValue('hashedPassword');
     });
-    it('should return 500 if db.connect fails', () => {
-        db.connect.mockImplementation(cb => cb(new Error('Connection failed')));
-
-        registerBlock(mockReq, mockRes);
-
-        expect(mockRes.status).toHaveBeenCalledWith(500);
-        expect(mockRes.send).toHaveBeenCalledWith(expect.any(Error));
-    });
     it("Should return 200 if user already exists", (done) => {
-        db.connect.mockImplementation(cd => cd(null));
         db.query
-            .mockImplementationOnce((query, params, cb) => cb(null, [{ id: 1 }]));
+            .mockResolvedValue([[{ id: 1 }]]);
         
         registerBlock(mockReq, mockRes);
 
@@ -64,54 +57,45 @@ describe("create users", () => {
             }
         })
     });
-    it("Should insert a new user and return 201 on success", (done) => {
-        db.connect.mockImplementation(cd => cd(null));
-        db.query
-            .mockImplementationOnce((query, params, cb) => cb(null, []))
-            .mockImplementationOnce((query, params, cb) => cb(null, { affectedRows: 1 }));
-        
-        registerBlock(mockReq,mockRes);
+    it("Should insert a new user and return 201 on success", async () => {
+  db.query
+    .mockResolvedValueOnce([[]]) // SELECT: aucun utilisateur existant
+    .mockResolvedValueOnce({ affectedRows: 1 }); // INSERT réussi
 
-        setImmediate(() => {
-            try {
-                expect(hashPassword).toHaveBeenCalledWith("securePass123");
-                expect(db.query).toHaveBeenCalledWith(
-                    expect.stringContaining('INSERT INTO users'),
-                    expect.arrayContaining(["John", "Doe", "john@gmail.com", "0650405040", "hashedPassword"]),
-                    expect.any(Function)
-                );
-                expect(mockRes.status).toHaveBeenCalledWith(201);
-                expect(mockRes.send).toHaveBeenCalledWith("Inscription réussie");
-                done();
-            } catch (err) {
-                done(err);
-            }
-        });
-    });
+  await registerBlock(mockReq, mockRes);
+
+  expect(mockRes.send).toHaveBeenCalledWith("Inscription réussie");
+  expect(hashPassword).toHaveBeenCalledWith("securePass123");
+
+  expect(db.query).toHaveBeenCalledWith(
+    expect.stringContaining("INSERT INTO users"),
+    ["John", "Doe", "john@gmail.com", "0650405040", "hashedPassword"]
+  );
+
+  expect(mockRes.status).toHaveBeenCalledWith(201);
+});
     it('Should retunr 500 if query to check user fails', () => {
-        db.connect.mockImplementation(cb=> cb(null));
         db.query
-            .mockImplementationOnce((query, params, cb) => cb(new Error("Query failed")));
+            .mockRejectedValue(new Error("Query failed"));
 
         registerBlock(mockReq, mockRes);
 
         setImmediate(() => {
             expect(mockRes.status).toHaveBeenCalledWith(500);
-            expect(mockRes.send).toHaveBeenCalledWith(expect.any(Error));
+            expect(mockRes.send).toHaveBeenCalledWith("Une erreur est survenue:", "Query failed");
         });
     });
 
     it('Should retunr 500 if insert query fails', () => {
-        db.connect.mockImplementation(cb => cb(null));
         db.query
-            .mockImplementationOnce((query, params, cb) => cb(null, [])) // user not found
-            .mockImplementationOnce((query, params, cb) => cb(new Error('Insert failed'))); // insert error
+            .mockResolvedValue()
+            .mockRejectedValue(new Error("Register fails"))
 
         registerBlock(mockReq, mockRes);
 
         setImmediate(() => {
             expect(mockRes.status).toHaveBeenCalledWith(500);
-            expect(mockRes.send).toHaveBeenCalledWith(expect.any(Error));
+            expect(mockRes.send).toHaveBeenCalledWith("Une erreur est survenue:", "Register fails");
         });
     });
 });

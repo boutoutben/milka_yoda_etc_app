@@ -27,7 +27,7 @@ const fetchPersonnelsInfos = async (req, res) => {
 
 const setPersonnelInfo = async (req, res) => {
     const data = decryptData(req.body.data); 
-    const {civility, lastname, firstname, age, adressePostale, email, phone} = data.responseData.data;
+    const {civility, lastname, firstname, age, adressePostale, email, phone} = data.data;
     try {
       const [result] = await db.query(
         "UPDATE users SET civility = ?, firstname = ?, lastname = ?, adressePostale = ?, email = ?, age = ?, phone = ? WHERE id = ?",

@@ -14,7 +14,7 @@ const PresentationAnimal = ({img, isWaiting, name, age, isMale, handleClick}) =>
                 </div>
                 <div>
                     <div>
-                        <p>{name}</p>
+                        <p data-cy="animal-name">{name}</p>
                         <p>{age}</p> 
                     </div>
                     <div className='verticalLine'></div>

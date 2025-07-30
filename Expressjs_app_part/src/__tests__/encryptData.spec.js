@@ -1,36 +1,36 @@
-const { encryptData, decryptData } = require("../Routes/encryptData");
-const crypto = require("crypto");
+const { encryptData } = require("../Routes/encryptData");
+const arrayBufferToBase64 = require("../utils/arryaBufferToBase64");
+const convertPemToBinary = require("../utils/convertPemToBinary");
+const { loadKeys } = require("../utils/generateKeys");
 
-const fakePublicKey = `-----BEGIN PUBLIC KEY-----
-... your static public key PEM here ...
------END PUBLIC KEY-----`;
+const { publicKey, privateKey } = loadKeys();
 
-const fakePrivateKey = `-----BEGIN PRIVATE KEY-----
-... your static private key PEM here ...
------END PRIVATE KEY-----`;
+jest.mock('../utils/arryaBufferToBase64', () => jest.fn((buf) => 'mocked-base64'));
 
-describe("encrypt and decryptData", () => {
+describe('encryptData', () => {
   beforeAll(() => {
-    process.env.PRIVATE_KEY = fakePrivateKey;
+    global.crypto = {
+      subtle: {
+        generateKey: jest.fn(async () => ({ /* mock key object */ })),
+        encrypt: jest.fn(async () => new ArrayBuffer(8)),
+        importKey: jest.fn(async (format, keyData) => {
+  return {}; // dummy key
+}),
+        exportKey: jest.fn(async () => new ArrayBuffer(16)),
+      },
+      getRandomValues: jest.fn(() => new Uint8Array(16)),
+    };
   });
 
-  it("should decrypt encrypted data correctly", () => {
-    const testData = { email: "john@example.com", password: "abc123" };
-    const encrypted = encryptData(testData, fakePublicKey);
-    const result = decryptData(encrypted, fakePrivateKey);
+  it('returns encryptedKey, encryptedData and iv as base64 strings', async () => {
+    const dataObj = { message: "hello" };
 
-    expect(result.responseData.message).toBe("Data received successfully");
-    expect(result.responseData.data).toEqual(testData);
-  });
+    const result = await encryptData(dataObj, publicKey);
 
-  it("should return error on invalid decrypted data", () => {
-    jest.spyOn(crypto, 'privateDecrypt').mockImplementation(() => {
-      throw new Error("Invalid decryption");
+    expect(result).toEqual({
+      encryptedKey: 'mocked-base64',
+      encryptedData: 'mocked-base64',
+      iv: 'mocked-base64',
     });
-
-    const result = decryptData("invalid_base64", fakePrivateKey);
-    expect(result).toBe("Decryption failed: Invalid decryption");
-
-    crypto.privateDecrypt.mockRestore();
   });
 });

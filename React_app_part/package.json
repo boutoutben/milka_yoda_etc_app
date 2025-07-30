@@ -28,6 +28,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "start:test": "vite --mode test",
     "build": "vite build",
     "test": "jest --detectOpenHandles --forceExit",
     "lint": "eslint .",

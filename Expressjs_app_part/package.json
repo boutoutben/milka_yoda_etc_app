@@ -7,6 +7,7 @@
     "test:e2e": "jest --testPathPattern=src/e2e",
     "start:dev": "nodemon ./src/index.js",
     "start": "node ./src/index.js",
+    "start:test":"cross-env NODE_ENV=test node ./src/index.js",
     "build:articles": "babel src/articles --out-dir public/articles"
   },
   "keywords": [],

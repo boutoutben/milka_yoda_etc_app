@@ -25,6 +25,7 @@ describe("addAction", () => {
   beforeEach(() => {
     mockReq = {
       body: {
+        id: 1,
         title: "Titre de l'action",
         description: "Description de l'action pour donner des infos",
         pageUrl: "nom_de_la_page",
@@ -41,11 +42,11 @@ describe("addAction", () => {
   });
 
   it("should add an action", async () => {
-    db.promise = jest.fn().mockReturnValue({
-        query: jest.fn()
-            // 1st call: SELECT * FROM users WHERE email = ?
-            .mockResolvedValueOnce([]) // or whatever your update query returns
-    });
+   db.query = jest.fn()
+  // 1er appel : retourne un tableau d'utilisateurs
+  .mockResolvedValueOnce([{ id: 2 }, { id: 2 }])
+  // 2e appel : retourne un tableau vide
+  .mockResolvedValueOnce([]);// or whatever your update query returns
 
     await addAction(mockReq, mockRes);
 
@@ -56,9 +57,7 @@ describe("addAction", () => {
   });
   it("should handle a database error gracefully", async () => {
     const db = require('../mysqlDatabase');
-    db.promise = () => ({
-      query: jest.fn().mockRejectedValue(new Error("DB error"))
-    });
+    db.query = jest.fn().mockRejectedValue(new Error("DB error"))
 
     await addAction(mockReq, mockRes);
 
@@ -88,8 +87,7 @@ jest.mock('../mysqlDatabase.js', () => {
   
     it("should return all actions", async () => {
       // ici on mock la méthode promise pour qu'elle retourne un objet avec query mocké
-      db.promise = jest.fn().mockReturnValue({
-        query: jest.fn()
+      db.query = jest.fn()
             // 1st call: SELECT * FROM users WHERE email = ?
             .mockResolvedValueOnce([[{ 
                 id: 1, 
@@ -97,7 +95,6 @@ jest.mock('../mysqlDatabase.js', () => {
                 description: 'Mocked' }]])
             // 2nd call: UPDATE user login data maybe
             .mockResolvedValueOnce([]) // or whatever your update query returns
-    });
   
       await fetchActions(mockReq, mockRes);
   
@@ -107,9 +104,8 @@ jest.mock('../mysqlDatabase.js', () => {
     });
   
     it("should handle DB error", async () => {
-      db.promise.mockImplementation(() => ({
-        query: jest.fn().mockRejectedValue(new Error("DB error"))
-      }));
+      db.query = jest.fn().mockRejectedValue(new Error("DB error"))
+
   
       await fetchActions(mockReq, mockRes);
   
@@ -127,7 +123,11 @@ jest.mock('../mysqlDatabase.js', () => {
             title: "Titre de l'action",
             description: "Description de l'action pour donner des infos",
             pageUrl: "nom_de_la_page",
-          }
+          },
+          params: {
+            id: 1
+          }, 
+          file: null
         };
     
         mockRes = {
@@ -136,13 +136,11 @@ jest.mock('../mysqlDatabase.js', () => {
         };
       });
     it("Should edit the action without file", async () => {
-        db.promise = jest.fn().mockReturnValue({
-            query: jest.fn()
+        db.query = jest.fn()
                 // 1st call: SELECT * FROM users WHERE email = ?
                 .mockResolvedValueOnce([{
                     actions: [{ id: 1, title: 'Test', description: 'Mocked' }]
                   }]) // or whatever your update query returns
-        });
         await editActions(mockReq, mockRes);
         expect(mockRes.json).toHaveBeenCalledWith({
             message: "Mise à jour réussie !"
@@ -151,23 +149,14 @@ jest.mock('../mysqlDatabase.js', () => {
 
     it("Should edit the action with file", async () => {
         // Prépare une requête avec fichier
-        mockReq = {
-          body: {
-            title: "Titre de l'action",
-            description: "Description de l'action pour donner des infos",
-            pageUrl: "nom_de_la_page",
-          },
-          file: {
+        mockReq.file = {
             filename: "test.jpg"
           }
-        };
       
         // Simule la réponse de la BDD
-        db.promise = jest.fn().mockReturnValue({
-          query: jest.fn().mockResolvedValueOnce([
+        db.query = jest.fn().mockResolvedValueOnce([
             [{ id: 1, title: 'Test', description: 'Mocked' }]
           ])
-        });
       
         await editActions(mockReq, mockRes);
       
@@ -176,9 +165,7 @@ jest.mock('../mysqlDatabase.js', () => {
         });
       });
       it("Should return an error if error", async () => {
-        db.promise.mockImplementation(() => ({
-          query: jest.fn().mockRejectedValue(new Error("DB error"))
-        }));
+        db.query = jest.fn().mockRejectedValue(new Error("DB error"))
       
         await editActions(mockReq, mockRes);
       
@@ -202,21 +189,18 @@ jest.mock('../mysqlDatabase.js', () => {
         };
       });
     it("Should delete the action", async () => {
-        db.promise = jest.fn().mockReturnValue({
-            query: jest.fn().mockResolvedValueOnce([
+        db.query= jest.fn().mockResolvedValueOnce([
               [{ imgName: "test.jpg" }]
             ])
-          });
           fs.promises.unlink.mockResolvedValue()
           await deleteActions(mockReq, mockRes);
           expect(mockRes.json).toHaveBeenCalledWith({message: "Supprimé"})
     });
     it("Should return action not found", async () => {
-      db.promise = jest.fn().mockReturnValue({
-        query: jest.fn().mockResolvedValueOnce([
+      db.query = jest.fn().mockResolvedValueOnce([
           []
         ])
-      });
+
       await deleteActions(mockReq, mockRes);
       expect(mockRes.status).toHaveBeenCalledWith(404);
       expect(mockRes.json).toHaveBeenCalledWith({
@@ -224,11 +208,9 @@ jest.mock('../mysqlDatabase.js', () => {
       })
     })
     it("Should return img delete error", async () => {
-      db.promise = jest.fn().mockReturnValue({
-          query: jest.fn().mockResolvedValueOnce([
+      db.query = jest.fn().mockResolvedValueOnce([
             [{ imgName: "test.jpg" }]
           ])
-        });
         fs.promises.unlink.mockRejectedValue(new Error("Delete img error"));
         await deleteActions(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(500);
@@ -237,9 +219,7 @@ jest.mock('../mysqlDatabase.js', () => {
           })
   });
     it("Should return an error if delete error", async () => {
-        db.promise.mockImplementation(() => ({
-            query: jest.fn().mockRejectedValue(new Error("DB error"))
-          }));
+        db.query = jest.fn().mockRejectedValue(new Error("DB error"))
           await deleteActions(mockReq, mockRes);
           expect(mockRes.status).toHaveBeenCalledWith(500);
           expect(mockRes.json).toHaveBeenCalledWith({
@@ -278,7 +258,7 @@ jest.mock('../mysqlDatabase.js', () => {
   
     it('should update all actions and return success', async () => {
       const mockQuery = jest.fn().mockResolvedValue([{}]);
-      db.promise.mockReturnValue({ query: mockQuery });
+      db.query = mockQuery
   
       await updateOrder(mockReq, mockRes);
   
@@ -292,7 +272,7 @@ jest.mock('../mysqlDatabase.js', () => {
   
     it('should handle errors and return 500', async () => {
       const mockQuery = jest.fn().mockRejectedValue(new Error('DB error'));
-      db.promise.mockReturnValue({ query: mockQuery });
+      db. query = mockQuery
   
       await updateOrder(mockReq, mockRes);
   

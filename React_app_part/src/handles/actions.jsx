@@ -26,11 +26,10 @@ const AddActionForm = ({onReload = () => window.location.reload()}) => {
             formData.append("description", values.description);
             formData.append("file", values.file);
             formData.append("pageUrl", values.pageUrl)
-
             await axios.post('http://localhost:5000/api/action/addAction', formData, {
                 withCredentials: true,
                 headers: {
-                'Content-Type': 'application/json', 
+
                 'Authorization': `Bearer ${token}`
                 }
             });

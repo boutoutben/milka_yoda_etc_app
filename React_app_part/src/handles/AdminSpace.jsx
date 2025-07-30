@@ -23,7 +23,7 @@ const AskForAdoption = () => {
             setAnimals(data);
           })
           .catch(err => {
-            if (err.status === 403) {
+            if (err.status == 403 || err.status == 401) {
               navigate("/login", { state: { error: "Vous n'êtes pas ou plus authorisée" } });
             } else {
               console.error("Unexpected error: ", err.message);
@@ -81,7 +81,7 @@ const UserPresentation = ({user}) => {
             setBan(!isBan);
         })
         .catch(err => {
-            if (err.status === 403) {
+            if (err.status == 403 || err.status == 401 ) {
               navigate("/login", { state: { error: "Vous n'êtes pas ou plus authorisée" } });
             } else {
               console.error("Unexpected error: ", err.message);
@@ -129,7 +129,7 @@ const BanUser = () => {
             setFilteredUsers(data.users);
           })
           .catch(err => {
-            if (err.status === 403) {
+            if (err.status == 403 || err.status == 401) {
                 navigate("/login", { state: { error: "Vous n'êtes pas ou plus authorisée" } });
               } else {
                 console.error("Unexpected error: ", err.message);
@@ -147,7 +147,7 @@ const BanUser = () => {
             content={
                 <div className="flex-column row-gap-25">
                     <h4>Vous accueillez {users.length} utilsateurs</h4>
-                    <SearchBar elements={users} setFiltered={setFilteredUsers} searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
+                    <SearchBar elements={users} setFiltered={setFilteredUsers} searchTerm={searchTerm} setSearchTerm={setSearchTerm} fieldName={"email"}/>
                     <div className="flex-column row-gap-15">
                     {filteredUsers.slice(0, 3).map(user => (
                       <UserPresentation key={user.email} user={user} />

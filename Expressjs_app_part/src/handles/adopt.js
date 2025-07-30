@@ -20,7 +20,7 @@ const fetchAnimalsById = async (req, res) => {
         
         // Requête pour récupérer les informations de l'animal
         const [rows] = await db.query(
-            "SELECT animals.id, animals.name, animals.born, animals.sexe, animals.imgName, animals.description, animals.isSterile, animals.isMediator, animals.createdAt, animals.races, animals.incompatibility FROM animals WHERE animals.id = ?;",
+            "SELECT animals.id, animals.name, animals.born, animals.sexe, animals.imgName, animals.description, animals.isSterile, animals.isMediator, animals.createdAt, animals.races, animals.incompatibility, isAdopted FROM animals WHERE animals.id = ?;",
             [id]
         );
         
@@ -80,7 +80,7 @@ const addAnimals = async (req, res) => {
         
         .query(
           "INSERT INTO animals(id, name, description, sexe, isSterile, imgName, races, born, incompatibility, createdAt) VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-          [name, description, sexe, isSterile, file.filename, JSON.stringify(races), born, JSON.stringify(incompatibility), new Date()]
+          [name, description, sexe, isSterile, file.filename, races, born, incompatibility, new Date()]
         );
   
       res.status(201).json({ message: "Animal ajouter" });
@@ -97,10 +97,8 @@ const addAnimals = async (req, res) => {
     try {
       const [rows] = await db.query("SELECT imgName FROM animals WHERE id = ?", [id]);
       const oldImgName = rows[0]?.imgName;
-  
-      const racesJson = races ? JSON.stringify(races) : null;
-      const incompatibilityJson = incompatibility ? JSON.stringify(incompatibility) : null;
-  
+      const racesJson = races ? races : null;
+      const incompatibilityJson = incompatibility ? incompatibility : null;
       if (file) {
         if (oldImgName) {
           const oldFilePath = path.join('uploads', oldImgName);

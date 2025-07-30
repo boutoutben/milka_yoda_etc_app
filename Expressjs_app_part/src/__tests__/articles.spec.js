@@ -49,9 +49,7 @@ describe("fetchArticles", () => {
         { id: 2, title: "test", description: "test description" }
       ];
   
-      db.promise = jest.fn().mockReturnValue({
-        query: jest.fn().mockResolvedValue([articles])
-      });
+      db.query= jest.fn().mockResolvedValue([articles])
   
       await fetchArticles(mockReq, mockRes);
   
@@ -60,9 +58,7 @@ describe("fetchArticles", () => {
     });
 
     it("Should return an error is error", async () => {
-        db.promise.mockImplementation(() => ({
-            query: jest.fn().mockRejectedValue(new Error("DB error"))
-        }));
+        db.query= jest.fn().mockRejectedValue(new Error("DB error"))
 
         await fetchArticles(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(500);
@@ -82,14 +78,12 @@ describe("fetchArticles", () => {
         jest.clearAllMocks();
     });
     it("Should return the article with sucess", async () => {
-        db.promise = jest.fn().mockReturnValue({
-            query: jest.fn().mockResolvedValue([[{
+        db.query= jest.fn().mockResolvedValue([[{
                 id: 1,
                 title: 'test',
                 description: "test's description",
                 fileName: "test.txt"
             }]])
-        })
         await fetchArticlesById(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(200);
         expect(mockRes.json).toHaveBeenCalledWith({
@@ -100,17 +94,13 @@ describe("fetchArticles", () => {
         })
     });
     it("Should return article not found", async () => {
-        db.promise = jest.fn().mockReturnValue({
-            query: jest.fn().mockResolvedValue([[]])
-        })
+        db.query= jest.fn().mockResolvedValue([[]])
         await fetchArticlesById(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(404);
         expect(mockRes.json).toHaveBeenCalledWith({message: "L'article n'est pas été trouvé"});
     });
     it("Sould return ar error if error", async () => {
-        db.promise.mockImplementation(()=>({
-            query: jest.fn().mockRejectedValue(new Error("DB error"))
-        }))
+        db.query= jest.fn().mockRejectedValue(new Error("DB error"))
         await fetchArticlesById(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(500);
         expect(mockRes.json).toHaveBeenCalledWith({error: "Erreur serveur: DB error"});
@@ -131,9 +121,7 @@ describe("Fetch article detail", () => {
         const fakeData = "fake content";
         process.env.CLIENT_APP_PART = __dirname;
     
-        db.promise = jest.fn().mockReturnValue({
-          query: jest.fn().mockResolvedValue([[{ fileName: "test.txt" }]])
-        });
+        db.query= jest.fn().mockResolvedValue([[{ fileName: "test.txt" }]])
     
         fs.readFile.mockImplementation((path, encoding, callback) => {
           callback(null, fakeData);
@@ -146,9 +134,7 @@ describe("Fetch article detail", () => {
       });
 
       it("Should return article not found", async () => {
-        db.promise = jest.fn().mockReturnValue({
-            query: jest.fn().mockResolvedValue([[{}]])
-          });
+        db.query= jest.fn().mockResolvedValue([[{}]])
         
           await fetchArticlesDetail(mockReq, mockRes);
           expect(mockRes.status).toHaveBeenCalledWith(404);
@@ -160,10 +146,7 @@ describe("Fetch article detail", () => {
 
         process.env.CLIENT_APP_PART = __dirname;
 
-        db.promise = jest.fn().mockReturnValue({
-            query: jest.fn().mockResolvedValue([[{ fileName: "test.txt" }]])
-
-        });
+        db.query= jest.fn().mockResolvedValue([[{ fileName: "test.txt" }]])
 
         fs.readFile.mockImplementation((path, encoding, callback) => {
             callback(fakeError, null); // Simule une erreur
@@ -175,9 +158,7 @@ describe("Fetch article detail", () => {
       });
 
       it("Should return an error is error", async () => {
-        db.promise.mockImplementation(() => ({
-            query: jest.fn().mockRejectedValue(new Error("DB erreur"))
-        }));
+        db.query= jest.fn().mockRejectedValue(new Error("DB erreur"))
 
         await fetchArticlesDetail(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(500);
@@ -257,10 +238,8 @@ describe("edit articles description", () => {
     });
 
     it("Should edit the article description with success wihout file", async () => {
-        db.promise.mockReturnValue({
-            query : jest.fn()
+        db.query = jest.fn()
                 .mockResolvedValueOnce([[{imgName: "lastTest.jpg"}]])
-        })
         await editDescriptionArticle(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(200);
         expect(mockRes.json).toHaveBeenCalledWith({message: "Mise à jour réussie !"})
@@ -276,10 +255,8 @@ describe("edit articles description", () => {
                 filename: 'test.jpg'
             }
         }
-        db.promise.mockReturnValue({
-            query : jest.fn()
+        db.query = jest.fn()
                 .mockResolvedValueOnce([[{imgName: "lastTest.jpg"}]])
-        });
         fs.promises.unlink.mockResolvedValue()
         await editDescriptionArticle(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(200);
@@ -297,10 +274,8 @@ describe("edit articles description", () => {
           }
         };
       
-        db.promise.mockReturnValue({
-          query: jest.fn()
+        db.query= jest.fn()
             .mockResolvedValueOnce([[{ imgName: "lastTest.jpg" }]])
-        });
       
         fs.promises.unlink.mockRejectedValue(new Error("Delete error"));
       
@@ -310,9 +285,7 @@ describe("edit articles description", () => {
         expect(mockRes.json).toHaveBeenCalledWith({ error: "Delete file error: Delete error" });
       });
     it("Should return an error is error", async () => {
-        db.promise.mockImplementation(() => ({
-            query: jest.fn().mockRejectedValue(new Error("DB error"))
-        }))
+        db.query= jest.fn().mockRejectedValue(new Error("DB error"))
         await editDescriptionArticle(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(500);
         expect(mockRes.json).toHaveBeenCalledWith({error: "Erreur serveur: DB error"})
@@ -332,11 +305,9 @@ describe("edit articles", () => {
         jest.clearAllMocks();
     })
     it("Should edit the article with success while publish", async () => {
-        db.promise = jest.fn().mockReturnValue({
-            query: jest.fn()
+        db.query= jest.fn()
               .mockResolvedValueOnce([[{ fileName: "test.txt", isPublish: false }]])
               .mockResolvedValueOnce([])
-          });
         fs.writeFile.mockImplementation((dirPath, options, callback) => {
             callback(null);
           });
@@ -345,11 +316,9 @@ describe("edit articles", () => {
         expect(mockRes.json).toHaveBeenCalledWith({message: "update"});
     });
     it("Should edit the article with success while publish", async () => {
-        db.promise = jest.fn().mockReturnValue({
-            query: jest.fn()
+        db.query = jest.fn()
               .mockResolvedValueOnce([[{ fileName: "test.txt", isPublish: true }]])
               .mockResolvedValueOnce([])
-          });
           fs.writeFile.mockImplementation((dirPath, options, callback) => {
             callback(null); 
           });
@@ -358,12 +327,10 @@ describe("edit articles", () => {
         expect(mockRes.json).toHaveBeenCalledWith({message: "update"});
     });
     it("Should return write file error", async () => {
-        db.promise = jest.fn().mockReturnValue({
-          query: jest
+        db.query = jest
             .fn()
             .mockResolvedValueOnce([[{ fileName: "test.txt", isPublish: true }]]) // SELECT
-            .mockResolvedValueOnce([]) // UPDATE
-        });
+            .mockResolvedValueOnce([]) 
       
         fs.writeFile.mockImplementation((filePath, data, callback) => {
           callback(new Error("Write file error")); // Simule une erreur d'écriture
@@ -377,9 +344,8 @@ describe("edit articles", () => {
         });
       });
     it("Should return an error if error", async () => {
-        db.promise.mockImplementation(() => ({
-            query: jest.fn().mockRejectedValue(new Error("DB erreur"))
-        }));
+        db.query= jest.fn().mockRejectedValue(new Error("DB erreur"))
+        
 
         await editArticles(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(500);
@@ -397,21 +363,17 @@ describe("Cancelle edit article", () => {
         jest.clearAllMocks()
     });
     it("Should cancelle the edit with sucess while no publish", async () => {
-        db.promise = jest.fn().mockReturnValue({
-            query: jest.fn()
+        db.query= jest.fn()
               .mockResolvedValueOnce([[{ fileName: "test.txt", isPublish: true }]])
               .mockResolvedValueOnce([])
-          });
         await cancelleEditArticle(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(200);
         expect(mockRes.json).toHaveBeenCalledWith({url: "/article/1"})
     })
     it("Should cancelle the edit wiht sucess while publish", async () => {
-        db.promise = jest.fn().mockReturnValue({
-            query: jest.fn()
+        db.query = jest.fn()
               .mockResolvedValueOnce([[{ fileName: "test.txt", isPublish: false }]])
               .mockResolvedValueOnce([])
-          });
           fs.unlink.mockImplementation((path, callback) => {
             callback(null); 
           });
@@ -420,11 +382,9 @@ describe("Cancelle edit article", () => {
           expect(mockRes.json).toHaveBeenCalledWith({url: '/article'})
     });
     it("Shoult return an error if delete file error", async () => {
-        db.promise = jest.fn().mockReturnValue({
-            query: jest.fn()
+        db.query= jest.fn()
               .mockResolvedValueOnce([[{ fileName: "test.txt", isPublish: false }]])
               .mockResolvedValueOnce([])
-          });
           fs.unlink.mockImplementation((path, callback) => {
             callback(new Error('Delete file error')); 
           });
@@ -433,9 +393,7 @@ describe("Cancelle edit article", () => {
           expect(mockRes.json).toHaveBeenCalledWith({error: "Delete file error: Delete file error"});
     });
     it("Should return an error if error", async () => {
-        db.promise.mockImplementation(() => ({
-            query: jest.fn().mockRejectedValue(new Error("DB error"))
-        }));
+        db.query= jest.fn().mockRejectedValue(new Error("DB error"))
         await cancelleEditArticle(mockReq, mockRes);
           expect(mockRes.status).toHaveBeenCalledWith(500);
           expect(mockRes.json).toHaveBeenCalledWith({error: "Erreur serveur: DB error"});
@@ -455,11 +413,9 @@ describe("Delete article", () => {
     it("Should delete the article with success", async () => {
         process.env.CLIENT_APP_PART = __dirname;
       
-        db.promise = jest.fn().mockReturnValue({
-            query: jest.fn()
+        db.query= jest.fn()
               .mockResolvedValueOnce([[{ fileName: "test.txt", imgName: "test.png" }]])
               .mockResolvedValueOnce([]),
-          });
       
         fs.promises.unlink
           .mockResolvedValueOnce() // filePath OK
@@ -473,11 +429,9 @@ describe("Delete article", () => {
     it("Should return delete file error", async () => {
         process.env.CLIENT_APP_PART = __dirname;
       
-        db.promise = jest.fn().mockReturnValue({
-          query: jest.fn()
+        db.query= jest.fn()
             .mockResolvedValueOnce([[{ fileName: "test.txt", imgName: "test.png" }]])
             .mockResolvedValueOnce([]),
-        });
       
         fs.promises.unlink = jest.fn()
             .mockRejectedValueOnce(new Error("Delete error"))
@@ -493,11 +447,9 @@ describe("Delete article", () => {
       it("Should return delete img error", async () => {
         process.env.CLIENT_APP_PART = __dirname;
       
-        db.promise = jest.fn().mockReturnValue({
-          query: jest.fn()
+        db.query = jest.fn()
             .mockResolvedValueOnce([[{ fileName: "test.txt", imgName: "test.png" }]])
             .mockResolvedValueOnce([]),
-        });
       
         fs.promises.unlink = jest.fn()
             .mockResolvedValueOnce()
@@ -512,9 +464,7 @@ describe("Delete article", () => {
         });
       });
     it("Should return an error if error", async () => {
-        db.promise.mockImplementation(() => ({
-            query: jest.fn().mockRejectedValue(new Error("DB error"))
-        }));
+        db.query= jest.fn().mockRejectedValue(new Error("DB error"))
         await deleteArticle(mockReq, mockRes);
           expect(mockRes.status).toHaveBeenCalledWith(500);
           expect(mockRes.json).toHaveBeenCalledWith({error: "Erreur serveur: DB error"});

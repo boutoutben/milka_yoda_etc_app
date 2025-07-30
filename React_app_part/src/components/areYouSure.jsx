@@ -4,9 +4,13 @@ import '../css/component.css'
 import PropTypes from "prop-types";
 
 const AreYouSure = ({setter, apiUrl, onReload = () => location.reload()}) => {
+    const token = localStorage.getItem("token");
     const yesClick = () => {
         axios.delete(`http://localhost:5000/api/${apiUrl}`, {
-                withCredentials: true
+                withCredentials: true, 
+                headers: {
+                'Authorization': `Bearer ${token}`
+                }
             })
             .then(() => {
                 onReload();

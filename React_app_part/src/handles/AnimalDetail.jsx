@@ -49,6 +49,7 @@ const useApiData = (currentUrl = window.location.href) => {
 const EditAnimal = ({ setEdit, animalData, onReload = () => location.reload() }) => {
     const [races, setRaces] = useState([]);
     const [incompatibility, setIncompatibility] = useState([]);
+    const token = localStorage.getItem("token")
 
     const formik = useFormik({
         enableReinitialize: true,
@@ -74,7 +75,7 @@ const EditAnimal = ({ setEdit, animalData, onReload = () => location.reload() })
             const formData = new FormData();
             for (const key in values) {
                 if (Array.isArray(values[key])) {
-                  values[key].forEach((v) => formData.append(key, v));
+                  formData.append(key, JSON.stringify(values[key]))
                 } else {
                   formData.append(key, values[key]);
                 }
@@ -83,7 +84,8 @@ const EditAnimal = ({ setEdit, animalData, onReload = () => location.reload() })
             axios.patch(`http://localhost:5000/api/adopt/edit/${animalData.animal.id}`, formData, {
                 withCredentials: true,
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
                 }
             })
             .then(() => {
@@ -368,6 +370,7 @@ const AnimalDescription = ({btnName, apiData}) => {
             }
             nameBtn={btnName != null?btnName: null}
             click={AnimalDetailHandleClick}
+            disable={animal.isAdopted}
         />
     )
 }

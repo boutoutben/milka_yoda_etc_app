@@ -1,4 +1,3 @@
-import useGetPublicKey from "../hook/useGetPublicKey";
 import { useFormik } from "formik";
 import axios from 'axios';
 import UserInfoSchema from '../validationSchema/UserInfoSchema';
@@ -9,13 +8,11 @@ import { useEffect, useState } from "react";
 import encryptWithPublicKey from "../utils/encryptWithPublicKey";
 import PropTypes from "prop-types";
 import getFetchApi from "../utils/getFetchApi";
+import useEncryptData from "../hook/useEncryptData";
 
 const UserInfo = ({ personnelInfo, navigate }) => {
     const [message, setMessage] = useState(null);
     const token = localStorage.getItem('token');
-    
-
-    const publicKey = useGetPublicKey()
     const formik = useFormik({
       enableReinitialize: true,
       initialValues: {
@@ -30,7 +27,7 @@ const UserInfo = ({ personnelInfo, navigate }) => {
       validationSchema: UserInfoSchema,
       onSubmit: async (values) => {
         try {
-          const encryptedData = await encryptWithPublicKey(values, publicKey);
+          const encryptedData = await useEncryptData(values)
           const response = await axios.put(
             'http://localhost:5000/api/user',
             { id: personnelInfo.id, data: encryptedData },
@@ -137,7 +134,7 @@ const UserInfo = ({ personnelInfo, navigate }) => {
           })
           .catch(err => { 
             const status = err?.response?.status || err?.status;
-            if (status === 403) {
+            if (status === 403 || status === 401) {
               navigate("/login", { state: { error: "Vous n'êtes pas ou plus autorisé" } });
             } else {
               console.error("Une erreur est survenue:", err.message);
@@ -150,24 +147,25 @@ const UserInfo = ({ personnelInfo, navigate }) => {
 
   const useGetPersonnelData = () =>{
     const [personnelInfo, setPersonnelInfo] = useState(null);
-    const token = localStorage.getItem('token');
     useEffect(() => {
-        getFetchApi("user/fetchPersonnelInfos", {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          },
-        })
-          .then(data => {
-            if (data && data.length > 0) {
-              setPersonnelInfo(data[0]);
-            }
-          })
-          .catch(err => {
-            console.error("Erreur lors de la récupération des infos personnelles:", err.message);
-          });
-      
-      }, [token]);
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    getFetchApi("user/fetchPersonnelInfos", {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+    })
+    .then(data => {
+      if (data && data.length > 0) {
+        setPersonnelInfo(data[0]);
+      }
+    })
+    .catch(err => {
+      console.error("Erreur lors de la récupération des infos personnelles:", err.message);
+    });
+  }, []); 
 
       return personnelInfo
   }

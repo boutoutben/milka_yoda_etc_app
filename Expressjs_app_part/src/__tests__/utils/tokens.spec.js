@@ -31,7 +31,7 @@ describe("Check the tokens", () => {
     it("should return 401 with missing token", async () => {
         await verifyToken(req, res, next);
         expect(res.status).toHaveBeenCalledWith(401);
-        expect(res.json).toHaveBeenCalledWith({error: "Token manquant"});
+        expect(res.json).toHaveBeenCalledWith({error: "Token manquant ou invalide"});
         expect(next).not.toHaveBeenCalled();
     });
     it("should return 403 with logged out", () => {
@@ -40,7 +40,7 @@ describe("Check the tokens", () => {
         verifyToken(req, res, next);
     
         expect(res.status).toHaveBeenCalledWith(403);
-        expect(res.json).toHaveBeenCalledWith({ error: 'No allow' });
+        expect(res.json).toHaveBeenCalledWith({ error: 'Token invalide' });
         expect(next).not.toHaveBeenCalled();
     })
 })

@@ -1,6 +1,5 @@
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
-import useGetPublicKey from "../hook/useGetPublicKey";
 import encryptWithPublicKey from "../utils/encryptWithPublicKey";
 import resetPasswordSchema from "../validationSchema/resetPasswordSchema";
 import axios from "axios";
@@ -10,6 +9,7 @@ import PasswordInput from "../components/passwordInput";
 import AppSection from "../components/AppSection";
 import PropTypes from "prop-types";
 import getFetchApi from "../utils/getFetchApi";
+import useEncryptData from "../hook/useEncryptData";
 
 const useGetResetPasswordMessage = () => {
     const {token} = useParams();
@@ -28,7 +28,6 @@ const useGetResetPasswordMessage = () => {
 }
 
 const ResetPasswordSection = ({navigation}) => {
-    const publicKey = useGetPublicKey()
     const {token} = useParams();
     const formik = useFormik({
         initialValues: {
@@ -38,7 +37,7 @@ const ResetPasswordSection = ({navigation}) => {
         },
         validationSchema: resetPasswordSchema,
         onSubmit: async (values) => {
-            const encryptedData = await encryptWithPublicKey(values, publicKey)
+            const encryptedData = await useEncryptData(values)
             axios.post("http://localhost:5000/api/reset-password", {
                 data: encryptedData
               }, {

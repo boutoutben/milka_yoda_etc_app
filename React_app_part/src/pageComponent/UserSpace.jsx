@@ -1,14 +1,15 @@
 import '../css/userSpace.css'
 import Logout from '../components/logout';
 import { useNavigate } from 'react-router-dom';
-import { useGetPersonnelData, useGetUserAnimals } from '../handles/UserSpace';
+import { AdoptedAnimals, useGetPersonnelData, useGetUserAnimals, UserInfo } from '../handles/UserSpace';
 
 
 const UserSpace = () => {
   const navigate = useNavigate();
   const personnelInfo = useGetPersonnelData();
-  const animals = useGetUserAnimals();
+  const animals = useGetUserAnimals(navigate);
 
+  if(!personnelInfo) return <p>Chargement ...</p>
   
   return (
     <main id='userSpace'>

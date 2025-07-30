@@ -8,6 +8,7 @@ import AddArticleSchema from "../validationSchema/AddArticleSchema";
 import { useNavigate } from "react-router-dom";
 
 const EditArticle = ({onEdit, article, onReload = () => location.reload()}) => {
+    const token = localStorage.getItem("token")
     const formik = useFormik({
         initialValues: {
             title:article.title,
@@ -28,7 +29,8 @@ const EditArticle = ({onEdit, article, onReload = () => location.reload()}) => {
                   axios.patch('http://localhost:5000/api/articles/editDescriptionArticle', formData, {
                       withCredentials: true,
                       headers: {
-                          'Content-Type': 'multipart/form-data'
+                          'Content-Type': 'multipart/form-data',
+                          'Authorization': `Bearer ${token}`
                       }
                   })
                   
@@ -92,6 +94,7 @@ const Article = ({title, text, src, alt, click}) => {
 }
 const AddArticle = ({setAdd}) => {
     const navigate = useNavigate();
+    const token = localStorage.getItem("token")
     const formik = useFormik({
         initialValues: {
             title:'',
@@ -111,7 +114,12 @@ const AddArticle = ({setAdd}) => {
                 await axios.post(
                     'http://localhost:5000/api/articles/add',
                     formData,
-                    { withCredentials: true }
+                    {
+                        withCredentials: true,
+                        headers: { 
+                            'Content-Type': 'multipart/form-data',
+                            'Authorization': `Bearer ${token}`
+                        }}
                 ).then(response => {
                     navigate(`/writeArticle/${response.data.id}`)
                 })

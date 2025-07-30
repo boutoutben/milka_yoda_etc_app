@@ -3,14 +3,11 @@ import MainBtn from '../components/mainBtn';
 import AppSection from '../components/AppSection';
 import PasswordInput from '../components/passwordInput';
 import {useFormik} from 'formik';
-import encryptWithPublicKey from '../utils/encryptWithPublicKey';
 import registerSchema from '../validationSchema/RegisterSchema';
-import useGetPublicKey from '../hook/useGetPublicKey';
 import PropTypes from 'prop-types';
+import useEncryptData from '../hook/useEncryptData';
 
 const RegisterSection =  ({navigate}) => {
-   const publicKey = useGetPublicKey();
-   
     const formik = useFormik({
         initialValues:{
             firstname:'',
@@ -23,7 +20,7 @@ const RegisterSection =  ({navigate}) => {
         },
         validationSchema:registerSchema,
         onSubmit: async (values) => {
-            const encryptedData = await encryptWithPublicKey(values, publicKey);
+            const encryptedData = await useEncryptData(values);
             axios.post('http://localhost:5000/api/register',  {
                 data: encryptedData
               }, {
@@ -33,9 +30,11 @@ const RegisterSection =  ({navigate}) => {
                 withCredentials: true
               })
             .then(response => {
+                console.log("sucess")
                 navigate('/login', { state: { user: response.data } });
             })
             .catch(error => {
+                console.log("rr")
                 console.error("Erreur lors de l'envoi:", error.message);
             });
         }

@@ -6,7 +6,7 @@ import isGranted from "../utils/isGranted";
 import '../css/component.css'
 import { useEffect, useState } from "react";
 
-const AppSection = ({id, title, content, nameBtn, sectionClick, click,isSubmit=false, editAndSup, onEdit, onDelete, ref, attributes, listeners, style}) => {
+const AppSection = ({id, title, content, nameBtn, sectionClick, click,isSubmit=false, editAndSup, onEdit, onDelete, ref, attributes, listeners, style, disable=false}) => {
     const [granted, setGranted] = useState(false);
     useEffect(() => {
         async function checkSomething() {
@@ -42,7 +42,7 @@ const AppSection = ({id, title, content, nameBtn, sectionClick, click,isSubmit=f
             <div className='contentDiv flex-column relative'>
                 {content}
             </div>
-            {nameBtn && <MainBtn name={nameBtn} className='btnInMain' click={click} isSubmit={isSubmit}/>}
+            {nameBtn && <MainBtn name={nameBtn} className='btnInMain' click={click} isSubmit={isSubmit} disabled={disable}/>}
         </section>
         
     )
