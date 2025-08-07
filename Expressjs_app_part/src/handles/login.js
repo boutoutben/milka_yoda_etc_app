@@ -11,16 +11,14 @@ dotenv.config();
 
 const loginBlock = async (req, res) => {
   try {
-    console.log(req.body)
     const data = decryptData(req.body.data);
-    console.log(data)
     const {email, password, remember_me } = data.data
     const [rows] = await db.query(`
       SELECT users.*, roles.name as roleName
       FROM users
       INNER JOIN roles ON users.role = roles.id
       WHERE users.email = ?
-      `, [email]);
+    `, [email]);
 
     if (rows.length === 0) return res.status(400).send("L'email ou le mot de passe est incorect");
 
@@ -45,8 +43,6 @@ const loginBlock = async (req, res) => {
           updates.push("lockout_until = ?");
           values.push(lockoutTime);
         }
-
-        
 
         values.push(email);
         await db.query(`UPDATE users SET ${updates.join(", ")} WHERE email = ?`, values);
@@ -82,27 +78,28 @@ const forgotPassword = async (req, res) => {
   try {
     const [user] = await db.query("SELECT users.id as id FROM users INNER JOIN roles ON users.role = roles.id WHERE roles.name = 'USER_ROLE' AND users.email = ?", [email]);
     if(user.length === 1) {
+      const time = process.env.NODE_ENV === 'test'? 10000 : 10 * 60 * 1000
         const token = crypto.randomBytes(20).toString('hex');
-        await db.query("UPDATE users SET resetToken = ?, resetTokenExpires = ? WHERE id = ?" , [token, new Date(Date.now() + 10 * 60 * 1000) ,user[0].id])
+        await db.query("UPDATE users SET resetToken = ?, resetTokenExpires = ? WHERE id = ?" , [token, new Date(Date.now() + time) ,user[0].id])
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: 'boutout.ben@gmail.com',
+                user: process.env.NODE_ENV === 'test'? "test@example.com" : 'boutout.ben@gmail.com',
                 pass: process.env.GMAIL_SERVICE_PASSWORD,
             },
         });
         const mailOptions = {
-            from: 'boutout.ben@gmail.com',
+            from: process.env.NODE_ENV === 'test'? "test@example.com" : 'boutout.ben@gmail.com',
             to: email,
             subject: "Modifier le mot de passe",
             text: `Click sur le lien pour modifier ton mot de passe: http://localhost:5173/reset-password/${token}`
         };
         transporter.sendMail(mailOptions, (error, info) => {
-            if(error) {
-                res.status(500).send("Vérifier votre email pour modifier le mot de passe");
-            }
-        });
-        res.send("Un email vous a été envoyé.")
+  if (error) {
+    return res.status(500).send("Erreur lors de l'envoi de l'email.");
+  }
+  return res.send("Un email vous a été envoyé.");
+});
     } else {
         res.status(404).send("Email non trouvé");
     }  
@@ -130,7 +127,6 @@ const resetPassword = async (req, res) => {
   try {
       const [users] = await db.query("SELECT users.id AS id, resetToken, resetTokenExpires FROM users INNER JOIN roles ON roles.id = users.role WHERE roles.name = 'USER_ROLE'");
       const data = decryptData(req.body.data);
-      console.log(data)
       const  {token, password} = data.data;
       const user = users.find(user => user.resetToken === token);
       if(user) {

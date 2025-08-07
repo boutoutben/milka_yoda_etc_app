@@ -105,10 +105,7 @@ it("should block login after 7 failed attempts, then allow after 15 minutes", ()
   })
 
   it("should send a mail on forgotten btn click", () => {
-    cy.get("[data-cy = forgot_password]").click({force: true});
-    cy.wait(500);
-    cy.get("[name=email]").first().type("test@example.com")
-    cy.get("form").first().submit()
+    cy.loginResetPasswordClick()
     cy.wait(500);
     cy.get(".sucess_message", { timeout: 5000 }).should("contain", "Un email vous a été envoyé");
   })

@@ -45,6 +45,7 @@ async function updateAdoptAnimalStatus(id, value) {
   db.query("UPDATE animals SET isAdopted=? WHERE id=?", [value, id])
 }
 
+
 module.exports = {
     findUserByEmail,
     deleteUserByEmail,

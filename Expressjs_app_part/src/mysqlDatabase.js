@@ -3,9 +3,7 @@ const mysql = require('mysql2');
 const path = require('path');
 
 const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env';
-console.log("NODE_ENV =", process.env.NODE_ENV);
 dotenv.config({ path: path.resolve(__dirname, '..', envFile) });
-
 const db = mysql.createPool({
   host: process.env.HOST,
   port: process.env.DB_PORT || 3306,

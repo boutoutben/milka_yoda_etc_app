@@ -118,3 +118,22 @@ Cypress.Commands.add("addArticle", () => {
     });
   })
 })
+
+Cypress.Commands.add("loginResetPasswordClick", () => {
+  cy.visit("/login")
+  cy.get("[data-cy = forgot_password]").click({force: true});
+    cy.wait(500);
+    cy.get("[name=email]").first().type("test@example.com")
+    cy.get("form").first().submit()
+})
+
+Cypress.Commands.add("resetPassword", (password, confirmPassword) => {
+  cy.loginResetPasswordClick();
+  cy.task("findUserByEmail","test@example.com").then((user) => {
+    cy.visit(`/reset-password/${user.resetToken}`);
+    cy.get("form").should("be.visible");
+    cy.get("input[name=password]").type(password);
+    cy.get("input[name=confirmPassword]").type(confirmPassword);
+    cy.get("form").submit();
+  });
+})

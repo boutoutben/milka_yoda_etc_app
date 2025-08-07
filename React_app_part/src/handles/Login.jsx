@@ -29,7 +29,6 @@ const ForgetAndNoAccountBtn = ({onReload = () => location.reload()}) => {
               withCredentials: true
             })
             .then((response) => {
-                console.log(response)
                 setMessage(response)
                 setForgot(false)
             })

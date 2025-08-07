@@ -7,7 +7,6 @@ const addAction = async (req, res) => {
     const file = req.file;
     try {
       const [actions] = await db.query("select id from actions");
-      console.log(actions)
       const order = actions.length;
         await db.query(
           "INSERT INTO actions(id, title, description, imgName, pageUrl, actionOrder) VALUES (uuid(), ?, ?, ?, ?, ?)",
@@ -20,6 +19,7 @@ const addAction = async (req, res) => {
 }
 
 const fetchActions = async (req, res) => {
+  console.log("cc")
     try {
       const [actions] = await db.query("SELECT * FROM actions ORDER BY actionOrder");
       res.json({ actions });
