@@ -303,19 +303,24 @@ function toggleTagOnSelection(tagName, tagFormat) {
       const token = localStorage.getItem("token")
         const handleArticleRegister =  async () => {
             const content = getContent(editorRef);
+            console.log(content)
             try {
+                const formData = new FormData();
+                formData.append('content', content);
+
                 await axios.post(
                     `http://localhost:5000/api/articles/edit/${id}`,
-                    {content},
+                    formData,
                     {
                         withCredentials: true,
                         headers: { 
-                            'Content-Type': 'multipart/form-data',
                             'Authorization': `Bearer ${token}`
-                        }}
+                            
+                        }
+                    }
                 ).then(() => {
-                    navigate(`/article/${id}`)
-                })
+                    navigate(`/article/${id}`);
+                });
                 }  catch (err) {
                 console.error("Erreur lors de l'envoi :", err.message);
                 } 

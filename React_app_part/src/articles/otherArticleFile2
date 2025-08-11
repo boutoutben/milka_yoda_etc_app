@@ -2,6 +2,7 @@
         const Article = () => {
             return (
             <>
+                undefined
             </>
             )
         };

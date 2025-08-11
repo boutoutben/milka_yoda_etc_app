@@ -139,7 +139,9 @@ const editDescriptionArticle = async (req, res) => {
 const editArticles = async (req, res) => {
     try {
         const {id} = req.params;
+        console.log("cc", req.body)
         const content = req.body.content;
+        console.log(content);
         const fileContent = `
         const Article = () => {
             return (
@@ -149,9 +151,9 @@ const editArticles = async (req, res) => {
             )
         };
         export default Article;`
-        console.log(id)
+    
         const [article] = await db.query("SELECT fileName, isPublish FROM articles WHERE id = ?", [id]);
-        console.log(article)
+
         const filePath = path.join(process.env.CLIENT_APP_PART, 'src', 'articles', article[0].fileName);
         if(!article[0].isPublish) await db.query("UPDATE articles SET isPublish = true");
         fs.writeFile(filePath, fileContent, function (err) {

@@ -92,7 +92,7 @@ const WriteArticle = () => {
             ></div>
             <div className="flex-row gap-25">
                 <ArticleCancelle navigate={navigate} />
-                <ArticleRegister navigate={navigate}/>
+                <ArticleRegister editorRef={editorRef} navigate={navigate}/>
             </div>
         </main>
     );
