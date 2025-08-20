@@ -1,7 +1,7 @@
 describe("ArticleDetail page", () => {
-    it("should render the title of the article", () => {
+    it("should render the article content", () => {
         cy.visit("article/b3b9bc6e-6cb9-11f0-b3aa-50ebf692f6a4");
-        cy.get("h1").should("contain", "ezrui zeri uaezr poiazeu poizeur ipaoz e");
+        cy.get("#articleDetail").should("exist");
     })
     it("should return to write article on update article", () => {
         cy.adminLogin();
@@ -23,5 +23,11 @@ describe("ArticleDetail page", () => {
         }).then(article => {
             expect(article).to.be.null;
         });
+    })
+
+    it("should return to the article page if article not exist", () => {
+        cy.visit("article/b3b9bc6e-6cb9-1");
+        cy.url().should("include", '/article');
+        cy.get(".formError").should("contain", "Article non trouvé")
     })
 })

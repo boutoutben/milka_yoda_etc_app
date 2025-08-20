@@ -27,12 +27,13 @@ describe("addAction", () => {
       body: {
         id: 1,
         title: "Titre de l'action",
-        description: "Description de l'action pour donner des infos",
-        pageUrl: "nom_de_la_page",
+        description: "Description de l'action aiming to give more informations to the action",
+        pageUrl: "pageName",
       },
       file: {
-        filename: 'mock-image-123.png'
-      },
+  filename: 'test.jpg',
+  size: 500 * 1024 // => 512000
+},
     };
 
     mockRes = {
@@ -55,6 +56,12 @@ describe("addAction", () => {
       message: "Action ajoutée avec succès !"
     });
   });
+  it("should return an 400 error if invalid data", async () => {
+    mockReq.body.title = ""
+    await addAction(mockReq, mockRes);
+     expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith({"errors": []})
+  })
   it("should handle a database error gracefully", async () => {
     const db = require('../mysqlDatabase');
     db.query = jest.fn().mockRejectedValue(new Error("DB error"))
@@ -121,8 +128,8 @@ jest.mock('../mysqlDatabase.js', () => {
         mockReq = {
           body: {
             title: "Titre de l'action",
-            description: "Description de l'action pour donner des infos",
-            pageUrl: "nom_de_la_page",
+            description: "Description de l'action aiming to give more informations to the action",
+            pageUrl: "pageName",
           },
           params: {
             id: 1
@@ -150,8 +157,9 @@ jest.mock('../mysqlDatabase.js', () => {
     it("Should edit the action with file", async () => {
         // Prépare une requête avec fichier
         mockReq.file = {
-            filename: "test.jpg"
-          }
+          filename: 'test.jpg',
+          size: 500 * 1024 // => 512000
+        },
       
         // Simule la réponse de la BDD
         db.query = jest.fn().mockResolvedValueOnce([
@@ -164,6 +172,12 @@ jest.mock('../mysqlDatabase.js', () => {
           message: "Mise à jour réussie !"
         });
       });
+      it("should return an 400 error if invalid data", async () => {
+        mockReq.body.title = '';
+        await editActions(mockReq, mockRes);
+         expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith({"errors": []})
+      })
       it("Should return an error if error", async () => {
         db.query = jest.fn().mockRejectedValue(new Error("DB error"))
       

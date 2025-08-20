@@ -22,8 +22,9 @@ describe("Set adopter sumary", () => {
             body: {
                 values: {
                     civility: 1,
-                    lastname: "testname",
-                    firstname: "test",
+                    lastname: "Testname",
+                    firstname: "Test",
+                    age: 18,
                     adressePostale: "59000",
                     email: "boutout.ben@gmail.com",
                     phone: "0600000000",
@@ -50,6 +51,12 @@ describe("Set adopter sumary", () => {
         expect(mockRes.status).toHaveBeenCalledWith(201);
         expect(mockRes.json).toHaveBeenCalledWith({message: 'Opération réussie'})
     });
+    it("should return an 400 error if invalid data", async () => {
+        mockReq.body.values.lastname = ""
+        await setAdopterSumary(mockReq, mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+            expect(mockRes.json).toHaveBeenCalledWith({"errors": []})
+    })
     it("Should return an error is error", async () => {
         db.query= jest.fn()
               .mockRejectedValue(new Error("DB error"))

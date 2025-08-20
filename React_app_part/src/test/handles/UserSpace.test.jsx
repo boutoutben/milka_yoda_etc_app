@@ -2,22 +2,19 @@ import { render, renderHook, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import { AdoptedAnimals, useGetPersonnelData, useGetUserAnimals, UserInfo } from "../../handles/UserSpace";
-import encryptWithPublicKey from "../../utils/encryptWithPublicKey";
 import getFetchApi from "../../utils/getFetchApi";
-import useGetPublicKey from "../../hook/useGetPublicKey";
+import encryptData from "../../utils/encryptData";
 
 jest.mock("axios")
-jest.mock("../../utils/encryptWithPublicKey");
-jest.mock("../../hook/useGetPublicKey.jsx")
 jest.mock("../../utils/getFetchApi.jsx")
+jest.mock("../../utils/encryptData")
 
 describe("UserInfo", () => {
     beforeEach(() => {
         jest.clearAllMocks();
-        encryptWithPublicKey.mockReturnValue("mock encrypt data");
+        
         jest.spyOn(console, 'error').mockImplementation(() => {})
         jest.spyOn(Storage.prototype, "setItem");
-        useGetPublicKey.mockResolvedValue("mock key")
       });
     const mockNavigate = jest.fn()
     const fillForm = async () => {
@@ -44,6 +41,7 @@ describe("UserInfo", () => {
     }
     test("should submit and store the new info in localStorage", async () => {
         const mockData = {data: {message: "Infos mises à jour !", userInfo: {id:1}}}
+        encryptData.mockResolvedValue("mock encrypt data")
         axios.put.mockResolvedValue(mockData);
         
         render(<UserInfo personnelInfo={{id:1}} navigate={mockNavigate} />);
@@ -153,11 +151,15 @@ describe("AdoptedAnimals", () => {
     })
 
     describe("useGetPersonnelData", () => {
+        beforeEach(() => {
+          jest.spyOn(Storage.prototype, 'getItem').mockImplementation(() => 'mocked-token');
+        })
         test("should return the date", async () => {
             getFetchApi.mockResolvedValue([{id: 1}])
             const {result} = renderHook(() => useGetPersonnelData());
             await waitFor(() => {
                 expect(result.current).toEqual({id: 1})
+
             })
         })
         test("should return an error and null", async () => {

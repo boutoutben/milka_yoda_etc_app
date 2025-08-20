@@ -75,7 +75,7 @@ const handleAcceptClick = (data, setAlert, navigate) => {
           }, 3000);
         })
         .catch((err) => {
-          console.error("Erreur lors de l'envoi de l'email:", err);
+          console.error("Erreur lors de l'envoi de l'email:", err.message);
         });
       })
         .catch(error => {

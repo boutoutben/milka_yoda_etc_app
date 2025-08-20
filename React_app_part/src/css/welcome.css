@@ -59,7 +59,7 @@
     position: absolute;
     top: 0;
     background-color: rgb(128, 128, 128,0.5);
-    width: calc(100vw - 200px);
+    width: 100vw;
     padding: 0 100px;
     height: 100%;
     display: flex;
@@ -83,13 +83,15 @@
     padding: 25px 0;
 }
 
+
+
 main img {
     object-fit: cover;
 
 }
 #assocationPresentation img {
     width: 300px;
-    height: 175px;
+    height: 150px;
     border: 10px solid rgb(0, 0, 0, 0.5);
     border-radius: 15px;
 }
@@ -100,7 +102,7 @@ main img {
 
 #assocationPresentation .borderBlue {
     border-radius: 15px;
-    height: 167px;
+    height: 150px;
 }
 
 #actionSumary {
@@ -176,7 +178,7 @@ main img {
     position: relative;
     display: flex;
     height: 200px;
-    width: 225px;
+    width: 200px;
 }
 
 #beingCarefullAboutAnimales img {
@@ -315,28 +317,33 @@ main img {
         right: 20px;
     }
     
-
+    #welcomePage .welcomeSection>div>div {
+        gap: 10px;
+    }
     #assocationPresentation>div>div{
         flex-direction: column-reverse;
     }
 
     #assocationPresentation img {
-        width: 65vw;
-        max-width: 350px;
-        height: 40vw;
+        width: 220px;
+        height: 120px;
         max-height: 200px;
+    }
+
+    #assocationPresentation .borderBlue {
+        height: 120px;
     }
 
     #assocationPresentation p {
         width: 70vw;
         max-width: 400px;
     }
-    #welcomePage section >div>div {
+    #welcomePage .overflow{
         align-items: center;
-        max-width: 100vw;
+        max-width:calc(100vw - 50px);
         justify-content: flex-start;
         overflow:auto;
-        padding: 0 10px;
+        padding: 0 25px;
     }
 
     #socialMediaPresentation img {

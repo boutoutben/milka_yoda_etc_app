@@ -171,11 +171,12 @@ describe("Add articles", () => {
         mockReq = {
             body: {
                 title: "test's title",
-                description: "Test's description"
+                description: "description of the test aming to descript the animal with his comportement"
             },
             file: {
-                filename: 'test.jpg'
-            }
+  filename: 'test.jpg',
+  size: 500 * 1024 // => 512000
+}
         }
         jest.clearAllMocks();
     })
@@ -188,24 +189,30 @@ describe("Add articles", () => {
       
         fs.promises.mkdir.mockResolvedValue()
         fs.promises.writeFile.mockResolvedValue()
-      
+        db.query.mockResolvedValue()
         await addArticles(mockReq, mockRes);
       
         expect(mockRes.status).toHaveBeenCalledWith(201);
-        expect(mockRes.json).toHaveBeenCalledWith({message: "Article créer", id: mockUuid});
+        expect(mockRes.json).toHaveBeenCalledWith({message: "Article créé", id: mockUuid});
       });
     it("Should return failed to create folder", async () =>{
         fs.promises.mkdir.mockRejectedValue(new Error("Imposible to create folder"))
           await addArticles(mockReq, mockRes);
           expect(mockRes.status).toHaveBeenCalledWith(500);
-          expect(mockRes.json).toHaveBeenCalledWith({error: "Failed to create folder: Imposible to create folder"})
+          expect(mockRes.json).toHaveBeenCalledWith({error: "Erreur serveur : Imposible to create folder"})
     });
     it("Should return wrife file error", async () => {
         fs.promises.mkdir.mockResolvedValue()
         fs.promises.writeFile.mockRejectedValue(new Error("Write error"));
         await addArticles(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(500);
-        expect(mockRes.json).toHaveBeenCalledWith({error: "Write file error: Write error"})
+        expect(mockRes.json).toHaveBeenCalledWith({error: "Erreur serveur : Write error"})
+    })
+    it("should return an 400 error if invalid data", async () => {
+      mockReq.body.title = "";
+      await addArticles(mockReq, mockRes);
+      expect(mockRes.status).toHaveBeenCalledWith(400);
+      expect(mockRes.json).toHaveBeenCalledWith({"errors": []})
     })
     it("Should return 500 if unexpected server error occurs", async () => {
         process.env.CLIENT_APP_PART = __dirname;
@@ -219,9 +226,10 @@ describe("Add articles", () => {
       
         expect(mockRes.status).toHaveBeenCalledWith(500);
         expect(mockRes.json).toHaveBeenCalledWith({
-          error: "Erreur serveur: Unexpected failure"
+          error: "Erreur serveur : Unexpected failure"
         });
       });
+    
 })
 
 describe("edit articles description", () => {
@@ -229,7 +237,7 @@ describe("edit articles description", () => {
         mockReq = {
             body: {
                 title: "test's title",
-                description: "test's description",
+                description: "description of the test aming to descript the animal with his comportement",
                 articleId: 1
             },
             file: null
@@ -245,16 +253,10 @@ describe("edit articles description", () => {
         expect(mockRes.json).toHaveBeenCalledWith({message: "Mise à jour réussie !"})
     });
     it("Should edit the article description with sucess with file", async () => {
-        mockReq = {
-            body: {
-                title: "test's title",
-                description: "test's description",
-                articleId: 1
-            },
-            file: {
-                filename: 'test.jpg'
-            }
-        }
+        mockReq.file = {
+  filename: 'test.jpg',
+  size: 500 * 1024 // => 512000
+}
         db.query = jest.fn()
                 .mockResolvedValueOnce([[{imgName: "lastTest.jpg"}]])
         fs.promises.unlink.mockResolvedValue()
@@ -263,27 +265,26 @@ describe("edit articles description", () => {
         expect(mockRes.json).toHaveBeenCalledWith({message: "Mise à jour réussie !"})
     });
     it("Should return delete file error", async () => {
-        mockReq = {
-          body: {
-            title: "test's title",
-            description: "test's description",
-            articleId: 1
-          },
-          file: {
-            filename: 'test.jpg'
-          }
-        };
+        mockReq.file = {
+  filename: 'test.jpg',
+  size: 500 * 1024 // => 512000
+}
       
         db.query= jest.fn()
             .mockResolvedValueOnce([[{ imgName: "lastTest.jpg" }]])
       
         fs.promises.unlink.mockRejectedValue(new Error("Delete error"));
-      
         await editDescriptionArticle(mockReq, mockRes);
       
         expect(mockRes.status).toHaveBeenCalledWith(500);
         expect(mockRes.json).toHaveBeenCalledWith({ error: "Delete file error: Delete error" });
       });
+      it("should return an 400 error on invalid data", async () => {
+        mockReq.body.title = ""
+        await editDescriptionArticle(mockReq, mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith({"errors": []})
+      })
     it("Should return an error is error", async () => {
         db.query= jest.fn().mockRejectedValue(new Error("DB error"))
         await editDescriptionArticle(mockReq, mockRes);
@@ -308,9 +309,7 @@ describe("edit articles", () => {
         db.query= jest.fn()
               .mockResolvedValueOnce([[{ fileName: "test.txt", isPublish: false }]])
               .mockResolvedValueOnce([])
-        fs.writeFile.mockImplementation((dirPath, options, callback) => {
-            callback(null);
-          });
+        fs.promises.writeFile.mockResolvedValue();
         await editArticles(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(200);
         expect(mockRes.json).toHaveBeenCalledWith({message: "update"});
@@ -319,9 +318,7 @@ describe("edit articles", () => {
         db.query = jest.fn()
               .mockResolvedValueOnce([[{ fileName: "test.txt", isPublish: true }]])
               .mockResolvedValueOnce([])
-          fs.writeFile.mockImplementation((dirPath, options, callback) => {
-            callback(null); 
-          });
+          fs.promises.writeFile.mockResolvedValue();
           await editArticles(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(200);
         expect(mockRes.json).toHaveBeenCalledWith({message: "update"});
@@ -332,15 +329,13 @@ describe("edit articles", () => {
             .mockResolvedValueOnce([[{ fileName: "test.txt", isPublish: true }]]) // SELECT
             .mockResolvedValueOnce([]) 
       
-        fs.writeFile.mockImplementation((filePath, data, callback) => {
-          callback(new Error("Write file error")); // Simule une erreur d'écriture
-        });
+        fs.promises.writeFile.mockRejectedValue(new Error("Write file error"));
       
         await editArticles(mockReq, mockRes);
       
         expect(mockRes.status).toHaveBeenCalledWith(500);
         expect(mockRes.json).toHaveBeenCalledWith({
-          error: "Write file error: Write file error"
+          error: "Server error: Write file error"
         });
       });
     it("Should return an error if error", async () => {

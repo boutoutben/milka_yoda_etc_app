@@ -24,7 +24,7 @@ NavElement.propTypes = {
 }
 
 
-const UserBtn = () => {
+const UserBtn = ({setMenuType}) => {
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState({});
     const token = localStorage.getItem("token")
@@ -50,6 +50,8 @@ const UserBtn = () => {
       
     const handleAccountClick = (event) => {
         event.preventDefault();
+        console.log(setMenuType)
+        setMenuType?.('btn');
         try {
             if (userInfo) {
                 switch (userInfo.roleName) {
@@ -133,7 +135,7 @@ const Menu = ({redirection}) => {
                 <CloseImg click={() => setMenuType('btn')} />
                 <NavElement navClass={"flex-column"} />
                 <Link to='/'><img src="/img/AssocJuliette.png" alt="logo" id='headerLogo'/></Link>
-                <UserBtn />
+                <UserBtn setMenuType={setMenuType} />
                 <MainBtn name={"Nous soutenir"} click={handleClick} />
             </div>
         </div>
@@ -162,7 +164,7 @@ const Navbar = () => {
             
             <NavElement />
             <div className='flex-row alignCenter-AJ'>
-                <UserBtn />
+                <UserBtn  />
                 <button href="/" className='unstyled-button'><img src='/img/shopping-cart.png' alt='shop en ligne' className='shopImg'/></button>
                 <Menu redirection={'/don'}/>
                 <div className='verticalLine'></div>

@@ -57,23 +57,24 @@
 @media screen and (max-width:768px) {
     #contactForm {
         border: none;
-        
+    }
+    #contactForm .flex-row {
+        flex-direction: column;
+        gap: 7px;
     }
     #contactForm>form>div {
             flex-direction: column;
     }
-    #contactForm>form{
+    #contactForm form{
         display: flex;
+        width: 90%;
         flex-direction: column;
         align-items: center;
         justify-content: center;
     }
     #contactForm>form input, #contactForm>form>div>input {
-        width: 80vw;
-    }
-
-    #contactForm textarea {
-        width: 80vw !important;
+        width: 100%;
+        background-color: red;
     }
 
     .contactText {

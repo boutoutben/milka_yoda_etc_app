@@ -109,4 +109,12 @@ it("should block login after 7 failed attempts, then allow after 15 minutes", ()
     cy.wait(500);
     cy.get(".sucess_message", { timeout: 5000 }).should("contain", "Un email vous a été envoyé");
   })
+  it("should return email not find if forgot email not exist", () => {
+    cy.visit("/login")
+  cy.get("[data-cy = forgot_password]").click({force: true});
+    cy.wait(500);
+    cy.get("[name=email]").first().type("test.admin@example.com")
+    cy.get("form").first().submit()
+  })
+  cy.get(".formError", { timeout: 5000 }).should("contain", "Email non trouvé");
 });

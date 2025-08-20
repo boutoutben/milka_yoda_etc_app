@@ -27,11 +27,7 @@ const addSecondsToDate = (date, n) => {
     return d;
 };
 
-const mockData = {
-    email: 'john@gmail.com',
-    password: 'securePass123',
-    remember_me: false
-};
+let mockData;
 let mockReq, mockRes, mockQuery = {};
 
 mockRes = {
@@ -44,12 +40,16 @@ describe("Login user", () => {
    
 
     beforeEach(async () => {
+        mockData = {
+    email: 'john@gmail.com',
+    password: 'SecurePass123!',
+    remember_me: false
+};
         mockReq = {
             body: {
                 data: await encryptData(mockData, publicKey)
             }
         };
-        console.log(mockReq)
         process.env.JWT_SECRET = 'mocked_secret';
 
         // Reset mocks
@@ -126,6 +126,18 @@ describe("Login user", () => {
         expect(mockRes.status).toHaveBeenCalledWith(400);
         expect(mockRes.send).toHaveBeenCalledWith("L'email ou le mot de passe est incorect");
     });
+
+    it("should return an 400 error if invalid data", async () => {
+        mockData.email = ""
+        mockReq = {
+            body: {
+                data: await encryptData(mockData, publicKey)
+            }
+        };
+        await loginBlock(mockReq, mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith({"errors": []})
+      })
 
     it("Should return 500 on server error", async () => {
         // simulate query throwing an error
@@ -275,8 +287,14 @@ describe("forgot password", () => {
         });
         await forgotPassword(mockReq, mockRes);
         expect(mockRes.status).toHaveBeenCalledWith(500);
-        expect(mockRes.send).toHaveBeenCalledWith("Vérifier votre email pour modifier le mot de passe");
+        expect(mockRes.send).toHaveBeenCalledWith("Erreur lors de l'envoi de l'email.");
     });
+    it("should return an 400 error if invalid data", async () => {
+        mockReq.body.email = ""
+        await forgotPassword(mockReq, mockRes);
+         expect(mockRes.status).toHaveBeenCalledWith(400);
+            expect(mockRes.json).toHaveBeenCalledWith({"errors": []})
+      })
     it("shoud return an server error",async () => {
         db.query= jest.fn().mockRejectedValue(new Error("DB error"))
         await forgotPassword(mockReq, mockRes);
@@ -351,11 +369,13 @@ describe("canResetPassword", () => {
 })
 
 describe("resetPassword", () => {
-    const mockData = {
-        token: "mock token", 
-        password: "password123"
-    }
+    let mockData;
     beforeEach(async () => {
+        mockData = {
+            token: "mock token", 
+            password: "Password123!",
+            confirmPassword: "Password123!"
+        }
         mockReq = {
             body: {
                 data: await encryptData(mockData, publicKey)
@@ -386,6 +406,17 @@ describe("resetPassword", () => {
           expect(mockRes.status).toHaveBeenCalledWith(404)
         expect(mockRes.send).toHaveBeenCalledWith("User not found");
       });
+      it("should return an 400 error if invalid data", async () => {
+        mockData.password = ""
+        mockReq = {
+                    body: {
+                        data: await encryptData(mockData, publicKey) 
+                    }
+                }; 
+        await forgotPassword(mockReq, mockRes);
+         expect(mockRes.status).toHaveBeenCalledWith(400);
+            expect(mockRes.json).toHaveBeenCalledWith({"errors": []})
+      })
       it("should return an server error", async () => {
         db.query= jest
               .fn()

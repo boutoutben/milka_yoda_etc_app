@@ -547,7 +547,13 @@ describe("ArticleCancelle", () => {
       expect(axios.post).toHaveBeenCalledWith(
         "http://localhost:5000/api/articles/cancelle/1",
         {},
-        { withCredentials: true }
+        {
+     "headers": {
+         "Authorization": "Bearer null",
+         "Content-Type": "multipart/form-data",
+       },
+        "withCredentials": true,
+      }
       );
       expect(mockNavigate).toHaveBeenCalledWith("/test");
     });
@@ -567,7 +573,13 @@ describe("ArticleCancelle", () => {
       expect(axios.post).toHaveBeenCalledWith(
         "http://localhost:5000/api/articles/cancelle/1",
         {},
-        { withCredentials: true }
+        {
+     "headers": {
+         "Authorization": "Bearer null",
+         "Content-Type": "multipart/form-data",
+       },
+        "withCredentials": true,
+      }
       );
       expect(console.error).toHaveBeenCalledWith("Erreur lors de l'envoi :", "Mock error");
     });
@@ -600,8 +612,13 @@ describe("ArticleRegister", () => {
   await waitFor(() => {
     expect(axios.post).toHaveBeenCalledWith(
       "http://localhost:5000/api/articles/edit/1",
-      { content: "" },
-      { withCredentials: true }
+      expect.any(FormData),
+      {
+     "headers": {
+         "Authorization": "Bearer null",
+       },
+        "withCredentials": true,
+      }
     );
     expect(mockNavigate).toHaveBeenCalledWith("/article/1");
   });

@@ -45,7 +45,7 @@ describe("handleDeleteArticle", () => {
 describe("useFetchArticleDetailData", () => {
     const mockArticle = { id: 1, title: 'Test', fileName: 'test-article.js' };
     const MockedComponent = () => <div>Mocked Component</div>;
-  
+    const mockNavigate = jest.fn();
     beforeEach(() => {
       jest.clearAllMocks();
       getFetchApi.mockResolvedValue(mockArticle);
@@ -55,7 +55,7 @@ describe("useFetchArticleDetailData", () => {
     test('fetches article data and loads component', async () => {
       loadArticleComponent.mockResolvedValue({ default: MockedComponent });
   
-      const { result } = renderHook(() => useFetchArticleDetailData(1));
+      const { result } = renderHook(() => useFetchArticleDetailData(1, mockNavigate));
   
       await act(async () => { await Promise.resolve(); });
   
@@ -68,7 +68,7 @@ describe("useFetchArticleDetailData", () => {
     test("should fail when loadArticleComponent error", async () => {
       loadArticleComponent.mockRejectedValue(new Error("LoadArticleComponent error"));
   
-      const { result } = renderHook(() => useFetchArticleDetailData(1));
+      const { result } = renderHook(() => useFetchArticleDetailData(1, mockNavigate));
   
       await act(async () => { await Promise.resolve(); });
   
@@ -81,6 +81,21 @@ describe("useFetchArticleDetailData", () => {
       );
       expect(result.current.ArticleComponent).toEqual(null);
     });
+    test("should redirect to article on not found article", async () => {
+      getFetchApi.mockRejectedValue({
+          status: 404,
+          statusText: "Not Found",
+          data: { message: "Article non trouvé" },
+        },
+      );
+      const { result } = renderHook(() => useFetchArticleDetailData(1, mockNavigate));
+      await act(async () => { await Promise.resolve(); });
+      expect(getFetchApi).toHaveBeenCalledWith("articles/1");
+      expect(loadArticleComponent).not.toHaveBeenCalled();
+      expect(result.current.article).toEqual(null);
+      expect(result.current.ArticleComponent).toEqual(null);
+      expect(mockNavigate).toHaveBeenCalledWith("/article", {"state": {"message": "Article non trouvé"}})
+    })
     test("should fail when server error", async () => {
         getFetchApi.mockRejectedValue(new Error("Mock error"));
         const { result } = renderHook(() => useFetchArticleDetailData(1));

@@ -122,6 +122,9 @@ header div>button>img{
     :is(.normalMenu,.dropdownMenu) button{
         margin: 0 25px !important;
     }
+    .dropdownMenu  [aria-label="Compte utilisateur"]{
+        margin: 0 60px !important;
+    }
 
 
     .dropdownMenu>a>img {

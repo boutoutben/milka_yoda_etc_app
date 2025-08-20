@@ -3,17 +3,16 @@ import { cleanup, render, screen, waitFor } from "@testing-library/react"
 import axios from "axios"
 import convertExpiresInToMs from "../../utils/convertExpiresInToMS"
 import { MemoryRouter, useLocation } from "react-router-dom"
-import encryptWithPublicKey from "../../utils/encryptWithPublicKey"
 import * as HandleLogin from "../../handles/Login"
+import encryptData from "../../utils/encryptData"
 
 const { ForgetAndNoAccountBtn, handleResponse, LoginSection, handleError } = HandleLogin; 
 
 
 jest.mock("axios")
-jest.mock("../../utils/encryptWithPublicKey")
+jest.mock("../../utils/encryptData")
 
 describe("ForgetBtn", () => {
-    const mockReload = jest.fn()
     test("should render the form on forget btn click", async () => {
         render(<ForgetAndNoAccountBtn />)
         await userEvent.click(screen.getByText("mot de passe oublié"));
@@ -21,9 +20,9 @@ describe("ForgetBtn", () => {
             expect(screen.getByTestId("forgetPasswordForm")).toBeInTheDocument();
         })
     });
-    test("should submit on form submit btn click and reload", async () => {
-        axios.post.mockResolvedValue();
-        render(<ForgetAndNoAccountBtn onReload={mockReload}/>)
+    test("should submit on form submit btn click and show the success message", async () => {
+        axios.post.mockResolvedValue({data: "Un email vous a été envoyé."});
+        render(<ForgetAndNoAccountBtn/>)
         await userEvent.click(screen.getByText("mot de passe oublié"));
         await waitFor(() => {
             expect(screen.getByTestId("forgetPasswordForm")).toBeInTheDocument();
@@ -33,12 +32,28 @@ describe("ForgetBtn", () => {
         await waitFor(() => {
             expect(axios.post).toHaveBeenCalled();
         })
-        expect(mockReload);
+        expect(screen.getByText("Un email vous a été envoyé.")).toBeInTheDocument();
     });
+    test("should submit on form submit btn click and return 404 error", async () => {
+      axios.post.mockRejectedValue({
+        status: 404
+      });
+        render(<ForgetAndNoAccountBtn/>)
+        await userEvent.click(screen.getByText("mot de passe oublié"));
+        await waitFor(() => {
+            expect(screen.getByTestId("forgetPasswordForm")).toBeInTheDocument();
+        })
+        await userEvent.type(screen.getByTestId("forgetPasswordEmail"), "test@example.com");
+        await userEvent.click(screen.getByRole('button', { name: /valider/i }));
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalled();
+        })
+        expect(screen.getByText("Email non trouvé")).toBeInTheDocument();
+    })
     test("shoud sumit on form submit btn click and fail with error", async () => {
         jest.spyOn(console, "error").mockImplementation(() => {});
         axios.post.mockRejectedValue(new Error("Mock error"));
-        render(<ForgetAndNoAccountBtn onReload={mockReload}/>)
+        render(<ForgetAndNoAccountBtn/>)
         await userEvent.click(screen.getByText("mot de passe oublié"));
         await waitFor(() => {
             expect(screen.getByTestId("forgetPasswordForm")).toBeInTheDocument();
@@ -144,7 +159,7 @@ jest.mock('react-router-dom', () => ({
       jest.clearAllMocks();
       jest.spyOn(HandleLogin, "handleResponse").mockImplementation(() => {});
       
-      encryptWithPublicKey.mockReturnValue("mock encrypt data");
+      encryptData.mockReturnValue("mock encrypt data");
     });
   
     const fillForm = async () => {

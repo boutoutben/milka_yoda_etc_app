@@ -2,15 +2,15 @@ import { render, screen, waitFor } from "@testing-library/react"
 import { userEvent } from "@testing-library/user-event"
 import { RegisterSection } from "../../handles/Register";
 import axios from "axios";
-import encryptWithPublicKey from "../../utils/encryptWithPublicKey";
+import encryptData from "../../utils/encryptData";
 
 jest.mock("axios");
-jest.mock("../../utils/encryptWithPublicKey")
+jest.mock("../../utils/encryptData")
 
 describe("RegisterSection", () => {
     beforeEach(() => {
       jest.clearAllMocks();
-      encryptWithPublicKey.mockReturnValue("mock encrypt data");
+      encryptData.mockReturnValue("mock encrypt data");
       jest.spyOn(console, 'error').mockImplementation(() => {})
     });
     const mockNavigate = jest.fn();

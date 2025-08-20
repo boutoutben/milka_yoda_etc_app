@@ -1,9 +1,11 @@
-const db = require("../mysqlDatabase.js")
+const db = require("../mysqlDatabase.js");
+const AdopterProfileSchema = require("../schema/adoptProfileSchema.js");
 
 const setAdopterSumary = async (req, res) => {
     try {
+        await AdopterProfileSchema.validate(req.body.values);
         const {
-            civility, lastname, firstname, adressePostale, email, phone,
+            civility, lastname, firstname, age, adressePostale, email, phone,
             animalCase, animalNumber, otherAnimals, lifeRoutine,
             haveChildren, motivation, animalPlace, child
         } = req.body.values;  
@@ -11,11 +13,12 @@ const setAdopterSumary = async (req, res) => {
         const animal = req.body.animal;
 
         await db.query(
-            "INSERT INTO adopter (id, firstname, lastname, civility, adressePostale, email, phone, animalCase, animalNumber, otherAnimals, lifeRoutine, haveChildren, motivation, animalPlace, child, animal_id) VALUES (uuid(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO adopter (id, firstname, lastname, civility,age, adressePostale, email, phone, animalCase, animalNumber, otherAnimals, lifeRoutine, haveChildren, motivation, animalPlace, child, animal_id) VALUES (uuid(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
                 firstname,
                 lastname,
                 civility,
+                age,
                 adressePostale,
                 email,
                 phone,
@@ -39,6 +42,14 @@ const setAdopterSumary = async (req, res) => {
         return res.status(201).json({ message: 'Opération réussie' });
 
     } catch (err) {
+        if (err.name === "ValidationError") {
+          return res.status(400).json({
+            errors: err.inner.map(e => ({
+              field: e.path,
+              message: e.message
+            }))
+          });
+        }
         return res.status(500).json({ error: `Erreur serveur: ${err.message}` });
     }
 }

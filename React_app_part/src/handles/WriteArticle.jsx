@@ -309,15 +309,15 @@ function toggleTagOnSelection(tagName, tagFormat) {
                 formData.append('content', content);
 
                 await axios.post(
-                    `http://localhost:5000/api/articles/edit/${id}`,
-                    formData,
-                    {
-                        withCredentials: true,
-                        headers: { 
-                            'Authorization': `Bearer ${token}`
-                            
-                        }
+                  `http://localhost:5000/api/articles/edit/${id}`,
+                  formData,
+                  {
+                    withCredentials: true,
+                    headers: {
+                      'Authorization': `Bearer ${token}`
+                      // ❌ Do NOT set Content-Type manually here
                     }
+                  }
                 ).then(() => {
                     navigate(`/article/${id}`);
                 });

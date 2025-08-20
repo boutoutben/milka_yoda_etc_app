@@ -1,5 +1,6 @@
 const db = require("../mysqlDatabase.js");
 const { decryptData } = require("../Routes/encryptData.js");
+const UserInfoSchema = require("../schema/UserInfoSchema.js");
 
 const fetchAdoptedAnimals = async (req, res) => {
     try {
@@ -28,7 +29,9 @@ const fetchPersonnelsInfos = async (req, res) => {
 const setPersonnelInfo = async (req, res) => {
     const data = decryptData(req.body.data); 
     const {civility, lastname, firstname, age, adressePostale, email, phone} = data.data;
+    
     try {
+       await UserInfoSchema.validate(data.data);
       const [result] = await db.query(
         "UPDATE users SET civility = ?, firstname = ?, lastname = ?, adressePostale = ?, email = ?, age = ?, phone = ? WHERE id = ?",
         [civility, firstname, lastname, adressePostale, email, age, phone, req.body.id]
@@ -42,6 +45,14 @@ const setPersonnelInfo = async (req, res) => {
   
       res.status(200).json({ message: "Infos mises à jour !", userInfo: user[0] });
     } catch (err) {
+      if (err.name === "ValidationError") {
+          return res.status(400).json({
+            errors: err.inner.map(e => ({
+              field: e.path,
+              message: e.message
+            }))
+          });
+        }
       res.status(500).json({ error: `Erreur serveur: ${err.message}` });
     }
   }

@@ -3,6 +3,8 @@ const AnimalsRaces = require("../mongoose/Schemas/animalsRaces.js");
 const AnimalsIncompatibility = require("../mongoose/Schemas/animalsIncompability.js");
 const fs = require("fs");
 const path = require("path");
+const AddUpdateAnimalSchema = require("../schema/AddUpdateAnimalSchema.js");
+const { json } = require("body-parser");
 
 
 const fetchAdopt = async (req, res) => {
@@ -31,7 +33,6 @@ const fetchAnimalsById = async (req, res) => {
         }
         // Prendre le premier animal trouvé
         const animal = rows[0];
-
         const races = JSON.parse(animal.races); // Convert JSON string to array
         const raceObjects = await Promise.all(
             races.map(raceId => AnimalsRaces.findById(raceId))
@@ -73,6 +74,12 @@ const fetchRacesAndIncompatibility = async (req, res) => {
 
 const addAnimals = async (req, res) => {
     try {
+      const dataToValidate = {
+      ...req.body,
+      races: JSON.parse(req.body.races),
+      file: req.file,
+    };
+       await AddUpdateAnimalSchema(true).validate(dataToValidate);
       const { name, description, sexe, isSterile, races, born, incompatibility } = req.body;
       const file = req.file;
   
@@ -85,16 +92,32 @@ const addAnimals = async (req, res) => {
   
       res.status(201).json({ message: "Animal ajouter" });
     } catch (err) {
+      console.log(err)
+      if (err.name === "ValidationError") {
+          return res.status(400).json({
+            errors: err.inner.map(e => ({
+              field: e.path,
+              message: e.message
+            }))
+          });
+        }
       res.status(500).json({ error: `Erreur serveur: ${err.message}` });
     }
   };
 
   const editAnimals = async (req, res) => {
+    const dataToValidate = {
+      ...req.body,
+      races: JSON.parse(req.body.races),
+      file: req.file,
+    };
+       
     const { name, description, sexe, isSterile, races, born, incompatibility } = req.body;
     const { id } = req.params;
     const file = req.file;
   
     try {
+      await AddUpdateAnimalSchema().validate(dataToValidate);
       const [rows] = await db.query("SELECT imgName FROM animals WHERE id = ?", [id]);
       const oldImgName = rows[0]?.imgName;
       const racesJson = races ? races : null;
@@ -123,6 +146,14 @@ const addAnimals = async (req, res) => {
   
       res.status(200).json({ message: 'Animal mis à jour avec succès' });
     } catch (err) {
+       if (err.name === "ValidationError") {
+          return res.status(400).json({
+            errors: err.inner.map(e => ({
+              field: e.path,
+              message: e.message
+            }))
+          });
+        }
       res.status(500).json({ error: `Erreur serveur: ${err.message}` });
     }
   };

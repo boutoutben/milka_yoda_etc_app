@@ -28,7 +28,7 @@ const Adopt = () => {
                 <AddAnimals apiUrl="adopt/add" />
             )}
            
-            <SearchBottom filter={filter} searchTerm={searchTerm} setFiltered={setFilteredAnimals} setSearchTerm={setSearchTerm} count={filteredAnimals.length} elements={animals} />
+            <SearchBottom filter={filter} setFilter={setFilter} searchTerm={searchTerm} setFiltered={setFilteredAnimals} setSearchTerm={setSearchTerm} count={filteredAnimals.length} elements={animals} />
             <section id="adoptInterface">
                 <Filter filter={filter} setFilter={setFilter} filteredAnimals={animals} setFilteredAnimals={setFilteredAnimals} />
                 

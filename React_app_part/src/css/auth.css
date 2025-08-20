@@ -1,5 +1,5 @@
 #auth{
-    margin:80px 0 0;
+    margin:90px 0 0;
     max-width: 100%;
     align-items: stretch;
 }
@@ -8,6 +8,7 @@
 #auth>section {
     background-color: var(--blue-color);
     margin: 0;
+    width: 40%;
     align-items: center;
     justify-content: center;
     padding: 40px 50px;
@@ -32,6 +33,7 @@
     width: 100%;
 }
 #auth a, #auth .link {
+    font-size: 1.3em;
     color: rgb(143, 212, 240);
     text-decoration: underline;
 }
@@ -46,6 +48,7 @@
 #auth form {
     width: 100%;
 }
+
 #auth>div{
     flex: 1;
     display: flex;
@@ -60,11 +63,15 @@
     /* enlève l’espace blanc en bas dû aux images inline */
 }
 
-
-
+@media screen and (max-width:1180px) {
+    #auth .contentDiv .flex-row{
+        flex-direction: column;
+    }
+}
 
 @media screen and (max-width:768px) {
     #auth{
+        margin:80px 0 0;
         flex-direction: column-reverse;
         gap: 0;
     }
@@ -80,6 +87,8 @@
     #auth.register>section {
         height: fit-content;
     }
+
+    
  
     #auth img, #auth.register img{
         height: 250px;
@@ -90,8 +99,6 @@
         max-width: 400px;
         width: 100%;
     }
-    #auth .flex-row{
-        flex-direction: column;
-    }
+
 }
 

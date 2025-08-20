@@ -8,7 +8,7 @@ import PasswordInput from "../components/passwordInput";
 import AppSection from "../components/AppSection";
 import PropTypes from "prop-types";
 import getFetchApi from "../utils/getFetchApi";
-import useEncryptData from "../hook/useEncryptData";
+import useEncryptData from "../utils/encryptData";
 
 const useGetResetPasswordMessage = () => {
     const {token} = useParams();

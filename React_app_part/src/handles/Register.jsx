@@ -5,7 +5,7 @@ import PasswordInput from '../components/passwordInput';
 import {useFormik} from 'formik';
 import registerSchema from '../validationSchema/RegisterSchema';
 import PropTypes from 'prop-types';
-import useEncryptData from '../hook/useEncryptData';
+import useEncryptData from '../utils/encryptData';
 
 const RegisterSection =  ({navigate}) => {
     const formik = useFormik({
@@ -30,11 +30,9 @@ const RegisterSection =  ({navigate}) => {
                 withCredentials: true
               })
             .then(response => {
-                console.log("sucess")
                 navigate('/login', { state: { user: response.data } });
             })
             .catch(error => {
-                console.log("rr")
                 console.error("Erreur lors de l'envoi:", error.message);
             });
         }

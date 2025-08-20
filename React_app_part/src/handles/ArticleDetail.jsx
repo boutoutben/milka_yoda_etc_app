@@ -3,6 +3,7 @@ import { Suspense, useEffect, useState } from "react";
 import getFetchApi from "../utils/getFetchApi";
 import loadArticleComponent from "../utils/loadArticleComponent";
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 
 const handleDeleteArticle = async (id, navigate) => {
     try {
@@ -18,7 +19,7 @@ const handleDeleteArticle = async (id, navigate) => {
     } 
 }
 
-const useFetchArticleDetailData = (id) => {
+const useFetchArticleDetailData = (id, navigate) => {
     const [article, setArticle] = useState(null);
     const [ArticleComponent, setArticleComponent] = useState(null);
     useEffect(() => {
@@ -30,6 +31,9 @@ const useFetchArticleDetailData = (id) => {
                             .catch((err) => console.error("Erreur lors du chargement du composant:", err.message));
                     })
                     .catch(err => {
+                        if(err.status == 404) {
+                            navigate("/article", { state: { message: "Article non trouvé" } });
+                        }
                         console.error("Erreur lors de la recherche:", err.message);
                     });
             }, [id]);

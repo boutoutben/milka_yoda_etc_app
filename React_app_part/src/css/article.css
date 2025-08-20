@@ -16,6 +16,10 @@
     padding: 15px 30px;
 }
 
+#article .formError{
+    text-align: center;
+}
+
 #article>article {
     max-width: 1000px;
     margin: 2vw 0;

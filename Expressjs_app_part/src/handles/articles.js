@@ -5,6 +5,8 @@ const dotenv = require('dotenv');
 dotenv.config();
 const {generateRandomName} = require("../utils/generateRandowName.js")
 const crypto = require("crypto");
+const AddArticleSchema = require("../schema/AddArticleSchema.js");
+const EditArticleSchema = require("../schema/EditArticleSchema.js");
 
 const fetchArticles = async (req, res) => {
     try {
@@ -63,7 +65,11 @@ const fetchArticlesDetail = async (req, res) => {
   try {
     const { title, description } = req.body;
     const file = req.file;
-
+    const dataToValidate = {
+      ...req.body,
+      file: file
+    }
+    await AddArticleSchema.validate(dataToValidate)
     if (!file) {
       return res.status(400).json({ error: 'Aucun fichier fourni.' });
     }
@@ -98,6 +104,14 @@ const fetchArticlesDetail = async (req, res) => {
 
   } catch (err) {
     console.error("Erreur dans addArticles:", err);
+    if (err.name === "ValidationError") {
+          return res.status(400).json({
+            errors: err.inner.map(e => ({
+              field: e.path,
+              message: e.message
+            }))
+          });
+        }
     return res.status(500).json({ error: `Erreur serveur : ${err.message}` });
   }
 };
@@ -106,6 +120,11 @@ const editDescriptionArticle = async (req, res) => {
   const file = req.file;
 
   try {
+    const dataToValidate = {
+      ...req.body,
+      file: req.file,
+    };
+       await EditArticleSchema.validate(dataToValidate);
     const [rows] = await db.query("SELECT imgName FROM articles WHERE id = ?", [articleId]);
     const oldImgName = rows[0]?.imgName;
 
@@ -132,6 +151,14 @@ const editDescriptionArticle = async (req, res) => {
 
     res.status(200).json({ message: "Mise à jour réussie !" });
   } catch (err) {
+    if (err.name === "ValidationError") {
+          return res.status(400).json({
+            errors: err.inner.map(e => ({
+              field: e.path,
+              message: e.message
+            }))
+          });
+        }
     res.status(500).json({ error: `Erreur serveur: ${err.message}` });
   }
 };
@@ -139,9 +166,7 @@ const editDescriptionArticle = async (req, res) => {
 const editArticles = async (req, res) => {
     try {
         const {id} = req.params;
-        console.log("cc", req.body)
         const content = req.body.content;
-        console.log(content);
         const fileContent = `
         const Article = () => {
             return (
@@ -155,12 +180,20 @@ const editArticles = async (req, res) => {
         const [article] = await db.query("SELECT fileName, isPublish FROM articles WHERE id = ?", [id]);
 
         const filePath = path.join(process.env.CLIENT_APP_PART, 'src', 'articles', article[0].fileName);
-        if(!article[0].isPublish) await db.query("UPDATE articles SET isPublish = true");
-        fs.writeFile(filePath, fileContent, function (err) {
-            if (err)  res.status(500).json({ error: `Write file error: ${err.message}` });
-            res.status(200).json({message:"update"})
-        });
+        try {
+  if (!article[0].isPublish) {
+    await db.query("UPDATE articles SET isPublish = true");
+  }
+  await fs.promises.writeFile(filePath, fileContent) 
+    // ✅ Only one response, sent after file write completes
+    res.status(200).json({ message: "update" });
+
+} catch (error) {
+  // ✅ Catch errors from the db.query or any sync code
+  res.status(500).json({ error: `Server error: ${error.message}` });
+}
     } catch (err){
+      console.log(err)
         res.status(500).json({error: `Erreur serveur: ${err.message}`})
     }
   }

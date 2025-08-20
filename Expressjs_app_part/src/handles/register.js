@@ -1,6 +1,7 @@
 const { hashPassword } = require("../utils/hashPassword.js");
 const db = require("../mysqlDatabase.js");
 const { decryptData } = require("../Routes/encryptData.js");
+const registerSchema = require("../schema/RegisterSchema.js");
 
 const registerBlock = async (req, res) => {
   const data = decryptData(req.body.data);
@@ -11,10 +12,11 @@ const registerBlock = async (req, res) => {
   }
 
   const { firstname, lastname, email, phone, password } = data.data;
+  
     const passwordHash = hashPassword(password);
     try {
+      await registerSchema.validate(data.data);
       const existUser = await db.query("SELECT * FROM users WHERE email = ?", [email]);
-      console.log(existUser[0].length)
       if(existUser[0].length > 0) {
         return res.status(200).send("Vous avez déjà un compte");
       }
@@ -29,6 +31,14 @@ const registerBlock = async (req, res) => {
     
 
   catch (err) {
+    if (err.name === "ValidationError") {
+          return res.status(400).json({
+            errors: err.inner.map(e => ({
+              field: e.path,
+              message: e.message
+            }))
+          });
+        }
     return res.status(500).send("Une erreur est survenue:", err.message);
   }
 }

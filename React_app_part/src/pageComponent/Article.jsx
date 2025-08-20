@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import './../css/article.css';
 import getFetchApi from '../utils/getFetchApi';
 import uploadsImgUrl from '../utils/uploadsImgUrl';
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import AreYouSure from '../components/areYouSure';
 import EditElement from '../components/editElement';
 import MainBtn from '../components/mainBtn';
@@ -38,6 +38,9 @@ const Articles = () => {
     const toggleEdit = (index) => toggleAtIndex(canEditArray, setCanEditArray, index)
     const toggledelete = (index) => toggleAtIndex(canDeleteArray, setCanDeleteArray, index);
     const navigate = useNavigate()
+    const location = useLocation()
+    const state = location.state;
+    console.log(state)
     const handleClick = (event, id) => {
         event.preventDefault();
         navigate(`/article/${id}`);
@@ -47,6 +50,9 @@ const Articles = () => {
     return (
         <main id="article">
             <article>
+            {state && (
+                <p className="formError">{state.message}</p>
+            )}
                 {granted && (
                     <div className='relative'>
                     <MainBtn name={"Ajouter un article"} click={() => setAdd(true)} className={"btnInMain"} />

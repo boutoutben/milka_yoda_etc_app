@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from '../components/Navbar.jsx';
 import Actions from './Actions';
@@ -23,6 +22,7 @@ import ApprouvedAdoption from './ApprouvedAdoption.jsx';
 import WriteArticle from './WriteArticle.jsx';
 import ResetPassword from './ResetPassword.jsx';
 import ScrollToTop from '../utils/scrollToTop.jsx';
+import NotFoundPage from './NotFoundPage.jsx';
 
 const App = () => {
     return (
@@ -51,7 +51,7 @@ const App = () => {
                 <Route path='/adopterSumary' element={<AdopterSumary />} />
                 <Route path='/adoptSucess' element={<AdoptSucess />} />
                 <Route path='/adopterApprouved/:id' element={<ApprouvedAdoption />} />
-    
+                <Route path='*' element={<NotFoundPage />} />
             </Routes>
             <Footer />
         </Router>

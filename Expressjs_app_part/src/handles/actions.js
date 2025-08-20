@@ -1,11 +1,17 @@
 const db = require("../mysqlDatabase.js");
 const fs = require("fs");
 const path = require("path");
+const AddUpdateActionSchema = require('../schema/AddUpdateActionSchema');
 
 const addAction = async (req, res) => {
     const { title, description, pageUrl } = req.body;
     const file = req.file;
     try {
+      const dataToValidate = {
+      ...req.body,
+      file: req.file,
+    };
+       await AddUpdateActionSchema(true).validate(dataToValidate);
       const [actions] = await db.query("select id from actions");
       const order = actions.length;
         await db.query(
@@ -14,12 +20,20 @@ const addAction = async (req, res) => {
         );
         res.status(201).json({ message: "Action ajoutée avec succès !" });
       } catch (err) {
+        if (err.name === "ValidationError") {
+          return res.status(400).json({
+            errors: err.inner.map(e => ({
+              field: e.path,
+              message: e.message
+            }))
+          });
+        }
+
         res.status(500).json({ error: `Erreur lors de l'ajout de l'action: ${err}` });
       }
 }
 
 const fetchActions = async (req, res) => {
-  console.log("cc")
     try {
       const [actions] = await db.query("SELECT * FROM actions ORDER BY actionOrder");
       res.json({ actions });
@@ -32,8 +46,13 @@ const editActions = async (req, res) => {
     const { title, description, pageUrl } = req.body;
       const file = req.file;
       const {id} = req.params;
-    
+      
       try {
+        const dataToValidate = {
+      ...req.body,
+      file: req.file,
+    };
+       await AddUpdateActionSchema(false).validate(dataToValidate);
         // 1️⃣ Récupérer l'ancien imgName
         const [rows] = await db.query("SELECT imgName FROM actions WHERE id = ?", [id]);
         const oldImgName = rows[0]?.imgName;
@@ -64,6 +83,15 @@ const editActions = async (req, res) => {
     
         res.json({message: "Mise à jour réussie !"});
       } catch (err) {
+        console.log(err)
+        if (err.name === "ValidationError") {
+          return res.status(400).json({
+            errors: err.inner.map(e => ({
+              field: e.path,
+              message: e.message
+            }))
+          });
+        }
         res.status(500).json({error: `Erreur serveur: ${err}`});
       } 
 }

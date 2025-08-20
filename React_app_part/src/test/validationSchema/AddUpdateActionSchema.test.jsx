@@ -44,7 +44,7 @@ describe("addUpdateActionSchema", () => {
         title: validTitle,
         description: validDescription,
         file: validFile
-    }, AddUpdateActionSchema(true), true )
+    }, AddUpdateActionSchema(true), true)
     
 
     // test pageUrl 

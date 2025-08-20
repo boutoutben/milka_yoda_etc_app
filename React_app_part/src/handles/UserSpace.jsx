@@ -5,10 +5,9 @@ import PersonnelInfo from '../components/personnelInfo';
 import PresentationAnimal from '../components/presentationAnimal';
 import AppSection from '../components/AppSection';
 import { useEffect, useState } from "react";
-import encryptWithPublicKey from "../utils/encryptWithPublicKey";
 import PropTypes from "prop-types";
 import getFetchApi from "../utils/getFetchApi";
-import useEncryptData from "../hook/useEncryptData";
+import useEncryptData from "../utils/encryptData";
 
 const UserInfo = ({ personnelInfo, navigate }) => {
     const [message, setMessage] = useState(null);
@@ -28,6 +27,7 @@ const UserInfo = ({ personnelInfo, navigate }) => {
       onSubmit: async (values) => {
         try {
           const encryptedData = await useEncryptData(values)
+          
           const response = await axios.put(
             'http://localhost:5000/api/user',
             { id: personnelInfo.id, data: encryptedData },

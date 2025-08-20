@@ -7,7 +7,7 @@
     "test:e2e": "jest --testPathPattern=src/e2e",
     "start:dev": "nodemon ./src/index.js",
     "start": "node ./src/index.js",
-    "start:test":"cross-env NODE_ENV=test node ./src/index.js",
+    "start:test": "cross-env NODE_ENV=test node ./src/index.js",
     "build:articles": "babel src/articles --out-dir public/articles"
   },
   "keywords": [],
@@ -27,13 +27,15 @@
     "fs": "^0.0.1-security",
     "https": "^1.0.0",
     "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
     "mongoose": "^8.13.0",
     "multer": "^1.4.5-lts.2",
     "mysql2": "^3.14.0",
     "nodemailer": "^7.0.3",
     "nodemon": "^3.1.9",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "yup": "^1.7.0"
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",

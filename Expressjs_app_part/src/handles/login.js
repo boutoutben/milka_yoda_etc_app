@@ -6,6 +6,9 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const { hashPassword } = require("../utils/hashPassword.js");
 const { decryptData } = require("../Routes/encryptData.js");
+const emailSchema = require("../schema/emailSchema");
+const loginSchema = require("../schema/LoginSchema");
+const resetPasswordSchema = require("../schema/resetPasswordSchema");
 
 dotenv.config();
 
@@ -13,6 +16,7 @@ const loginBlock = async (req, res) => {
   try {
     const data = decryptData(req.body.data);
     const {email, password, remember_me } = data.data
+     await loginSchema.validate(data.data);
     const [rows] = await db.query(`
       SELECT users.*, roles.name as roleName
       FROM users
@@ -68,7 +72,14 @@ const loginBlock = async (req, res) => {
       const expiresIn = remember_me ? "30d" : "1h";
       res.status(200).json({ token, userInfo, expiresIn });
       } catch (err) {
-        console.error("Erreur serveur :", err);
+        if (err.name === "ValidationError") {
+          return res.status(400).json({
+            errors: err.inner.map(e => ({
+              field: e.path,
+              message: e.message
+            }))
+          });
+        }
         res.status(500).json({ error: "Erreur serveur", details: err.message });
       }
 }
@@ -76,6 +87,7 @@ const loginBlock = async (req, res) => {
 const forgotPassword = async (req, res) => {
   const {email} = req.body;
   try {
+    await emailSchema.validate(req.body);
     const [user] = await db.query("SELECT users.id as id FROM users INNER JOIN roles ON users.role = roles.id WHERE roles.name = 'USER_ROLE' AND users.email = ?", [email]);
     if(user.length === 1) {
       const time = process.env.NODE_ENV === 'test'? 10000 : 10 * 60 * 1000
@@ -84,7 +96,7 @@ const forgotPassword = async (req, res) => {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: process.env.NODE_ENV === 'test'? "test@example.com" : 'boutout.ben@gmail.com',
+                user: 'boutout.ben@gmail.com',
                 pass: process.env.GMAIL_SERVICE_PASSWORD,
             },
         });
@@ -104,6 +116,14 @@ const forgotPassword = async (req, res) => {
         res.status(404).send("Email non trouvé");
     }  
   } catch (err) {
+    if (err.name === "ValidationError") {
+          return res.status(400).json({
+            errors: err.inner.map(e => ({
+              field: e.path,
+              message: e.message
+            }))
+          });
+        }
     res.status(500).json({error: `Erreur server: ${err.message}`})
   }
 }
@@ -128,6 +148,7 @@ const resetPassword = async (req, res) => {
       const [users] = await db.query("SELECT users.id AS id, resetToken, resetTokenExpires FROM users INNER JOIN roles ON roles.id = users.role WHERE roles.name = 'USER_ROLE'");
       const data = decryptData(req.body.data);
       const  {token, password} = data.data;
+      await resetPasswordSchema.validate(data.data);
       const user = users.find(user => user.resetToken === token);
       if(user) {
           const hash = hashPassword(password);
@@ -138,6 +159,14 @@ const resetPassword = async (req, res) => {
         res.status(404).send("User not found");
       }
   } catch(err) {
+     if (err.name === "ValidationError") {
+          return res.status(400).json({
+            errors: err.inner.map(e => ({
+              field: e.path,
+              message: e.message
+            }))
+          });
+        }
       res.status(500).json({error: `Erreur server: ${err.message}`})
   }
 }

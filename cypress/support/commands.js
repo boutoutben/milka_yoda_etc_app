@@ -137,3 +137,33 @@ Cypress.Commands.add("resetPassword", (password, confirmPassword) => {
     cy.get("form").submit();
   });
 })
+
+Cypress.Commands.add("writeArticlePage", () => {
+  cy.adminLogin();
+        cy.visit("article/b3b9bc6e-6cb9-11f0-b3aa-50ebf692f6a4");
+        cy.get("[data-testid='edit-paraph']").click();
+        cy.url().should("include", '/writeArticle/b3b9bc6e-6cb9-11f0-b3aa-50ebf692f6a4');
+})
+
+Cypress.Commands.add('selectElement', ($el) => {
+  const el = $el.get(0);
+    let node = el.firstChild;
+
+    // If firstChild is an element, get its first text node
+    if (node && node.nodeType === Node.ELEMENT_NODE) {
+      node = node.firstChild;
+    }
+
+    if (!node || node.nodeType !== Node.TEXT_NODE) {
+      throw new Error("No text node found to select");
+    }
+
+    const doc = el.ownerDocument;
+    const range = doc.createRange();
+    range.setStart(node, 0);
+    range.setEnd(node, node.length);
+
+    const selection = doc.defaultView.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+})

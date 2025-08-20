@@ -12,13 +12,7 @@ jest.mock('../mysqlDatabase.js', () => {
     };
 });
 
-const mockData = {
-    firstname:"John",
-    lastname:'Doe',
-    email:'john@gmail.com',
-    phone:"0650405040",
-    password:'securePass123'
-}
+let mockData;
 
 jest.mock('../utils/hashpassword', () => ({
     hashPassword: jest.fn()
@@ -28,6 +22,14 @@ describe("create users", () => {
     let mockReq, mockRes;
 
     beforeEach(async () => {
+         mockData = {
+    firstname:"John",
+    lastname:'Doe',
+    email:'john@gmail.com',
+    phone:"0650405040",
+    password:'SecurePass123!',
+    confirmPassword:'SecurePass123!'
+}
         mockReq = {
             body: {
                 data: await encryptData(mockData, publicKey) 
@@ -36,6 +38,7 @@ describe("create users", () => {
 
         mockRes = {
             status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
             send: jest.fn()
         };
 
@@ -65,7 +68,7 @@ describe("create users", () => {
   await registerBlock(mockReq, mockRes);
 
   expect(mockRes.send).toHaveBeenCalledWith("Inscription réussie");
-  expect(hashPassword).toHaveBeenCalledWith("securePass123");
+  expect(hashPassword).toHaveBeenCalledWith("SecurePass123!");
 
   expect(db.query).toHaveBeenCalledWith(
     expect.stringContaining("INSERT INTO users"),
@@ -74,6 +77,17 @@ describe("create users", () => {
 
   expect(mockRes.status).toHaveBeenCalledWith(201);
 });
+    it("should return 400 error if invalid data", async () => {
+        mockData.email = "";
+        mockReq = {
+            body: {
+                data: await encryptData(mockData, publicKey)
+            }
+        };
+        await registerBlock(mockReq, mockRes);
+        expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith({"errors": []})
+    })
     it('Should retunr 500 if query to check user fails', () => {
         db.query
             .mockRejectedValue(new Error("Query failed"));

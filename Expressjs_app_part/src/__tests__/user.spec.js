@@ -98,16 +98,17 @@ describe("Fetch personnel info", () => {
 })
 
 describe("Set personnel Info", () => {
-    const mockData = {
-        civility: 1,
-        lastname: "testname",
-        firstname:'test',
-        age:'18',
-        adressePostale: "59000",
-        email: "boutout.ben@gmail.com",
-        phone: "0600000000"
-    }
+    let mockData;
     beforeEach(async () => {
+        mockData = {
+            civility: 1,
+            lastname: "Testname",
+            firstname:'Test',
+            age:'18',
+            adressePostale: "59000",
+            email: "boutout.ben@gmail.com",
+            phone: "0600000000"
+        }
         mockReq = {
             body: {
                 data: await encryptData(mockData, publicKey),
@@ -120,8 +121,8 @@ describe("Set personnel Info", () => {
         db.query= jest.fn().mockResolvedValue([[{
                 id: 1,
                 civility: 1,
-                lastname: "testname",
-                firstname:'test',
+                lastname: "Testname",
+                firstname:'Test',
                 age:'18',
                 adressePostale: "59000",
                 email: "boutout.ben@gmail.com",
@@ -132,8 +133,8 @@ describe("Set personnel Info", () => {
         expect(mockRes.json).toHaveBeenCalledWith({message: "Infos mises à jour !", userInfo: {
             id: 1,
                 civility: 1,
-                lastname: "testname",
-                firstname:'test',
+                lastname: "Testname",
+                firstname:'Test',
                 age:'18',
                 adressePostale: "59000",
                 email: "boutout.ben@gmail.com",
@@ -148,6 +149,17 @@ describe("Set personnel Info", () => {
         expect(mockRes.status).toHaveBeenCalledWith(404);
         expect(mockRes.json).toHaveBeenCalledWith({ message: "Aucun utilisateur trouvé avec cet ID" });
       });
+      it("should return an 400 error if invalid data", async () => {
+        mockData.email = ""
+        mockReq = {
+                    body: {
+                        data: await encryptData(mockData, publicKey) 
+                    }
+                }; 
+        await setPersonnelInfo(mockReq, mockRes);
+         expect(mockRes.status).toHaveBeenCalledWith(400);
+            expect(mockRes.json).toHaveBeenCalledWith({"errors": []})
+      })
     it("Should return an error is error", async () => {
         db.query= jest.fn().mockRejectedValue(new Error("DB error"))
         await setPersonnelInfo(mockReq, mockRes);

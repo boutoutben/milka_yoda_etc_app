@@ -3,11 +3,11 @@ import getFetchApi from "../../utils/getFetchApi";
 import { ResetPasswordSection, useGetResetPasswordMessage } from "../../handles/ResetPassword";;
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
-import encryptWithPublicKey from "../../utils/encryptWithPublicKey";
+import encryptData from "../../utils/encryptData";
 
 jest.mock("../../utils/getFetchApi.jsx");
 jest.mock("axios");
-jest.mock("../../utils/encryptWithPublicKey")
+jest.mock("../../utils/encryptData")
 
 describe("useGetResetPasswordMessage", () => {
     test("should return the message get", async () => {
@@ -31,7 +31,7 @@ describe("useGetResetPasswordMessage", () => {
 describe("ResetPasswordSection", () => {
     beforeEach(() => {
         jest.clearAllMocks();
-        encryptWithPublicKey.mockReturnValue("mock encrypt data");
+        encryptData.mockReturnValue("mock encrypt data");
         jest.spyOn(console, 'error').mockImplementation(() => {})
       });
 

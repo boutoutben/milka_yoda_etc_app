@@ -38,6 +38,7 @@ const EditArticle = ({onEdit, article, onReload = () => location.reload()}) => {
                         onReload();
                   })
                   .catch(error => {
+                    console.log(error)
                       console.error("Erreur lors de l'envoi :", error.message);
                   });
               }

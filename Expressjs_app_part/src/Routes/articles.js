@@ -17,7 +17,7 @@ router.get("/detail/:id", fetchArticlesDetail)
 
 router.post("/add", verifyToken, authRole("ADMIN_ROLE"), upload.single('file'), addArticles)
 
-router.post("/edit/:id", verifyToken, authRole("ADMIN_ROLE"), editArticles)
+router.post("/edit/:id", verifyToken, authRole("ADMIN_ROLE"),upload.none(), editArticles)
 
 router.patch('/editDescriptionArticle', verifyToken, authRole("ADMIN_ROLE"), upload.single('file'), editDescriptionArticle)
 

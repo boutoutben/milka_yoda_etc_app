@@ -30,6 +30,6 @@ describe("EditArticleSchema", () => {
             description: validDescription,
             file: validFile
         };
-        expect(EditArticleSchema.validate(data)).resolves.toEqual(data)
+        expect(EditArticleSchema.validate(data)).resolves.toEqual(data);
     })
 })

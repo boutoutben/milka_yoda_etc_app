@@ -23,6 +23,9 @@ describe("AreYouSure", () => {
 
     expect(axios.delete).toHaveBeenCalledWith("http://localhost:5000/api/test", {
       withCredentials: true,
+      "headers":  {
+        "Authorization": "Bearer null",
+      },
     });
 
     expect(mockReload).toHaveBeenCalled();

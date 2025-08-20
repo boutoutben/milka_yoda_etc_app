@@ -124,7 +124,7 @@ const ActionSumary = () => {
         id="actionSumary"
         title="Avant goût des actions"
         content={
-            <div className="flex-row alignCenter-AJ">
+            <div className="flex-row alignCenter-AJ overflow">
                 {actions.map((action, index) => (
                     <WelcomeImg
                         key={action.id}
@@ -168,7 +168,7 @@ const AnimalToAdopt = () => {
             id='animalToAdopt'
             title='Nos animaux à adopter'
             content={
-                <div className="flex-row alignCenter-AJ">
+                <div className="flex-row alignCenter-AJ overflow">
                     {animalsData.length > 0 ? (
                         animalsData.map((animal) => (
                             <PresentationAnimal
@@ -219,7 +219,7 @@ const BeingCarefullAboutAnimales = ({redirection, navigate}) => {
         id='beingCarefullAboutAnimales'
         title='Les animaux ne sont pas des objets'
         content={
-            <div className="flex-row alignCenter-AJ">
+            <div className="flex-row alignCenter-AJ overflow">
                 {articles.map((article) => (
                     <div className="borderBlue" data-testid={`article`} key={article.id} onClick={(event) => handleArticleClick(event, article.id)} >
                         <img data-testid={`articleImg-${article.id}`} src={uploadsImgUrl(article.imgName)} alt="" />

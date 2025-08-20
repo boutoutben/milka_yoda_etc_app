@@ -8,6 +8,16 @@ jest.mock("@emailjs/browser", () => ({
     sendForm: jest.fn().mockResolvedValue({}),
   }));
 
+jest.mock('../../utils/getEnvVars', () => ({
+    __esModule: true,
+    default: () => ({
+      VITE_GMAIL_SERVICE_ID: 'test',
+      VITE_GMAIL_CONTACT_MODELE_ID: 'test',
+      VITE_GMAILJS_PUBLIC_KEY: 'test',
+      VITE_OWNER_EMAIL: "test"
+    }),
+  }));
+
 describe("handleContactSubmit", () => {
     const mockFormRef = { current: { some: "formElement" } };
     const mockResetForm = jest.fn();
@@ -23,10 +33,10 @@ describe("handleContactSubmit", () => {
         submit({}, { resetForm: mockResetForm });
 
         expect(emailjs.sendForm).toHaveBeenCalledWith(
-            "service_rudbrtp",
-            "template_n97r70c",
+            "test",
+            "test",
             mockFormRef.current,
-            "mHP87VvYc_0rTgwUu"
+            "test"
         );
         await waitFor(() => {
            expect(mockResetForm).toHaveBeenCalled(); 

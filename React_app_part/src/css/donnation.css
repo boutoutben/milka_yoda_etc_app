@@ -20,9 +20,10 @@
 }
 
 #donnationPrice input {
-    display: none;
-    /* Cache complètement l'input radio */
+    display: none; 
 }
+
+
 
 #donnationData>form{
     display: flex;
@@ -37,7 +38,7 @@
     width: fit-content;
     row-gap: 15px;
     background-color: var(--third-color);
-    padding: 30px 20px;
+    padding: 30px 25px;
     border-radius: 20px;
     border: 4px solid black;
     height: fit-content;
@@ -52,13 +53,13 @@
     flex-direction: row;
     gap: 10px;
 }
-#informationDonnation select{
-    height: 38px;
+
+#informationDonnation input[type=number] {
+    width: 90%;
 }
+
 #donnationData input:not(input[type=radio]){
     border-radius: 10px;
-    width: 100%;
-    height: 38px;
 }
 #coordonateDonnation {
     width: 400px !important;
@@ -73,12 +74,11 @@
 }
 
 
-select{
-    background-color: white;
-}
-
 .PhoneInputInput, select {
     border:3px solid var(--blue-color);
+}
+.PhoneInputInput {
+    padding: 17px 10px;
 }
 .PhoneInputCountry{
     display: flex;

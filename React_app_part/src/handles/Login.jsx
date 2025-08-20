@@ -10,11 +10,12 @@ import AppSection from "../components/AppSection";
 import PasswordInput from "../components/passwordInput";
 import convertExpiresInToMs from "../utils/convertExpiresInToMS";
 import PropTypes from "prop-types";
-import encryptData from "../hook/useEncryptData";
+import encryptData from "../utils/encryptData";
 
-const ForgetAndNoAccountBtn = ({onReload = () => location.reload()}) => {
+const ForgetAndNoAccountBtn = () => {
     const [forgot, setForgot] = useState(false);
     const [message, setMessage] = useState(null);
+    const [error, setError] = useState(null)
     const forgetFormik = useFormik({
         initialValues: {
             email:''
@@ -33,6 +34,10 @@ const ForgetAndNoAccountBtn = ({onReload = () => location.reload()}) => {
                 setForgot(false)
             })
             .catch(err => {
+                if(err.status == 404) {
+                    setError("Email non trouvé")
+                    setForgot(false)
+                }
                 console.error("Une erreur est survenue:", err.message);
             })
         }
@@ -40,6 +45,7 @@ const ForgetAndNoAccountBtn = ({onReload = () => location.reload()}) => {
     return (
         <>
             {message && <p className="sucess_message">{message.data}</p>}
+            {error && <p className="formError">{error}</p>}
             <div className="flex-row alignCenter-AJ gap-15">
             <a href="/register">pas encore de compte</a>
             <button type="button" data-cy="forgot_password" className="unstyled-button link" onClick={() => setForgot(true)}>mot de passe oublié</button>     

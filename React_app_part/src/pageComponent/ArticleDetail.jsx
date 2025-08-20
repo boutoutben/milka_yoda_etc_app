@@ -10,7 +10,7 @@ import useIsGrandted from "../hook/useIsgranted";
 const ArticleDetail = () => {
     const navigate = useNavigate();
     const {id} = useParams();
-    const {article, ArticleComponent} = useFetchArticleDetailData(id);
+    const {article, ArticleComponent} = useFetchArticleDetailData(id, navigate);
     const granted = useIsGrandted("ADMIN_ROLE");
 
     

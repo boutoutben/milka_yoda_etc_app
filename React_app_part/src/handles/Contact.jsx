@@ -5,15 +5,18 @@ import AppSection from '../components/AppSection';
 import { useRef } from 'react';
 import emailjs from '@emailjs/browser';
 import ContactSchema from '../validationSchema/ContactSchema';
+import getEnvVars from "../utils/getEnvVars";
+
+const {VITE_GMAIL_SERVICE_ID, VITE_OWNER_EMAIL, VITE_GMAILJS_PUBLIC_KEY, VITE_GMAIL_CONTACT_MODELE_ID} = getEnvVars()
 
 const handleContactSubmit = (formRef) => (values, { resetForm }) => {
         
     if (!formRef.current) return;
     emailjs.sendForm(
-        "service_rudbrtp",
-        "template_n97r70c",
+        VITE_GMAIL_SERVICE_ID,
+        VITE_GMAIL_CONTACT_MODELE_ID,
         formRef.current,
-        "mHP87VvYc_0rTgwUu"
+        VITE_GMAILJS_PUBLIC_KEY
     )
     .then(() => {
         resetForm();
@@ -26,7 +29,7 @@ const handleContactSubmit = (formRef) => (values, { resetForm }) => {
 const ContactForm = () => {
     const formRef = useRef();
     const initialValues = {
-        owner_email: import.meta.env.VITE_OWNER_EMAIL,
+        owner_email: VITE_OWNER_EMAIL,
         lastname: "",
         firstname: "",
         email: "",

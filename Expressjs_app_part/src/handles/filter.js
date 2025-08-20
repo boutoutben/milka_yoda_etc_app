@@ -7,7 +7,7 @@ const filtedAnimals = async (req, res) => {
         const filterValue = await Promise.all(filteredAnimals.map(async (animal) => {
             const races = JSON.parse(animal.races); // Convertir JSON string en tableau
             const raceObjects = await Promise.all(races.map(raceId => AnimalsRaces.findById(raceId)));
-           
+            console.log(raceObjects)
             const age = animalAge(raceObjects[0].espece, new Date().getFullYear() - new Date(animal.born).getFullYear());
             // Vérifier si l'animal correspond aux critères
             if (

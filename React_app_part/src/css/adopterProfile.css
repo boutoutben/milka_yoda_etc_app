@@ -107,6 +107,8 @@
 
     #personnalInfo .flex-row{
         flex-direction: column;
+        width: 100%;
+        max-width: 400px;
         gap: 10px;
     }
     #adopterProfile>form>div {
@@ -114,9 +116,13 @@
         gap: 15px;
     }
     #adopterProfile select {
-        width: auto;
+        width: 100%;
     }
     #adopterProfile input {
-        width: auto;
+        width: 100%;
+    }
+    #adopterProfile label {
+        word-wrap: break-word;
+    white-space: normal;
     }
 }

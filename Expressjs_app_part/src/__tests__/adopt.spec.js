@@ -279,16 +279,18 @@ describe("fetchAnimalsById", () => {
       mockReq = {
         body: {
           name: "test",
-          description: "description du test",
+          description: "description of the test aming to descript the animal with his comportement",
           sexe: 1,
+          animal: 'chien',
           isSterile: true,
-          races: [102, 103],
+          races: "[102, 103]",
           born: "2018-10-28",
           incompatibility: null
         },
         file: {
-          filename: "test.jpg"
-        }
+  filename: 'test.jpg',
+  size: 500 * 1024 // => 512000
+}
       };
   
       mockRes = {
@@ -308,6 +310,13 @@ describe("fetchAnimalsById", () => {
       expect(mockRes.status).toHaveBeenCalledWith(201);
       expect(mockRes.json).toHaveBeenCalledWith({ message: "Animal ajouter" });
     });
+
+    it("should return an 400 error if invalid data", async () => {
+      mockReq.body.name = '';
+      await addAnimals(mockReq, mockRes);
+       expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith({"errors": []})
+    })
   
     it("Should return error if error", async () => {
       const mockQueryError = jest.fn().mockRejectedValueOnce(new Error("DB Error"));
@@ -329,10 +338,11 @@ describe("fetchAnimalsById", () => {
       mockReq = {
         body: {
           name: "test",
-          description: "description du test",
+          description: "description of the test aming to descript the animal with his comportement",
           sexe: 1,
+          animal: "chien",
           isSterile: true,
-          races: [102, 103],
+          races: "[102, 103]",
           born: "2018-10-28",
           incompatibility: null
         },
@@ -368,14 +378,18 @@ describe("fetchAnimalsById", () => {
         mockReq = {
           body: {
             name: "test",
-            description: "description du test",
+            description: "description of the test aming to descript the animal with his comportement",
             sexe: 1,
+            animal: "chien",
             isSterile: true,
-            races: [102, 103],
+            races: "[102, 103]",
             born: "2018-10-28",
             incompatibility: null
           },
-          file: { filename: "newImg.jpg" },
+          file: {
+  filename: 'test.jpg',
+  size: 500 * 1024 // => 512000
+},
           params: {
               id: 1
           }
@@ -397,14 +411,18 @@ describe("fetchAnimalsById", () => {
         mockReq = {
           body: {
             name: "test",
-            description: "description du test",
+            description: "description of the test aming to descript the animal with his comportement",
             sexe: 1,
             isSterile: true,
-            races: [102, 103],
+            animal: "chien",
+            races: "[102, 103]",
             born: "2018-10-28",
             incompatibility: null
           },
-          file: { filename: "newImg.jpg" },
+          file: {
+  filename: 'test.jpg',
+  size: 500 * 1024 // => 512000
+},
           params: {
               id: 1
           }
@@ -418,6 +436,12 @@ describe("fetchAnimalsById", () => {
         expect(mockRes.status).toHaveBeenCalledWith(500);
         expect(mockRes.json).toHaveBeenCalledWith({ error: 'Delete file error: Delete error' });
       })
+      it("should return an 400 error if invalid data", async () => {
+      mockReq.body.name = '';
+      await editAnimals(mockReq, mockRes);
+       expect(mockRes.status).toHaveBeenCalledWith(400);
+        expect(mockRes.json).toHaveBeenCalledWith({"errors": []})
+    })
       it("Should return an error if error", async () => {
         const mockQueryError = jest.fn().mockRejectedValueOnce(new Error("DB Error"));
         db.query= mockQueryError 

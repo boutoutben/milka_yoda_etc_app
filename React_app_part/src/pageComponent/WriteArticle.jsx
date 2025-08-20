@@ -65,7 +65,7 @@ const WriteArticle = () => {
                 </button>
                 {tools.map((tool) => (
                   <button key={tool.name} onClick={() => toggleTagOnSelection(tool.name, tool.format)} className={tools.find(el => el.name === tool.name && el.value) ? 'editorCheck' : ''}>
-                    {tool.spanClass && <span className={tool.spanClass}></span>}
+                    <span className={`text-effect ${tool.spanClass || ""}`}></span>
                     {tool.title && <span>{tool.title}</span>}
                   </button>
                 ))}
